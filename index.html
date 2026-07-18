@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>חשבונות בין האחיות - משפחת אלקיים</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#8a6d3b">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="חשבונות האחיות">
+<style>
+  :root {
+    --bg: #f4f2ee;
+    --card: #ffffff;
+    --border: #e2ddd3;
+    --text: #2c2a26;
+    --text-muted: #8a8578;
+    --ricky: #b7562f;
+    --bruria: #2f6a55;
+    --dorit: #35578f;
+    --owed-to-me: #1f7a4d;
+    --i-owe: #b23b3b;
+    --accent: #8a6d3b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  .wrap { max-width: 480px; margin: 0 auto; padding: 16px; padding-bottom: 60px; }
+  .banner {
+    background: #fff4e0;
+    border: 1px solid #e8cfa0;
+    color: #6b5220;
+    font-size: 12.5px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  h1 { font-size: 20px; margin: 8px 0 2px; text-align: center; }
+  .sub { text-align: center; color: var(--text-muted); font-size: 13px; margin-bottom: 20px; }
+
+  .name-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 16px; }
+  .name-btn {
+    display: flex; align-items: center; gap: 12px;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; cursor: pointer; font-size: 16px; color: var(--text); text-align: right;
+  }
+  .name-btn.selected { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(138,109,59,0.15); }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; flex-shrink: 0; }
+  .avatar.ricky { background: var(--ricky); }
+  .avatar.bruria { background: var(--bruria); }
+  .avatar.dorit { background: var(--dorit); }
+
+  label { display: block; font-size: 13px; color: var(--text-muted); margin-bottom: 4px; }
+  input, select, textarea {
+    width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px;
+    font-size: 15px; background: #fff; color: var(--text); font-family: inherit;
+  }
+  textarea { resize: vertical; min-height: 64px; }
+  .field { margin-bottom: 12px; }
+  .btn {
+    width: 100%; padding: 12px; border-radius: 10px; border: none; font-size: 15px;
+    font-weight: 600; cursor: pointer;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-secondary { background: var(--card); color: var(--text); border: 1px solid var(--border); }
+  .btn-danger { background: var(--i-owe); color: #fff; }
+  .btn-small { padding: 8px 12px; font-size: 13px; width: auto; }
+  .row { display: flex; gap: 10px; }
+  .row > * { flex: 1; }
+
+  .error { color: var(--i-owe); font-size: 13px; margin-top: 6px; text-align: center; }
+
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .topbar .who { display: flex; align-items: center; gap: 10px; }
+  .topbar h1 { margin: 0; font-size: 18px; text-align: right; }
+  .link-btn { background: none; border: none; color: var(--accent); font-size: 13px; cursor: pointer; padding: 4px; }
+
+  .account-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 16px; margin-bottom: 12px; cursor: pointer;
+  }
+  .account-card .top { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .account-card .name { font-size: 16px; font-weight: 600; }
+  .balance-line { font-size: 15px; }
+  .balance-line.owed-to-me { color: var(--owed-to-me); font-weight: 600; }
+  .balance-line.i-owe { color: var(--i-owe); font-weight: 600; }
+  .balance-line.even { color: var(--text-muted); }
+
+  .back-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .back-row button { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text); padding: 4px 8px; }
+
+  .balance-hero { text-align: center; padding: 18px 10px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 16px; }
+  .balance-hero .amount { font-size: 30px; font-weight: 700; margin: 4px 0; }
+  .balance-hero .amount.owed-to-me { color: var(--owed-to-me); }
+  .balance-hero .amount.i-owe { color: var(--i-owe); }
+  .balance-hero .amount.even { color: var(--text-muted); }
+  .balance-hero .caption { font-size: 13px; color: var(--text-muted); }
+
+  .toggle-add { margin-bottom: 12px; }
+  .add-form { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 16px; }
+  .add-form h3 { margin: 0 0 12px; font-size: 15px; }
+  .type-toggle { display: flex; gap: 8px; margin-bottom: 12px; }
+  .type-toggle button {
+    flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--border);
+    background: #fff; cursor: pointer; font-size: 14px; color: var(--text-muted);
+  }
+  .type-toggle button.active.charge { background: #fbeceb; border-color: var(--i-owe); color: var(--i-owe); font-weight: 600; }
+  .type-toggle button.active.repayment { background: #e8f5ee; border-color: var(--owed-to-me); color: var(--owed-to-me); font-weight: 600; }
+
+  .tx-list { display: flex; flex-direction: column; gap: 8px; }
+  .tx-item { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; }
+  .tx-item .tx-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+  .tx-item .tx-amount { font-weight: 600; font-size: 15px; }
+  .tx-item .tx-amount.charge { color: var(--i-owe); }
+  .tx-item .tx-amount.repayment { color: var(--owed-to-me); }
+  .tx-item .tx-meta { font-size: 12px; color: var(--text-muted); }
+  .tx-item .tx-desc { font-size: 13.5px; margin-top: 4px; }
+  .tx-item .tx-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+  .del-btn { background: none; border: none; color: var(--text-muted); font-size: 12px; cursor: pointer; text-decoration: underline; }
+  .empty { text-align: center; color: var(--text-muted); font-size: 14px; padding: 30px 0; }
+
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+    display: flex; align-items: center; justify-content: center; z-index: 50; padding: 20px;
+  }
+  .modal-box { background: #fff; border-radius: 14px; padding: 20px; max-width: 340px; width: 100%; }
+  .modal-box p { font-size: 15px; margin: 0 0 16px; }
+
+  .footer-actions { display: flex; gap: 8px; margin-top: 24px; }
+  .footer-actions button { flex: 1; font-size: 12.5px; }
+
+  .bills-wrap { position: relative; height: 100px; margin: 4px 0 16px; }
+  .bill {
+    position: absolute; width: 92px; height: 56px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.55);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; color: #fff;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+  }
+  .bill .sign { font-size: 22px; font-weight: 700; line-height: 1; }
+  .bill .denom { font-size: 10px; font-weight: 600; opacity: 0.9; margin-top: 2px; }
+  .bill.b200 { background: #5c4b8a; top: 6px; left: 4px; transform: rotate(-8deg); z-index: 1; }
+  .bill.b100 { background: #c07120; top: 30px; left: 94px; transform: rotate(6deg); z-index: 3; }
+  .bill.b50  { background: #8a3b6b; top: 2px; left: 184px; transform: rotate(-5deg); z-index: 2; }
+  .bill.b20  { background: #1f8f7a; top: 34px; left: 274px; transform: rotate(10deg); z-index: 2; }
+
+  .popup-box { text-align: center; }
+  .popup-box .popup-text { font-size: 18px; font-weight: 600; margin: 4px 0 18px; line-height: 1.5; }
+
+  .tx-item.deleted-log { border-color: var(--i-owe); }
+  .notes-toggle { margin-top: 20px; }
+
+  .badge-new {
+    margin-inline-start: auto; background: var(--i-owe); color: #fff; font-size: 11px;
+    font-weight: 600; padding: 3px 10px; border-radius: 999px; white-space: nowrap;
+  }
+  .popup-notif-list { margin-bottom: 16px; }
+  .popup-notif { font-size: 14px; background: var(--bg); border-radius: 8px; padding: 8px 10px; margin-bottom: 6px; line-height: 1.4; }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+const NAMES = ['ריקי', 'ברוריה', 'דורית'];
+const AVATAR_CLASS = { 'ריקי': 'ricky', 'ברוריה': 'bruria', 'דורית': 'dorit' };
+const STORAGE_KEY = 'elkayam_ledger_v1';
+const SESSION_KEY = 'elkayam_ledger_session';
+const PET_NAMES = ['כפרוש', 'נשמה', 'חיים שלי', 'עיניים שלי'];
+
+function getTimePeriod() {
+  const h = new Date().getHours();
+  if (h >= 5 && h < 12) return 'morning';
+  if (h >= 12 && h < 18) return 'noon';
+  return 'night';
+}
+
+function getDashboardGreeting(name) {
+  const p = getTimePeriod();
+  if (p === 'morning') return `בוקר טוב ${name} כפרוש`;
+  if (p === 'noon') return `צהריים טובים ${name}`;
+  return `לילה טוב ${name}`;
+}
+
+function getLoginGreetingBase() {
+  const p = getTimePeriod();
+  return p === 'morning' ? 'בוקר טוב' : p === 'noon' ? 'צהריים טובים' : 'לילה טוב';
+}
+
+function pickPetName() {
+  return PET_NAMES[Math.floor(Math.random() * PET_NAMES.length)];
+}
+
+function buildTxNotificationText(tx, me, pet) {
+  const other = tx.enteredBy;
+  const amount = fmtMoney(tx.amount);
+  if (tx.type === 'charge') {
+    if (tx.payer === me) {
+      return `${pet}, את לא מאמינה אבל ${other} חייבה אותך ב-${amount} ש"ח`;
+    }
+    return `${pet}, תשימי לב ש${other} רשמה שהיא חייבת לך ${amount} ש"ח`;
+  }
+  if (tx.payee === me) {
+    return `${pet}, את לא מאמינה אבל ${other} החזירה לך ${amount} ש"ח`;
+  }
+  return `${pet}, ${other} רשמה שהחזרת לה ${amount} ש"ח`;
+}
+
+function hasUnreadNotes(me, other) {
+  const key = pairKey(me, other);
+  const notes = data.sharedNotes[key] || [];
+  const lastRead = (data.notesReadStatus[me] || {})[key];
+  return notes.some(n => n.author !== me && (!lastRead || n.createdAt > lastRead));
+}
+
+function getFarewellText() {
+  const p = getTimePeriod();
+  if (p === 'morning') return 'להתראות והמשך יום נפלא';
+  if (p === 'noon') return 'להתראות ושנ"צ מהנה';
+  return 'להתראות ולילה טוב כפרוש';
+}
+
+function loadData() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  const d = raw ? JSON.parse(raw) : {
+    transactions: [],
+    passwords: { 'ריקי': '1234', 'ברוריה': '1234', 'דורית': '1234' }
+  };
+  if (!d.activityLog) d.activityLog = [];
+  if (!d.personalNotes) d.personalNotes = { 'ריקי': [], 'ברוריה': [], 'דורית': [] };
+  if (!d.sharedNotes) d.sharedNotes = {};
+  if (!d.txSeenStatus) {
+    d.txSeenStatus = {};
+    NAMES.forEach(n => { d.txSeenStatus[n] = {}; });
+    d.transactions.forEach(tx => { NAMES.forEach(n => { d.txSeenStatus[n][tx.id] = true; }); });
+  }
+  if (!d.notesReadStatus) {
+    d.notesReadStatus = {};
+    const nowIso = new Date().toISOString();
+    NAMES.forEach(n => { d.notesReadStatus[n] = {}; });
+    Object.keys(d.sharedNotes).forEach(key => { NAMES.forEach(n => { d.notesReadStatus[n][key] = nowIso; }); });
+  }
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
+  return d;
+}
+function saveData(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+function pairKey(a, b) { return [a, b].sort().join('__'); }
+function newId(prefix) { return prefix + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8); }
+
+let data = loadData();
+let session = JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null');
+
+let view = { screen: session ? 'dashboard' : 'login', selectedName: null, activeAccount: null, showAddForm: false, addType: 'charge', loginError: '' };
+let pendingDelete = null;
+
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function fmtMoney(n) {
+  return Math.round(Math.abs(n) * 100) / 100;
+}
+
+function todayStr() {
+  const d = new Date();
+  return d.toISOString().slice(0, 10);
+}
+
+function fmtDate(iso) {
+  const [y, m, d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function otherNames(me) {
+  return NAMES.filter(n => n !== me);
+}
+
+function computeBalance(me, other) {
+  let net = 0;
+  for (const tx of data.transactions) {
+    if (tx.payer === me && tx.payee === other) {
+      net += tx.type === 'charge' ? tx.amount : -tx.amount;
+    } else if (tx.payer === other && tx.payee === me) {
+      net += tx.type === 'charge' ? -tx.amount : tx.amount;
+    }
+  }
+  return Math.round(net * 100) / 100;
+}
+
+function balanceLabel(me, other, net) {
+  if (net > 0.001) return { text: `את חייבת ל${other} ${fmtMoney(net)} ₪`, cls: 'i-owe' };
+  if (net < -0.001) return { text: `${other} חייבת לך ${fmtMoney(net)} ₪`, cls: 'owed-to-me' };
+  return { text: 'מאוזן', cls: 'even' };
+}
+
+function getPairTransactions(a, b) {
+  return data.transactions
+    .filter(tx => (tx.payer === a && tx.payee === b) || (tx.payer === b && tx.payee === a))
+    .sort((x, y) => (y.date + y.createdAt).localeCompare(x.date + x.createdAt));
+}
+
+function render() {
+  const app = document.getElementById('app');
+  if (view.screen === 'login') app.innerHTML = renderLogin();
+  else if (view.screen === 'dashboard') app.innerHTML = renderDashboard();
+  else if (view.screen === 'account') app.innerHTML = renderAccount();
+  else if (view.screen === 'farewell') app.innerHTML = renderFarewell();
+  else if (view.screen === 'log') app.innerHTML = renderLog();
+  else if (view.screen === 'personalNotes') app.innerHTML = renderPersonalNotes();
+  attachHandlers();
+}
+
+function renderLogin() {
+  return `
+    <div class="banner">גרסת דמו מקומית — הנתונים נשמרים בדפדפן הזה בלבד. חיבור לענן (Firebase) יתווסף בהמשך.</div>
+    <div class="bills-wrap" aria-hidden="true">
+      <div class="bill b200"><span class="sign">₪</span><span class="denom">200</span></div>
+      <div class="bill b100"><span class="sign">₪</span><span class="denom">100</span></div>
+      <div class="bill b50"><span class="sign">₪</span><span class="denom">50</span></div>
+      <div class="bill b20"><span class="sign">₪</span><span class="denom">20</span></div>
+    </div>
+    <h1>חשבונות בין האחיות</h1>
+    <div class="sub">משפחת אלקיים</div>
+    <div class="name-grid">
+      ${NAMES.map(n => `
+        <div class="name-btn ${view.selectedName === n ? 'selected' : ''}" data-select-name="${n}">
+          <div class="avatar ${AVATAR_CLASS[n]}">${n[0]}</div>
+          <div>${n}</div>
+        </div>
+      `).join('')}
+    </div>
+    ${view.selectedName ? `
+      <div class="field">
+        <label>סיסמה של ${view.selectedName}</label>
+        <input type="password" id="password-input" placeholder="הזיני סיסמה" autofocus>
+      </div>
+      ${view.loginError ? `<div class="error">${escapeHtml(view.loginError)}</div>` : ''}
+      <button class="btn btn-primary" id="login-btn">כניסה</button>
+      <div style="text-align:center; margin-top:10px;">
+        <button class="link-btn" id="show-change-pw">שינוי סיסמה</button>
+      </div>
+    ` : ''}
+    ${view.showChangePw ? renderChangePassword() : ''}
+  `;
+}
+
+function renderFarewell() {
+  return `
+    <div class="balance-hero popup-box" style="margin-top:80px;">
+      <div class="popup-text">${escapeHtml(view.farewellText)}</div>
+      <button class="btn btn-primary" id="farewell-ok-btn">חזרה למסך הכניסה</button>
+    </div>
+  `;
+}
+
+function renderChangePassword() {
+  return `
+    <div class="add-form" style="margin-top:14px;">
+      <h3>שינוי סיסמה עבור ${view.selectedName}</h3>
+      <div class="field">
+        <label>סיסמה נוכחית</label>
+        <input type="password" id="cur-pw">
+      </div>
+      <div class="field">
+        <label>סיסמה חדשה</label>
+        <input type="password" id="new-pw">
+      </div>
+      ${view.pwError ? `<div class="error">${escapeHtml(view.pwError)}</div>` : ''}
+      <button class="btn btn-primary" id="save-pw-btn">שמירת סיסמה</button>
+    </div>
+  `;
+}
+
+function renderDashboard() {
+  const me = session.name;
+  const others = otherNames(me);
+  return `
+    <div class="topbar">
+      <button class="btn btn-secondary btn-small" id="logout-btn">התנתקות</button>
+      <div class="who">
+        <h1>${getDashboardGreeting(me)}</h1>
+        <div class="avatar ${AVATAR_CLASS[me]}">${me[0]}</div>
+      </div>
+    </div>
+    ${view.loginPopup ? renderLoginPopup() : ''}
+    ${others.map(other => {
+      const net = computeBalance(me, other);
+      const label = balanceLabel(me, other, net);
+      return `
+        <div class="account-card" data-open-account="${other}">
+          <div class="top">
+            <div class="avatar ${AVATAR_CLASS[other]}">${other[0]}</div>
+            <div class="name">חשבון מול ${other}</div>
+            ${hasUnreadNotes(me, other) ? '<span class="badge-new">פתק חדש</span>' : ''}
+          </div>
+          <div class="balance-line ${label.cls}">${label.text}</div>
+        </div>
+      `;
+    }).join('')}
+    <div class="footer-actions">
+      <button class="btn btn-secondary" id="open-notes-btn">הפתקיות שלי</button>
+      <button class="btn btn-secondary" id="open-log-btn">יומן פעולות</button>
+    </div>
+    <div class="footer-actions">
+      <button class="btn btn-secondary" id="export-btn">ייצוא גיבוי</button>
+      <button class="btn btn-secondary" id="import-btn">ייבוא גיבוי</button>
+    </div>
+    <input type="file" id="import-file" accept="application/json" style="display:none;">
+  `;
+}
+
+function renderAccount() {
+  const me = session.name;
+  const other = view.activeAccount;
+  const net = computeBalance(me, other);
+  const label = balanceLabel(me, other, net);
+  const txs = getPairTransactions(me, other);
+  const notes = (data.sharedNotes[pairKey(me, other)] || []).slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+
+  return `
+    <div class="back-row">
+      <button class="btn btn-secondary btn-small" id="back-to-dash">→ חזרה</button>
+      <h1 style="margin:0; font-size:17px;">חשבון מול ${other}</h1>
+    </div>
+    <div class="balance-hero">
+      <div class="caption">מאזן נוכחי</div>
+      <div class="amount ${label.cls}">${label.cls === 'even' ? 'מאוזן' : fmtMoney(net) + ' ₪'}</div>
+      <div class="caption">${label.text}</div>
+    </div>
+    <button class="btn btn-primary toggle-add" id="toggle-add-btn">${view.showAddForm ? 'סגירת טופס' : '+ הוספת רישום'}</button>
+    ${view.showAddForm ? renderAddForm(me, other) : ''}
+    <div class="tx-list">
+      ${txs.length === 0 ? '<div class="empty">אין עדיין רישומים בחשבון הזה</div>' : txs.map(tx => renderTxItem(tx)).join('')}
+    </div>
+    <button class="btn btn-secondary notes-toggle" id="toggle-notes-btn">${view.showNotes ? 'סגירת פתקיות משותפות' : `פתקיות משותפות עם ${other} (${notes.length})`}</button>
+    ${view.showNotes ? renderSharedNotes(other, notes) : ''}
+    ${pendingDelete ? renderDeleteModal() : ''}
+  `;
+}
+
+function renderAddForm(me, other) {
+  return `
+    <div class="add-form">
+      <h3>רישום חדש מול ${other}</h3>
+      <div class="type-toggle">
+        <button type="button" data-set-type="charge" class="${view.addType === 'charge' ? 'active charge' : ''}">חיוב (יצירת חוב)</button>
+        <button type="button" data-set-type="repayment" class="${view.addType === 'repayment' ? 'active repayment' : ''}">החזר (סילוק חוב)</button>
+      </div>
+      <div class="field">
+        <label>${view.addType === 'charge' ? 'מי חייבת בעקבות הרישום הזה' : 'מי משלמת (מסלקת חוב קיים)'}</label>
+        <select id="direction-select">
+          <option value="me">אני (${me})</option>
+          <option value="other">${other}</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>סכום (₪)</label>
+        <input type="number" id="amount-input" min="0" step="0.01" inputmode="decimal" placeholder="0">
+      </div>
+      <div class="field">
+        <label>פרטים / תיאור</label>
+        <input type="text" id="desc-input" placeholder="למשל: קניות משותפות, מתנה, נסיעה">
+      </div>
+      <div class="field">
+        <label>תאריך</label>
+        <input type="date" id="date-input" value="${todayStr()}">
+      </div>
+      ${view.addError ? `<div class="error">${escapeHtml(view.addError)}</div>` : ''}
+      <button class="btn btn-primary" id="save-tx-btn">שמירה</button>
+    </div>
+  `;
+}
+
+function renderTxItem(tx) {
+  const me = session.name;
+  const payerText = tx.payer === me ? 'את' : tx.payer;
+  const payeeText = tx.payee === me ? 'לך' : `ל${tx.payee}`;
+  const typeLabel = tx.type === 'charge' ? 'חיוב כפרה' : 'החזר כפרה';
+  const directionText = tx.type === 'charge'
+    ? `${payerText} חייבת ${payeeText}`
+    : `${payerText} שילמה ${payeeText}`;
+  return `
+    <div class="tx-item">
+      <div class="tx-top">
+        <span class="tx-amount ${tx.type}">${typeLabel} — ${fmtMoney(tx.amount)} ₪</span>
+        <span class="tx-meta">${fmtDate(tx.date)}</span>
+      </div>
+      <div class="tx-meta">${directionText}</div>
+      ${tx.description ? `<div class="tx-desc">${escapeHtml(tx.description)}</div>` : ''}
+      <div class="tx-bottom">
+        <span class="tx-meta">נרשם ע"י ${tx.enteredBy}</span>
+        <button class="del-btn" data-delete-tx="${tx.id}">מחיקה</button>
+      </div>
+    </div>
+  `;
+}
+
+function fmtDateTime(iso) {
+  const d = new Date(iso);
+  const hh = d.getHours().toString().padStart(2, '0');
+  const mm = d.getMinutes().toString().padStart(2, '0');
+  return `${fmtDate(iso.slice(0, 10))} ${hh}:${mm}`;
+}
+
+function renderLog() {
+  const me = session.name;
+  const entries = data.activityLog
+    .filter(e => e.pairA === me || e.pairB === me)
+    .slice()
+    .sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+
+  return `
+    <div class="back-row">
+      <button class="btn btn-secondary btn-small" id="back-to-dash-from-log">→ חזרה</button>
+      <h1 style="margin:0; font-size:17px;">יומן פעולות</h1>
+    </div>
+    <div class="tx-list">
+      ${entries.length === 0 ? '<div class="empty">אין עדיין פעולות ביומן</div>' : entries.map(e => renderLogItem(e, me)).join('')}
+    </div>
+  `;
+}
+
+function renderLogItem(e, me) {
+  const other = e.pairA === me ? e.pairB : e.pairA;
+  const typeLabel = e.tx.type === 'charge' ? 'חיוב' : 'החזר';
+  if (e.action === 'add') {
+    return `
+      <div class="tx-item">
+        <div class="tx-top">
+          <span class="tx-amount ${e.tx.type}">הוספת ${typeLabel} — ${fmtMoney(e.tx.amount)} ₪</span>
+          <span class="tx-meta">${fmtDateTime(e.timestamp)}</span>
+        </div>
+        <div class="tx-meta">${e.performedBy} רשמה מול ${other}</div>
+        ${e.tx.description ? `<div class="tx-desc">${escapeHtml(e.tx.description)}</div>` : ''}
+      </div>
+    `;
+  }
+  return `
+    <div class="tx-item deleted-log">
+      <div class="tx-top">
+        <span class="tx-amount ${e.tx.type}">נמחק ${typeLabel} — ${fmtMoney(e.tx.amount)} ₪</span>
+        <span class="tx-meta">${fmtDateTime(e.timestamp)}</span>
+      </div>
+      <div class="tx-meta">${e.performedBy} מחקה רישום מול ${other} (נרשם במקור ע"י ${e.tx.enteredBy}, בתאריך ${fmtDate(e.tx.date)})</div>
+      ${e.tx.description ? `<div class="tx-desc">${escapeHtml(e.tx.description)}</div>` : ''}
+    </div>
+  `;
+}
+
+function renderPersonalNotes() {
+  const me = session.name;
+  const notes = (data.personalNotes[me] || []).slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  return `
+    <div class="back-row">
+      <button class="btn btn-secondary btn-small" id="back-to-dash-from-notes">→ חזרה</button>
+      <h1 style="margin:0; font-size:17px;">הפתקיות שלי</h1>
+    </div>
+    <div class="add-form">
+      <h3>פתק אישי חדש</h3>
+      <div class="field">
+        <textarea id="personal-note-input" rows="3" placeholder="כתבי כאן תזכורת אישית..."></textarea>
+      </div>
+      <button class="btn btn-primary" id="save-personal-note-btn">שמירת פתק</button>
+    </div>
+    <div class="tx-list">
+      ${notes.length === 0 ? '<div class="empty">אין עדיין פתקיות אישיות</div>' : notes.map(n => renderNoteItem(n, 'personal')).join('')}
+    </div>
+  `;
+}
+
+function renderSharedNotes(other, notes) {
+  const key = pairKey(session.name, other);
+  return `
+    <div class="add-form">
+      <h3>פתק חדש מול ${other}</h3>
+      <div class="field">
+        <textarea id="shared-note-input" rows="3" placeholder="כתבי כאן הערה או הודעה ל${other}..."></textarea>
+      </div>
+      <button class="btn btn-primary" id="save-shared-note-btn">שמירת פתק</button>
+    </div>
+    <div class="tx-list">
+      ${notes.length === 0 ? '<div class="empty">אין עדיין פתקיות משותפות</div>' : notes.map(n => renderNoteItem(n, 'shared', key)).join('')}
+    </div>
+  `;
+}
+
+function renderNoteItem(n, kind, key) {
+  return `
+    <div class="tx-item">
+      <div class="tx-top">
+        <span class="tx-meta">${n.author ? n.author + ' · ' : ''}${fmtDateTime(n.createdAt)}</span>
+        <button class="del-btn" data-delete-note="${n.id}" data-note-kind="${kind}" data-pair-key="${key || ''}">מחיקה</button>
+      </div>
+      <div class="tx-desc">${escapeHtml(n.text)}</div>
+    </div>
+  `;
+}
+
+function renderLoginPopup() {
+  const popup = view.loginPopup;
+  return `
+    <div class="modal-overlay" id="login-popup-overlay">
+      <div class="modal-box popup-box">
+        <div class="popup-text">${escapeHtml(popup.greeting)}</div>
+        ${popup.notifications.length > 0 ? `
+          <div class="popup-notif-list">
+            ${popup.notifications.map(n => `<div class="popup-notif">${escapeHtml(n)}</div>`).join('')}
+          </div>
+        ` : ''}
+        <button class="btn btn-primary" id="close-login-popup">כניסה לחשבון</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderDeleteModal() {
+  return `
+    <div class="modal-overlay" id="delete-modal-overlay">
+      <div class="modal-box">
+        <p>למחוק את הרישום הזה? הפעולה אינה הפיכה.</p>
+        <div class="row">
+          <button class="btn btn-secondary" id="cancel-delete">ביטול</button>
+          <button class="btn btn-danger" id="confirm-delete">מחיקה</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function attachHandlers() {
+  document.querySelectorAll('[data-select-name]').forEach(el => {
+    el.onclick = () => {
+      view.selectedName = el.getAttribute('data-select-name');
+      view.loginError = '';
+      view.showChangePw = false;
+      render();
+    };
+  });
+
+  const loginBtn = document.getElementById('login-btn');
+  if (loginBtn) {
+    loginBtn.onclick = () => {
+      const pw = document.getElementById('password-input').value;
+      if (data.passwords[view.selectedName] === pw) {
+        session = { name: view.selectedName };
+        sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+
+        const me = session.name;
+        const pet = pickPetName();
+        const seen = data.txSeenStatus[me] || {};
+        const unseenTx = data.transactions.filter(tx =>
+          (tx.payer === me || tx.payee === me) && tx.enteredBy !== me && !seen[tx.id]
+        );
+        const notifications = unseenTx.map(tx => buildTxNotificationText(tx, me, pet));
+        if (!data.txSeenStatus[me]) data.txSeenStatus[me] = {};
+        unseenTx.forEach(tx => { data.txSeenStatus[me][tx.id] = true; });
+        saveData(data);
+
+        view = {
+          screen: 'dashboard',
+          loginPopup: { greeting: `${getLoginGreetingBase()}, ${me} ${pet}!`, notifications }
+        };
+        render();
+      } else {
+        view.loginError = 'סיסמה שגויה, נסי שוב';
+        render();
+      }
+    };
+    const pwInput = document.getElementById('password-input');
+    pwInput.onkeydown = (e) => { if (e.key === 'Enter') loginBtn.click(); };
+  }
+
+  const showChangePw = document.getElementById('show-change-pw');
+  if (showChangePw) showChangePw.onclick = () => { view.showChangePw = !view.showChangePw; view.pwError = ''; render(); };
+
+  const savePwBtn = document.getElementById('save-pw-btn');
+  if (savePwBtn) {
+    savePwBtn.onclick = () => {
+      const cur = document.getElementById('cur-pw').value;
+      const nw = document.getElementById('new-pw').value;
+      if (data.passwords[view.selectedName] !== cur) {
+        view.pwError = 'הסיסמה הנוכחית שגויה';
+        render();
+        return;
+      }
+      if (!nw || nw.length < 4) {
+        view.pwError = 'סיסמה חדשה חייבת לפחות 4 תווים';
+        render();
+        return;
+      }
+      data.passwords[view.selectedName] = nw;
+      saveData(data);
+      view.showChangePw = false;
+      view.pwError = '';
+      view.loginError = 'הסיסמה עודכנה, אפשר להתחבר';
+      render();
+    };
+  }
+
+  const logoutBtn = document.getElementById('logout-btn');
+  if (logoutBtn) logoutBtn.onclick = () => {
+    const farewellText = getFarewellText();
+    session = null;
+    sessionStorage.removeItem(SESSION_KEY);
+    view = { screen: 'farewell', farewellText };
+    render();
+  };
+
+  const closeLoginPopup = document.getElementById('close-login-popup');
+  if (closeLoginPopup) closeLoginPopup.onclick = () => { view.loginPopup = null; render(); };
+
+  const farewellOkBtn = document.getElementById('farewell-ok-btn');
+  if (farewellOkBtn) farewellOkBtn.onclick = () => {
+    view = { screen: 'login', selectedName: null, loginError: '' };
+    render();
+  };
+
+  document.querySelectorAll('[data-open-account]').forEach(el => {
+    el.onclick = () => {
+      view.activeAccount = el.getAttribute('data-open-account');
+      view.screen = 'account';
+      view.showAddForm = false;
+      view.showNotes = false;
+      view.addType = 'charge';
+      view.addError = '';
+      render();
+    };
+  });
+
+  const backBtn = document.getElementById('back-to-dash');
+  if (backBtn) backBtn.onclick = () => { view.screen = 'dashboard'; render(); };
+
+  const openNotesBtn = document.getElementById('open-notes-btn');
+  if (openNotesBtn) openNotesBtn.onclick = () => { view.screen = 'personalNotes'; render(); };
+
+  const openLogBtn = document.getElementById('open-log-btn');
+  if (openLogBtn) openLogBtn.onclick = () => { view.screen = 'log'; render(); };
+
+  const backFromLog = document.getElementById('back-to-dash-from-log');
+  if (backFromLog) backFromLog.onclick = () => { view.screen = 'dashboard'; render(); };
+
+  const backFromNotes = document.getElementById('back-to-dash-from-notes');
+  if (backFromNotes) backFromNotes.onclick = () => { view.screen = 'dashboard'; render(); };
+
+  const toggleNotesBtn = document.getElementById('toggle-notes-btn');
+  if (toggleNotesBtn) toggleNotesBtn.onclick = () => {
+    view.showNotes = !view.showNotes;
+    if (view.showNotes) {
+      const me = session.name;
+      const other = view.activeAccount;
+      const key = pairKey(me, other);
+      if (!data.notesReadStatus[me]) data.notesReadStatus[me] = {};
+      data.notesReadStatus[me][key] = new Date().toISOString();
+      saveData(data);
+    }
+    render();
+  };
+
+  const savePersonalNoteBtn = document.getElementById('save-personal-note-btn');
+  if (savePersonalNoteBtn) {
+    savePersonalNoteBtn.onclick = () => {
+      const text = document.getElementById('personal-note-input').value.trim();
+      if (!text) return;
+      const me = session.name;
+      if (!data.personalNotes[me]) data.personalNotes[me] = [];
+      data.personalNotes[me].push({ id: newId('note'), text, createdAt: new Date().toISOString() });
+      saveData(data);
+      render();
+    };
+  }
+
+  const saveSharedNoteBtn = document.getElementById('save-shared-note-btn');
+  if (saveSharedNoteBtn) {
+    saveSharedNoteBtn.onclick = () => {
+      const text = document.getElementById('shared-note-input').value.trim();
+      if (!text) return;
+      const me = session.name;
+      const other = view.activeAccount;
+      const key = pairKey(me, other);
+      if (!data.sharedNotes[key]) data.sharedNotes[key] = [];
+      data.sharedNotes[key].push({ id: newId('note'), text, author: me, createdAt: new Date().toISOString() });
+      saveData(data);
+      render();
+    };
+  }
+
+  document.querySelectorAll('[data-delete-note]').forEach(el => {
+    el.onclick = () => {
+      const id = el.getAttribute('data-delete-note');
+      const kind = el.getAttribute('data-note-kind');
+      if (kind === 'personal') {
+        const me = session.name;
+        data.personalNotes[me] = (data.personalNotes[me] || []).filter(n => n.id !== id);
+      } else {
+        const key = el.getAttribute('data-pair-key');
+        data.sharedNotes[key] = (data.sharedNotes[key] || []).filter(n => n.id !== id);
+      }
+      saveData(data);
+      render();
+    };
+  });
+
+  const toggleAddBtn = document.getElementById('toggle-add-btn');
+  if (toggleAddBtn) toggleAddBtn.onclick = () => { view.showAddForm = !view.showAddForm; view.addError = ''; render(); };
+
+  document.querySelectorAll('[data-set-type]').forEach(el => {
+    el.onclick = () => { view.addType = el.getAttribute('data-set-type'); render(); };
+  });
+
+  const saveTxBtn = document.getElementById('save-tx-btn');
+  if (saveTxBtn) {
+    saveTxBtn.onclick = () => {
+      const me = session.name;
+      const other = view.activeAccount;
+      const direction = document.getElementById('direction-select').value;
+      const amount = parseFloat(document.getElementById('amount-input').value);
+      const description = document.getElementById('desc-input').value.trim();
+      const date = document.getElementById('date-input').value || todayStr();
+
+      if (!amount || amount <= 0) {
+        view.addError = 'יש להזין סכום תקין';
+        render();
+        return;
+      }
+
+      const payer = direction === 'me' ? me : other;
+      const payee = direction === 'me' ? other : me;
+
+      const newTx = {
+        id: newId('tx'),
+        payer, payee,
+        type: view.addType,
+        amount: Math.round(amount * 100) / 100,
+        description,
+        date,
+        enteredBy: me,
+        createdAt: new Date().toISOString()
+      };
+      data.transactions.push(newTx);
+      if (!data.txSeenStatus[me]) data.txSeenStatus[me] = {};
+      data.txSeenStatus[me][newTx.id] = true;
+      data.activityLog.push({
+        id: newId('log'),
+        action: 'add',
+        performedBy: me,
+        pairA: me, pairB: other,
+        timestamp: new Date().toISOString(),
+        tx: { type: newTx.type, amount: newTx.amount, description: newTx.description, date: newTx.date, enteredBy: newTx.enteredBy }
+      });
+      saveData(data);
+      view.showAddForm = false;
+      view.addError = '';
+      render();
+    };
+  }
+
+  document.querySelectorAll('[data-delete-tx]').forEach(el => {
+    el.onclick = () => { pendingDelete = el.getAttribute('data-delete-tx'); render(); };
+  });
+
+  const cancelDelete = document.getElementById('cancel-delete');
+  if (cancelDelete) cancelDelete.onclick = () => { pendingDelete = null; render(); };
+
+  const confirmDelete = document.getElementById('confirm-delete');
+  if (confirmDelete) confirmDelete.onclick = () => {
+    const deletedTx = data.transactions.find(tx => tx.id === pendingDelete);
+    if (deletedTx) {
+      data.activityLog.push({
+        id: newId('log'),
+        action: 'delete',
+        performedBy: session.name,
+        pairA: deletedTx.payer, pairB: deletedTx.payee,
+        timestamp: new Date().toISOString(),
+        tx: { type: deletedTx.type, amount: deletedTx.amount, description: deletedTx.description, date: deletedTx.date, enteredBy: deletedTx.enteredBy }
+      });
+    }
+    data.transactions = data.transactions.filter(tx => tx.id !== pendingDelete);
+    saveData(data);
+    pendingDelete = null;
+    render();
+  };
+
+  const exportBtn = document.getElementById('export-btn');
+  if (exportBtn) exportBtn.onclick = () => {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `elkayam-ledger-backup-${todayStr()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const importBtn = document.getElementById('import-btn');
+  const importFile = document.getElementById('import-file');
+  if (importBtn && importFile) {
+    importBtn.onclick = () => importFile.click();
+    importFile.onchange = () => {
+      const file = importFile.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(reader.result);
+          if (!parsed.transactions || !parsed.passwords) throw new Error('invalid');
+          data = parsed;
+          saveData(data);
+          render();
+        } catch (e) {
+          alert('קובץ גיבוי לא תקין');
+        }
+      };
+      reader.readAsText(file);
+    };
+  }
+}
+
+render();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
