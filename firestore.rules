@@ -1,0 +1,38 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function myName() {
+      return request.auth.token.email == 'ricky@elkayam-sisters-ledger.app' ? 'ריקי' :
+             request.auth.token.email == 'bruria@elkayam-sisters-ledger.app' ? 'ברוריה' :
+             request.auth.token.email == 'dorit@elkayam-sisters-ledger.app' ? 'דורית' : null;
+    }
+    function isSister() {
+      return request.auth != null && myName() != null;
+    }
+
+    match /transactions/{id} {
+      allow read, create, delete: if isSister();
+      allow update: if false;
+    }
+
+    match /activityLog/{id} {
+      allow read, create: if isSister();
+      allow update, delete: if false;
+    }
+
+    match /sharedNotes/{id} {
+      allow read, create, delete: if isSister();
+      allow update: if false;
+    }
+
+    match /personalNotes/{id} {
+      allow read, delete: if isSister() && resource.data.owner == myName();
+      allow create: if isSister() && request.resource.data.owner == myName();
+      allow update: if false;
+    }
+
+    match /userState/{name} {
+      allow read, write: if isSister() && myName() == name;
+    }
+  }
+}

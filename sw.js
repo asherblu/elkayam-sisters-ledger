@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'elkayam-ledger-v1';
+const CACHE_VERSION = 'elkayam-ledger-v2';
 const APP_SHELL = [
   './',
   './index.html',

@@ -36,9 +36,9 @@
   }
   .wrap { max-width: 480px; margin: 0 auto; padding: 16px; padding-bottom: 60px; }
   .banner {
-    background: #fff4e0;
-    border: 1px solid #e8cfa0;
-    color: #6b5220;
+    background: #eaf3de;
+    border: 1px solid #c0dd97;
+    color: #27500a;
     font-size: 12.5px;
     padding: 8px 12px;
     border-radius: 10px;
@@ -71,6 +71,7 @@
     width: 100%; padding: 12px; border-radius: 10px; border: none; font-size: 15px;
     font-weight: 600; cursor: pointer;
   }
+  .btn:disabled { opacity: 0.6; cursor: default; }
   .btn-primary { background: var(--accent); color: #fff; }
   .btn-secondary { background: var(--card); color: var(--text); border: 1px solid var(--border); }
   .btn-danger { background: var(--i-owe); color: #fff; }
@@ -164,17 +165,44 @@
   }
   .popup-notif-list { margin-bottom: 16px; }
   .popup-notif { font-size: 14px; background: var(--bg); border-radius: 8px; padding: 8px 10px; margin-bottom: 6px; line-height: 1.4; }
+
+  .loading-wrap { text-align: center; padding: 60px 10px; color: var(--text-muted); font-size: 15px; }
 </style>
 </head>
 <body>
 <div class="wrap" id="app"></div>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+import {
+  getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, updatePassword
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+import {
+  getFirestore, collection, doc, addDoc, setDoc, deleteDoc, onSnapshot, query, where
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCIqvUCjw_nR-emVAOJJ0WEVR_-xgCnOAo",
+  authDomain: "elkayam-sisters-ledger.firebaseapp.com",
+  projectId: "elkayam-sisters-ledger",
+  storageBucket: "elkayam-sisters-ledger.firebasestorage.app",
+  messagingSenderId: "579965292321",
+  appId: "1:579965292321:web:c277a91c9268f325bf7860"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+const db = getFirestore(fbApp);
+
 const NAMES = ['ריקי', 'ברוריה', 'דורית'];
 const AVATAR_CLASS = { 'ריקי': 'ricky', 'ברוריה': 'bruria', 'דורית': 'dorit' };
-const STORAGE_KEY = 'elkayam_ledger_v1';
-const SESSION_KEY = 'elkayam_ledger_session';
 const PET_NAMES = ['כפרוש', 'נשמה', 'חיים שלי', 'עיניים שלי'];
+const EMAIL_MAP = {
+  'ריקי': 'ricky@elkayam-sisters-ledger.app',
+  'ברוריה': 'bruria@elkayam-sisters-ledger.app',
+  'דורית': 'dorit@elkayam-sisters-ledger.app'
+};
+const EMAIL_TO_NAME = Object.fromEntries(Object.entries(EMAIL_MAP).map(([n, e]) => [e, n]));
 
 function getTimePeriod() {
   const h = new Date().getHours();
@@ -214,13 +242,6 @@ function buildTxNotificationText(tx, me, pet) {
   return `${pet}, ${other} רשמה שהחזרת לה ${amount} ש"ח`;
 }
 
-function hasUnreadNotes(me, other) {
-  const key = pairKey(me, other);
-  const notes = data.sharedNotes[key] || [];
-  const lastRead = (data.notesReadStatus[me] || {})[key];
-  return notes.some(n => n.author !== me && (!lastRead || n.createdAt > lastRead));
-}
-
 function getFarewellText() {
   const p = getTimePeriod();
   if (p === 'morning') return 'להתראות והמשך יום נפלא';
@@ -228,38 +249,41 @@ function getFarewellText() {
   return 'להתראות ולילה טוב כפרוש';
 }
 
-function loadData() {
-  const raw = localStorage.getItem(STORAGE_KEY);
-  const d = raw ? JSON.parse(raw) : {
-    transactions: [],
-    passwords: { 'ריקי': '1234', 'ברוריה': '1234', 'דורית': '1234' }
-  };
-  if (!d.activityLog) d.activityLog = [];
-  if (!d.personalNotes) d.personalNotes = { 'ריקי': [], 'ברוריה': [], 'דורית': [] };
-  if (!d.sharedNotes) d.sharedNotes = {};
-  if (!d.txSeenStatus) {
-    d.txSeenStatus = {};
-    NAMES.forEach(n => { d.txSeenStatus[n] = {}; });
-    d.transactions.forEach(tx => { NAMES.forEach(n => { d.txSeenStatus[n][tx.id] = true; }); });
-  }
-  if (!d.notesReadStatus) {
-    d.notesReadStatus = {};
-    const nowIso = new Date().toISOString();
-    NAMES.forEach(n => { d.notesReadStatus[n] = {}; });
-    Object.keys(d.sharedNotes).forEach(key => { NAMES.forEach(n => { d.notesReadStatus[n][key] = nowIso; }); });
-  }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(d));
-  return d;
-}
-function saveData(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
 function pairKey(a, b) { return [a, b].sort().join('__'); }
-function newId(prefix) { return prefix + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8); }
 
-let data = loadData();
-let session = JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null');
+function markTxSeen(name, txId) {
+  return setDoc(doc(db, 'userState', name), { txSeenStatus: { [txId]: true } }, { merge: true });
+}
+function markNotesRead(name, key, iso) {
+  return setDoc(doc(db, 'userState', name), { notesReadStatus: { [key]: iso } }, { merge: true });
+}
 
-let view = { screen: session ? 'dashboard' : 'login', selectedName: null, activeAccount: null, showAddForm: false, addType: 'charge', loginError: '' };
+let data = {
+  transactions: [],
+  activityLog: [],
+  sharedNotesFlat: [],
+  personalNotesFlat: [],
+  userState: { notesReadStatus: {}, txSeenStatus: {} }
+};
+
+let session = null;
+let view = { screen: 'login', selectedName: null, loginError: '' };
 let pendingDelete = null;
+let unsubscribers = [];
+let authGeneration = 0;
+let suppressAuthUI = false;
+
+function unsubscribeAll() {
+  unsubscribers.forEach(u => u());
+  unsubscribers = [];
+}
+
+function hasUnreadNotes(me, other) {
+  const key = pairKey(me, other);
+  const notes = data.sharedNotesFlat.filter(n => n.pairKey === key);
+  const lastRead = (data.userState.notesReadStatus || {})[key];
+  return notes.some(n => n.author !== me && (!lastRead || n.createdAt > lastRead));
+}
 
 function escapeHtml(s) {
   const d = document.createElement('div');
@@ -279,6 +303,13 @@ function todayStr() {
 function fmtDate(iso) {
   const [y, m, d] = iso.split('-');
   return `${d}/${m}/${y}`;
+}
+
+function fmtDateTime(iso) {
+  const d = new Date(iso);
+  const hh = d.getHours().toString().padStart(2, '0');
+  const mm = d.getMinutes().toString().padStart(2, '0');
+  return `${fmtDate(iso.slice(0, 10))} ${hh}:${mm}`;
 }
 
 function otherNames(me) {
@@ -311,7 +342,8 @@ function getPairTransactions(a, b) {
 
 function render() {
   const app = document.getElementById('app');
-  if (view.screen === 'login') app.innerHTML = renderLogin();
+  if (view.screen === 'loading') app.innerHTML = renderLoading();
+  else if (view.screen === 'login') app.innerHTML = renderLogin();
   else if (view.screen === 'dashboard') app.innerHTML = renderDashboard();
   else if (view.screen === 'account') app.innerHTML = renderAccount();
   else if (view.screen === 'farewell') app.innerHTML = renderFarewell();
@@ -320,9 +352,13 @@ function render() {
   attachHandlers();
 }
 
+function renderLoading() {
+  return `<div class="loading-wrap">טוענת נתונים...</div>`;
+}
+
 function renderLogin() {
   return `
-    <div class="banner">גרסת דמו מקומית — הנתונים נשמרים בדפדפן הזה בלבד. חיבור לענן (Firebase) יתווסף בהמשך.</div>
+    <div class="banner">מחוברת לענן - הנתונים מסונכרנים אוטומטית בין כל המכשירים</div>
     <div class="bills-wrap" aria-hidden="true">
       <div class="bill b200"><span class="sign">₪</span><span class="denom">200</span></div>
       <div class="bill b100"><span class="sign">₪</span><span class="denom">100</span></div>
@@ -372,7 +408,7 @@ function renderChangePassword() {
         <input type="password" id="cur-pw">
       </div>
       <div class="field">
-        <label>סיסמה חדשה</label>
+        <label>סיסמה חדשה (לפחות 6 תווים)</label>
         <input type="password" id="new-pw">
       </div>
       ${view.pwError ? `<div class="error">${escapeHtml(view.pwError)}</div>` : ''}
@@ -413,9 +449,7 @@ function renderDashboard() {
     </div>
     <div class="footer-actions">
       <button class="btn btn-secondary" id="export-btn">ייצוא גיבוי</button>
-      <button class="btn btn-secondary" id="import-btn">ייבוא גיבוי</button>
     </div>
-    <input type="file" id="import-file" accept="application/json" style="display:none;">
   `;
 }
 
@@ -425,7 +459,8 @@ function renderAccount() {
   const net = computeBalance(me, other);
   const label = balanceLabel(me, other, net);
   const txs = getPairTransactions(me, other);
-  const notes = (data.sharedNotes[pairKey(me, other)] || []).slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const key = pairKey(me, other);
+  const notes = data.sharedNotesFlat.filter(n => n.pairKey === key).slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 
   return `
     <div class="back-row">
@@ -505,13 +540,6 @@ function renderTxItem(tx) {
   `;
 }
 
-function fmtDateTime(iso) {
-  const d = new Date(iso);
-  const hh = d.getHours().toString().padStart(2, '0');
-  const mm = d.getMinutes().toString().padStart(2, '0');
-  return `${fmtDate(iso.slice(0, 10))} ${hh}:${mm}`;
-}
-
 function renderLog() {
   const me = session.name;
   const entries = data.activityLog
@@ -558,8 +586,7 @@ function renderLogItem(e, me) {
 }
 
 function renderPersonalNotes() {
-  const me = session.name;
-  const notes = (data.personalNotes[me] || []).slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const notes = data.personalNotesFlat.slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   return `
     <div class="back-row">
       <button class="btn btn-secondary btn-small" id="back-to-dash-from-notes">→ חזרה</button>
@@ -579,7 +606,6 @@ function renderPersonalNotes() {
 }
 
 function renderSharedNotes(other, notes) {
-  const key = pairKey(session.name, other);
   return `
     <div class="add-form">
       <h3>פתק חדש מול ${other}</h3>
@@ -589,17 +615,17 @@ function renderSharedNotes(other, notes) {
       <button class="btn btn-primary" id="save-shared-note-btn">שמירת פתק</button>
     </div>
     <div class="tx-list">
-      ${notes.length === 0 ? '<div class="empty">אין עדיין פתקיות משותפות</div>' : notes.map(n => renderNoteItem(n, 'shared', key)).join('')}
+      ${notes.length === 0 ? '<div class="empty">אין עדיין פתקיות משותפות</div>' : notes.map(n => renderNoteItem(n, 'shared')).join('')}
     </div>
   `;
 }
 
-function renderNoteItem(n, kind, key) {
+function renderNoteItem(n, kind) {
   return `
     <div class="tx-item">
       <div class="tx-top">
         <span class="tx-meta">${n.author ? n.author + ' · ' : ''}${fmtDateTime(n.createdAt)}</span>
-        <button class="del-btn" data-delete-note="${n.id}" data-note-kind="${kind}" data-pair-key="${key || ''}">מחיקה</button>
+        <button class="del-btn" data-delete-note="${n.id}" data-note-kind="${kind}">מחיקה</button>
       </div>
       <div class="tx-desc">${escapeHtml(n.text)}</div>
     </div>
@@ -649,29 +675,12 @@ function attachHandlers() {
 
   const loginBtn = document.getElementById('login-btn');
   if (loginBtn) {
-    loginBtn.onclick = () => {
+    loginBtn.onclick = async () => {
       const pw = document.getElementById('password-input').value;
-      if (data.passwords[view.selectedName] === pw) {
-        session = { name: view.selectedName };
-        sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
-
-        const me = session.name;
-        const pet = pickPetName();
-        const seen = data.txSeenStatus[me] || {};
-        const unseenTx = data.transactions.filter(tx =>
-          (tx.payer === me || tx.payee === me) && tx.enteredBy !== me && !seen[tx.id]
-        );
-        const notifications = unseenTx.map(tx => buildTxNotificationText(tx, me, pet));
-        if (!data.txSeenStatus[me]) data.txSeenStatus[me] = {};
-        unseenTx.forEach(tx => { data.txSeenStatus[me][tx.id] = true; });
-        saveData(data);
-
-        view = {
-          screen: 'dashboard',
-          loginPopup: { greeting: `${getLoginGreetingBase()}, ${me} ${pet}!`, notifications }
-        };
-        render();
-      } else {
+      loginBtn.disabled = true;
+      try {
+        await signInWithEmailAndPassword(auth, EMAIL_MAP[view.selectedName], pw);
+      } catch (e) {
         view.loginError = 'סיסמה שגויה, נסי שוב';
         render();
       }
@@ -685,33 +694,38 @@ function attachHandlers() {
 
   const savePwBtn = document.getElementById('save-pw-btn');
   if (savePwBtn) {
-    savePwBtn.onclick = () => {
+    savePwBtn.onclick = async () => {
       const cur = document.getElementById('cur-pw').value;
       const nw = document.getElementById('new-pw').value;
-      if (data.passwords[view.selectedName] !== cur) {
+      if (!nw || nw.length < 6) {
+        view.pwError = 'סיסמה חדשה חייבת לפחות 6 תווים';
+        render();
+        return;
+      }
+      savePwBtn.disabled = true;
+      suppressAuthUI = true;
+      try {
+        await signInWithEmailAndPassword(auth, EMAIL_MAP[view.selectedName], cur);
+        await updatePassword(auth.currentUser, nw);
+        await signOut(auth);
+        view.showChangePw = false;
+        view.pwError = '';
+        view.loginError = 'הסיסמה עודכנה, אפשר להתחבר';
+      } catch (e) {
         view.pwError = 'הסיסמה הנוכחית שגויה';
-        render();
-        return;
       }
-      if (!nw || nw.length < 4) {
-        view.pwError = 'סיסמה חדשה חייבת לפחות 4 תווים';
-        render();
-        return;
-      }
-      data.passwords[view.selectedName] = nw;
-      saveData(data);
-      view.showChangePw = false;
-      view.pwError = '';
-      view.loginError = 'הסיסמה עודכנה, אפשר להתחבר';
+      suppressAuthUI = false;
       render();
     };
   }
 
   const logoutBtn = document.getElementById('logout-btn');
-  if (logoutBtn) logoutBtn.onclick = () => {
+  if (logoutBtn) logoutBtn.onclick = async () => {
     const farewellText = getFarewellText();
+    suppressAuthUI = true;
+    unsubscribeAll();
+    await signOut(auth);
     session = null;
-    sessionStorage.removeItem(SESSION_KEY);
     view = { screen: 'farewell', farewellText };
     render();
   };
@@ -721,6 +735,7 @@ function attachHandlers() {
 
   const farewellOkBtn = document.getElementById('farewell-ok-btn');
   if (farewellOkBtn) farewellOkBtn.onclick = () => {
+    suppressAuthUI = false;
     view = { screen: 'login', selectedName: null, loginError: '' };
     render();
   };
@@ -758,55 +773,55 @@ function attachHandlers() {
     if (view.showNotes) {
       const me = session.name;
       const other = view.activeAccount;
-      const key = pairKey(me, other);
-      if (!data.notesReadStatus[me]) data.notesReadStatus[me] = {};
-      data.notesReadStatus[me][key] = new Date().toISOString();
-      saveData(data);
+      markNotesRead(me, pairKey(me, other), new Date().toISOString()).catch(() => {});
     }
     render();
   };
 
   const savePersonalNoteBtn = document.getElementById('save-personal-note-btn');
   if (savePersonalNoteBtn) {
-    savePersonalNoteBtn.onclick = () => {
-      const text = document.getElementById('personal-note-input').value.trim();
+    savePersonalNoteBtn.onclick = async () => {
+      const textEl = document.getElementById('personal-note-input');
+      const text = textEl.value.trim();
       if (!text) return;
-      const me = session.name;
-      if (!data.personalNotes[me]) data.personalNotes[me] = [];
-      data.personalNotes[me].push({ id: newId('note'), text, createdAt: new Date().toISOString() });
-      saveData(data);
-      render();
+      savePersonalNoteBtn.disabled = true;
+      try {
+        await addDoc(collection(db, 'personalNotes'), { owner: session.name, text, createdAt: new Date().toISOString() });
+      } catch (e) {
+        alert('שגיאה בשמירת הפתק, נסי שוב');
+      }
+      savePersonalNoteBtn.disabled = false;
     };
   }
 
   const saveSharedNoteBtn = document.getElementById('save-shared-note-btn');
   if (saveSharedNoteBtn) {
-    saveSharedNoteBtn.onclick = () => {
-      const text = document.getElementById('shared-note-input').value.trim();
+    saveSharedNoteBtn.onclick = async () => {
+      const textEl = document.getElementById('shared-note-input');
+      const text = textEl.value.trim();
       if (!text) return;
       const me = session.name;
       const other = view.activeAccount;
-      const key = pairKey(me, other);
-      if (!data.sharedNotes[key]) data.sharedNotes[key] = [];
-      data.sharedNotes[key].push({ id: newId('note'), text, author: me, createdAt: new Date().toISOString() });
-      saveData(data);
-      render();
+      saveSharedNoteBtn.disabled = true;
+      try {
+        await addDoc(collection(db, 'sharedNotes'), { pairKey: pairKey(me, other), author: me, text, createdAt: new Date().toISOString() });
+      } catch (e) {
+        alert('שגיאה בשמירת הפתק, נסי שוב');
+      }
+      saveSharedNoteBtn.disabled = false;
     };
   }
 
   document.querySelectorAll('[data-delete-note]').forEach(el => {
-    el.onclick = () => {
+    el.onclick = async () => {
       const id = el.getAttribute('data-delete-note');
       const kind = el.getAttribute('data-note-kind');
-      if (kind === 'personal') {
-        const me = session.name;
-        data.personalNotes[me] = (data.personalNotes[me] || []).filter(n => n.id !== id);
-      } else {
-        const key = el.getAttribute('data-pair-key');
-        data.sharedNotes[key] = (data.sharedNotes[key] || []).filter(n => n.id !== id);
+      const coll = kind === 'personal' ? 'personalNotes' : 'sharedNotes';
+      try {
+        await deleteDoc(doc(db, coll, id));
+      } catch (e) {
+        alert('שגיאה במחיקת הפתק');
       }
-      saveData(data);
-      render();
     };
   });
 
@@ -819,7 +834,7 @@ function attachHandlers() {
 
   const saveTxBtn = document.getElementById('save-tx-btn');
   if (saveTxBtn) {
-    saveTxBtn.onclick = () => {
+    saveTxBtn.onclick = async () => {
       const me = session.name;
       const other = view.activeAccount;
       const direction = document.getElementById('direction-select').value;
@@ -835,9 +850,7 @@ function attachHandlers() {
 
       const payer = direction === 'me' ? me : other;
       const payee = direction === 'me' ? other : me;
-
       const newTx = {
-        id: newId('tx'),
         payer, payee,
         type: view.addType,
         amount: Math.round(amount * 100) / 100,
@@ -846,21 +859,26 @@ function attachHandlers() {
         enteredBy: me,
         createdAt: new Date().toISOString()
       };
-      data.transactions.push(newTx);
-      if (!data.txSeenStatus[me]) data.txSeenStatus[me] = {};
-      data.txSeenStatus[me][newTx.id] = true;
-      data.activityLog.push({
-        id: newId('log'),
-        action: 'add',
-        performedBy: me,
-        pairA: me, pairB: other,
-        timestamp: new Date().toISOString(),
-        tx: { type: newTx.type, amount: newTx.amount, description: newTx.description, date: newTx.date, enteredBy: newTx.enteredBy }
-      });
-      saveData(data);
+
       view.showAddForm = false;
       view.addError = '';
       render();
+
+      try {
+        const txRef = await addDoc(collection(db, 'transactions'), newTx);
+        await Promise.all([
+          markTxSeen(me, txRef.id),
+          addDoc(collection(db, 'activityLog'), {
+            action: 'add',
+            performedBy: me,
+            pairA: me, pairB: other,
+            timestamp: new Date().toISOString(),
+            tx: { type: newTx.type, amount: newTx.amount, description: newTx.description, date: newTx.date, enteredBy: newTx.enteredBy }
+          })
+        ]);
+      } catch (e) {
+        alert('שגיאה בשמירת הרישום, נסי שוב');
+      }
     };
   }
 
@@ -872,22 +890,25 @@ function attachHandlers() {
   if (cancelDelete) cancelDelete.onclick = () => { pendingDelete = null; render(); };
 
   const confirmDelete = document.getElementById('confirm-delete');
-  if (confirmDelete) confirmDelete.onclick = () => {
+  if (confirmDelete) confirmDelete.onclick = async () => {
     const deletedTx = data.transactions.find(tx => tx.id === pendingDelete);
-    if (deletedTx) {
-      data.activityLog.push({
-        id: newId('log'),
-        action: 'delete',
-        performedBy: session.name,
-        pairA: deletedTx.payer, pairB: deletedTx.payee,
-        timestamp: new Date().toISOString(),
-        tx: { type: deletedTx.type, amount: deletedTx.amount, description: deletedTx.description, date: deletedTx.date, enteredBy: deletedTx.enteredBy }
-      });
-    }
-    data.transactions = data.transactions.filter(tx => tx.id !== pendingDelete);
-    saveData(data);
+    const idToDelete = pendingDelete;
     pendingDelete = null;
     render();
+    if (deletedTx) {
+      try {
+        await deleteDoc(doc(db, 'transactions', idToDelete));
+        await addDoc(collection(db, 'activityLog'), {
+          action: 'delete',
+          performedBy: session.name,
+          pairA: deletedTx.payer, pairB: deletedTx.payee,
+          timestamp: new Date().toISOString(),
+          tx: { type: deletedTx.type, amount: deletedTx.amount, description: deletedTx.description, date: deletedTx.date, enteredBy: deletedTx.enteredBy }
+        });
+      } catch (e) {
+        alert('שגיאה במחיקת הרישום');
+      }
+    }
   };
 
   const exportBtn = document.getElementById('export-btn');
@@ -900,30 +921,96 @@ function attachHandlers() {
     a.click();
     URL.revokeObjectURL(url);
   };
-
-  const importBtn = document.getElementById('import-btn');
-  const importFile = document.getElementById('import-file');
-  if (importBtn && importFile) {
-    importBtn.onclick = () => importFile.click();
-    importFile.onchange = () => {
-      const file = importFile.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        try {
-          const parsed = JSON.parse(reader.result);
-          if (!parsed.transactions || !parsed.passwords) throw new Error('invalid');
-          data = parsed;
-          saveData(data);
-          render();
-        } catch (e) {
-          alert('קובץ גיבוי לא תקין');
-        }
-      };
-      reader.readAsText(file);
-    };
-  }
 }
+
+function subscribeAll(name, gen) {
+  const loadedKeys = new Set();
+
+  const checkLoaded = () => {
+    if (gen !== authGeneration) return;
+    if (loadedKeys.size >= 5 && view.screen === 'loading') {
+      finishInitialLoad(name);
+    } else {
+      render();
+    }
+  };
+
+  unsubscribers.push(onSnapshot(collection(db, 'transactions'), snap => {
+    if (gen !== authGeneration) return;
+    data.transactions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    loadedKeys.add('transactions');
+    checkLoaded();
+  }, () => {}));
+
+  unsubscribers.push(onSnapshot(collection(db, 'activityLog'), snap => {
+    if (gen !== authGeneration) return;
+    data.activityLog = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    loadedKeys.add('activityLog');
+    checkLoaded();
+  }, () => {}));
+
+  unsubscribers.push(onSnapshot(collection(db, 'sharedNotes'), snap => {
+    if (gen !== authGeneration) return;
+    data.sharedNotesFlat = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    loadedKeys.add('sharedNotes');
+    checkLoaded();
+  }, () => {}));
+
+  unsubscribers.push(onSnapshot(query(collection(db, 'personalNotes'), where('owner', '==', name)), snap => {
+    if (gen !== authGeneration) return;
+    data.personalNotesFlat = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    loadedKeys.add('personalNotes');
+    checkLoaded();
+  }, () => {}));
+
+  unsubscribers.push(onSnapshot(doc(db, 'userState', name), snap => {
+    if (gen !== authGeneration) return;
+    data.userState = snap.exists() ? { notesReadStatus: {}, txSeenStatus: {}, ...snap.data() } : { notesReadStatus: {}, txSeenStatus: {} };
+    loadedKeys.add('userState');
+    checkLoaded();
+  }, () => {}));
+}
+
+function finishInitialLoad(me) {
+  const pet = pickPetName();
+  const seenMap = data.userState.txSeenStatus || {};
+  const unseenTx = data.transactions.filter(tx =>
+    (tx.payer === me || tx.payee === me) && tx.enteredBy !== me && !seenMap[tx.id]
+  );
+  const notifications = unseenTx.map(tx => buildTxNotificationText(tx, me, pet));
+  if (unseenTx.length) {
+    Promise.all(unseenTx.map(tx => markTxSeen(me, tx.id))).catch(() => {});
+  }
+  view = {
+    screen: 'dashboard',
+    loginPopup: { greeting: `${getLoginGreetingBase()}, ${me} ${pet}!`, notifications }
+  };
+  render();
+}
+
+onAuthStateChanged(auth, async (user) => {
+  if (suppressAuthUI) return;
+  const gen = ++authGeneration;
+  unsubscribeAll();
+
+  if (!user) {
+    session = null;
+    view = { screen: 'login', selectedName: null, loginError: '' };
+    render();
+    return;
+  }
+
+  const name = EMAIL_TO_NAME[user.email];
+  if (!name) {
+    await signOut(auth);
+    return;
+  }
+
+  session = { name };
+  view = { screen: 'loading' };
+  render();
+  subscribeAll(name, gen);
+});
 
 render();
 
