@@ -51,5 +51,15 @@ service cloud.firestore {
       allow update: if isSister();
       allow delete: if false;
     }
+
+    match /jokeRatings/{id} {
+      allow read: if isSister();
+      allow create, update: if isSister();
+      allow delete: if false;
+    }
+
+    match /shoppingList/{id} {
+      allow read, create, update, delete: if isSister();
+    }
   }
 }

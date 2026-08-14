@@ -214,6 +214,51 @@
   .row-add-btn { background: var(--bg); border: 1px dashed var(--border); border-radius: 8px; padding: 8px; font-size: 13px; color: var(--text-muted); cursor: pointer; width: 100%; margin-bottom: 4px; }
 
   .app-version-footer { text-align: center; font-size: 11px; color: var(--text-muted); opacity: 0.75; margin-top: 26px; line-height: 1.6; }
+
+  .fab-col { position: fixed; z-index: 40; display: flex; flex-direction: column; gap: 14px; bottom: 90px; }
+  .fab-col.right { right: 16px; }
+  .fab-circle {
+    width: 62px; height: 62px; border-radius: 50%; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 26px; color: #fff;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+  }
+  .fab-circle.joke-fab { background: linear-gradient(145deg, #ffd166, #f0a500); box-shadow: 0 5px 0 #b87700, 0 8px 14px rgba(184,119,0,0.35); }
+  .fab-circle.joke-fab:active { transform: translateY(4px); box-shadow: 0 1px 0 #b87700, 0 2px 6px rgba(184,119,0,0.3); }
+  .fab-circle.empower-fab { background: linear-gradient(145deg, #e07bb0, #c94f8f); box-shadow: 0 5px 0 #a03a70, 0 8px 14px rgba(160,58,112,0.35); }
+  .fab-circle.empower-fab:active { transform: translateY(4px); box-shadow: 0 1px 0 #a03a70, 0 2px 6px rgba(160,58,112,0.3); }
+
+  .sticky-note-tab {
+    position: fixed; left: 0; top: 50%; transform: translateY(-50%); z-index: 40;
+    background: #fff4a3; border: 1px solid #e6d366; border-inline-start: none;
+    border-radius: 0 12px 12px 0; padding: 14px 8px; box-shadow: 2px 3px 8px rgba(0,0,0,0.18);
+    cursor: pointer; writing-mode: vertical-rl; text-orientation: mixed; font-size: 13px; font-weight: 700; color: #6b5a10;
+  }
+
+  .joke-modal .joke-text, .empower-modal .empower-text { font-size: 17px; font-weight: 600; line-height: 1.6; text-align: center; margin: 6px 0 18px; }
+  .empower-modal .empower-text { color: var(--accent); }
+  .star-row { display: flex; justify-content: center; gap: 8px; margin-bottom: 10px; direction: ltr; }
+  .star-row .star { font-size: 30px; cursor: pointer; color: #ddd; line-height: 1; }
+  .star-row .star.filled { color: #f5b400; }
+  .joke-reactions { display: flex; flex-direction: column; gap: 6px; margin: 4px 0 16px; }
+  .joke-reaction { font-size: 13px; background: var(--bg); border-radius: 8px; padding: 8px 10px; }
+  .joke-reaction .stars-mini { color: #f5b400; letter-spacing: 1px; }
+  .modal-actions { display: flex; gap: 8px; }
+  .my-rating-caption { text-align: center; font-size: 13px; color: var(--text-muted); margin: 0 0 14px; }
+
+  .shopping-modal { max-width: 400px; }
+  .shopping-add-row { display: flex; gap: 8px; margin-bottom: 14px; }
+  .shopping-add-row input { flex: 1; }
+  .shopping-list { display: flex; flex-direction: column; gap: 8px; max-height: 50vh; overflow-y: auto; }
+  .shopping-item { display: flex; align-items: center; gap: 10px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+  .shopping-item.purchased { opacity: 0.65; }
+  .shopping-item .avatar { width: 28px; height: 28px; font-size: 12px; flex-shrink: 0; }
+  .shopping-item .item-body { flex: 1; min-width: 0; }
+  .shopping-item .item-text { font-size: 14.5px; word-break: break-word; }
+  .shopping-item.purchased .item-text { text-decoration: line-through; color: var(--text-muted); }
+  .shopping-item .item-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+  .buy-check { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border); background: #fff; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 15px; color: transparent; padding: 0; }
+  .shopping-item.purchased .buy-check { background: var(--owed-to-me); border-color: var(--owed-to-me); color: #fff; }
+  .del-item-btn { background: none; border: none; color: var(--text-muted); font-size: 17px; cursor: pointer; flex-shrink: 0; padding: 2px 4px; }
 </style>
 </head>
 <body>
@@ -459,8 +504,90 @@ const EMPOWERMENT_QUOTES = [
   "היכולת שלך לצמוח מתוך קושי היא מה שהופך אותך למי שאת."
 ];
 
+const JOKES = [
+"אבא שלי מתפאר שאני שחקן הצלחת מעופפת הכי טוב בארץ, אבל אני חושב שהוא מפריז-בי",
+"השבוע התקיים אירוע השקה לממתיק מלאכותי חדש. אתם תוהים מדוע לא שמעתם עליו? כי האירוע לא סוכר.",
+"אחרי כל כך הרבה שנים שאני מנגן בדרבוקה, אני יכול לומר שלמדתי את הכלי בדרך הקשה",
+"יש לי חבר צרפתי שתמיד מגזים. נראה לי שזה כי הוא מפריז",
+"מה עשתה מומחית האקסל במקווה? טבלה",
+"אם מישהו רוכב על סוסים – הוא פרש. ואם הוא מפסיק לרכב על סוסים – הוא פרש.",
+"מה עושים כדורי בשר כשהם בחו\"ל? מיתבוללים",
+"אם השם משפחה שלי זה אדרת ואני מתחתנת אז בעצם אני אותה גברת בשינוי אדרת?",
+"טעמתי עכשיו את החומוס של צבר, הוא אחלה",
+"חבר חופר לי על פולי קפה. כמה אפשר לטחון את זה?!",
+"איך קוראים לבחורה יפנית שקיבלה התקף חרדה? ג'פאניקה",
+"מה חסר לבן אדם שסיים את כל הסיגריות שלו? שאיפות לעתיד",
+"מטייל בגולן עם המשפחה. טיול ברמה!",
+"ביצה נפלה לסיר מים רותחים, מצבה קשה.",
+"אירוניה זה מישהי שנדלקת מכבאי",
+"היתה לי פרה שבמשך תקופה ארוכה חיפשתי עבורה בית חם ואוהב. היום היא אומצה.",
+"ליצור מעברים לנכים זה רק עניין של גישה",
+"התנינים לא בורחים מחמת גדר",
+"אשתי היתה כל כך לחוצה על נופש בבירת פולין עד שאיימה להתגרש אם לא ניסע. ממש הכריזה על מרד: גט – או ורשה!",
+"איש המפתחות קיבל תואר אצולה ומהיום הוא מרקיז.",
+"חבר שלי נכנס לטיפול נגד אקנה. הוא נפטר מפצעיו.",
+"סליחה על הבורות, אבל איך נוצרים בולענים?",
+"שמעתי עכשיו ויכוח בין נהגי קטר ברכבת. הויכוח גלש לפסים אישיים.",
+"אם אני אוהב כמון, וגם הבן שלי אוהב כמון, אפשר להגיד שהוא כמוני?",
+"בירושלים על כל אדם ישן, יש מאה שערים",
+"אם יחטפו אתאיסט שני הצדדים ידרשו את הכופר",
+"היא: מה יש בטלוויזיה? אני: לדים ומעגלים חשמליים.",
+"עבדתי עם שיפוצניק שבונה קירות גבס, נהנתי במחיצתו.",
+"פעם קראתי ספר ברחוק. נתקעתי בעמוד הראשון.",
+"איך קוראים לכלב שמתחרה בנינג'ה ישראל? הב-טיפוס",
+"איך קוראים לבחורה שממשיכה להתקשר למספר הלא נכון? שגית",
+"אפל תוציא סדרת מחשבים ניידים שעשויים מבוטנים מצופים. הם יהיו מקבוקים.",
+"זה שוולברין מחלים מכל פציעה זה פשוט לוגן כלפי האויבים שלו",
+"ג'ף בזוס הוא אחד מאבות אמזון",
+"רוצה לעשות ארגזים של כסף? לך תהיה נגר.",
+"נשפך לי קפה במיטה. עכשיו הפוך הפוך על הפוך",
+"כבר בגיל צעיר אהבתי שווארמה. הייתי ילד לאפות",
+"סליחה, אתה הולך למסיבה ב\"דאנג'ן\"? לא, אני לא קשור.",
+"למה עצים לא יכולים ללכת לבית הספר? כי הם לא היו שורדים את ה\"חטיבה\".",
+"אכלתי מוח בפעם הראשונה. בסדר, היה תאים",
+"כבר 5 דקות שאני עומד ומחכה למים חמים.",
+"לא הרבה יודעים אבל בית החולים \"אסף הרופא\" נקרא \"אסף הסטאז'ר\" בשנים הראשונות שלו",
+"תגידו... אפשר לומר שרפד ישראלי הוא מחייה הספה העברית?",
+"כשלא הבינו את מייקל ג'קסון הוא בטח אמר: תנו לי להבהיר את עצמי",
+"אירוניה זה שלמכשיר שאנחנו מדליקים בבוקר קוראים קומקום",
+"למה הים מלוח? כי החוף לא ניקה את הדגים.",
+"מה ההבדל בין ספר לרופא? הספר רק ממליץ.",
+"מה אומר הגשם לגג? אל תדאג, אני רק עובר.",
+"מה הכי קל לשבור? הבטחה.",
+"למה לא מספרים בדיחות בשיעור ביולוגיה? כי הכיתה מתפקעת.",
+"מה ההבדל בין מורה לרכבת? הרכבת אומרת: צ'וק צ'וק, המורה: שש שש.",
+"מה שם אמו של ספיידרמן? כרישה.",
+"מה ההבדל בין עוף לתרנגולת? התרנגולת יודעת לבשל.",
+"מה אומר שן לשן? יש מקום ביניכם?",
+"למה הצפרדע ירוקה? כי שכחה ביום החולצה הכחולה."
+];
+const JOKE_STAR_PHRASES = {
+  1: 'לא ממש צחקתי...',
+  2: 'בסדר גמור, אפשר יותר טוב',
+  3: 'כן, זה מצחיק!',
+  4: 'ממש צחקתי מזה!',
+  5: 'עפה על הבדיחה הזאת!'
+};
+
+const EMPOWER_TEMPLATES = [
+  '{name} היקרה, {quote}',
+  '{name}, תזכרי לרגע: {quote}',
+  'זה בדיוק בשבילך היום, {name}: {quote}',
+  '{name} שלי, {quote}',
+  'רגע אישי בשבילך, {name}: {quote}',
+  '{name}, תקראי את זה לאט: {quote}'
+];
+
+function personalizedEmpowerText(name) {
+  const pool = EMPOWERMENT_QUOTES.concat(data.empowermentQuotes.map(q => q.text));
+  if (!pool.length) return '';
+  const quote = pool[Math.floor(Math.random() * pool.length)];
+  const template = EMPOWER_TEMPLATES[Math.floor(Math.random() * EMPOWER_TEMPLATES.length)];
+  return template.replace('{name}', name).replace('{quote}', quote);
+}
+
 const NAMES = ['ריקי', 'ברוריה', 'דורית'];
-const APP_VERSION = '2.1.0';
+const APP_VERSION = '2.2.0';
 const APP_UPDATED = '14.08.2026';
 const AVATAR_CLASS = { 'ריקי': 'ricky', 'ברוריה': 'bruria', 'דורית': 'dorit' };
 const PET_NAMES = ['כפרוש', 'נשמה', 'חיים שלי', 'עיניים שלי'];
@@ -539,6 +666,8 @@ let data = {
   empowermentQuotes: [],
   recipes: [],
   recipeCategories: [],
+  jokeRatings: [],
+  shoppingList: [],
   userState: { notesReadStatus: {}, txSeenStatus: {} }
 };
 
@@ -736,6 +865,10 @@ function renderDashboard() {
     <div class="footer-actions">
       <button class="btn btn-secondary" id="export-btn">ייצוא גיבוי</button>
     </div>
+    ${renderFabButtons()}
+    ${view.jokePopup ? renderJokeModal() : ''}
+    ${view.empowerPopup ? renderEmpowerModal() : ''}
+    ${view.shoppingOpen ? renderShoppingModal() : ''}
   `;
 }
 
@@ -1071,6 +1204,98 @@ function renderAddRecipeForm(cats) {
       </div>
       ${view.addRecipeError ? `<div class="error">${escapeHtml(view.addRecipeError)}</div>` : ''}
       <button class="btn btn-primary" id="save-recipe-btn">שמירת מתכון</button>
+    </div>
+  `;
+}
+
+function renderFabButtons() {
+  return `
+    <div class="fab-col right">
+      <button class="fab-circle joke-fab" id="joke-fab-btn" title="בדיחה" aria-label="בדיחה">😂</button>
+      <button class="fab-circle empower-fab" id="empower-fab-btn" title="תעצים אותי" aria-label="תעצים אותי">✨</button>
+    </div>
+    <div class="sticky-note-tab" id="shopping-tab-btn">🛒 רשימת קניות</div>
+  `;
+}
+
+function jokeStarPhrase(stars) {
+  return JOKE_STAR_PHRASES[stars] || '';
+}
+
+function renderJokeModal() {
+  const idx = view.jokePopup.index;
+  const joke = JOKES[idx];
+  const myRating = data.jokeRatings.find(r => r.jokeIndex === idx && r.sister === session.name);
+  const myStars = myRating ? myRating.stars : 0;
+  const others = data.jokeRatings.filter(r => r.jokeIndex === idx && r.sister !== session.name && r.stars > 0);
+  return `
+    <div class="modal-overlay" id="joke-modal-overlay">
+      <div class="modal-box joke-modal">
+        <div class="joke-text">😂 ${escapeHtml(joke)}</div>
+        <div class="star-row" id="joke-star-row">
+          ${[1, 2, 3, 4, 5].map(n => `<span class="star ${n <= myStars ? 'filled' : ''}" data-star="${n}">★</span>`).join('')}
+        </div>
+        ${myStars ? `<div class="my-rating-caption">${escapeHtml(jokeStarPhrase(myStars))}</div>` : ''}
+        ${others.length ? `
+          <div class="joke-reactions">
+            ${others.map(r => `<div class="joke-reaction"><span class="stars-mini">${'★'.repeat(r.stars)}</span> ${escapeHtml(r.sister)} ${escapeHtml(jokeStarPhrase(r.stars))}</div>`).join('')}
+          </div>
+        ` : ''}
+        <div class="modal-actions">
+          <button class="btn btn-secondary" id="joke-next-btn">בדיחה הבאה</button>
+          <button class="btn btn-primary" id="joke-close-btn">סגירה</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderEmpowerModal() {
+  return `
+    <div class="modal-overlay" id="empower-modal-overlay">
+      <div class="modal-box empower-modal">
+        <div class="empower-text">✨ ${escapeHtml(view.empowerPopup.text)}</div>
+        <button class="btn btn-primary" id="empower-close-btn">סגירה</button>
+      </div>
+    </div>
+  `;
+}
+
+function shoppingSortedList() {
+  const list = data.shoppingList.slice();
+  list.sort((a, b) => {
+    if (!!a.purchased !== !!b.purchased) return a.purchased ? 1 : -1;
+    if (a.purchased) return (a.purchasedAt || '').localeCompare(b.purchasedAt || '');
+    return (a.createdAt || '').localeCompare(b.createdAt || '');
+  });
+  return list;
+}
+
+function renderShoppingModal() {
+  const list = shoppingSortedList();
+  return `
+    <div class="modal-overlay" id="shopping-modal-overlay">
+      <div class="modal-box shopping-modal">
+        <h3 style="margin:0 0 14px; font-size:16px;">🛒 רשימת קניות</h3>
+        <div class="shopping-add-row">
+          <input type="text" id="shopping-item-input" placeholder="מה צריך לקנות?">
+          <button class="btn btn-primary btn-small" id="shopping-add-btn">הוספה</button>
+        </div>
+        <div class="shopping-list">
+          ${list.length === 0 ? '<div class="empty">הרשימה ריקה</div>' : list.map(item => `
+            <div class="shopping-item ${item.purchased ? 'purchased' : ''}">
+              <button class="buy-check" data-toggle-purchased="${item.id}" data-currently="${item.purchased ? '1' : '0'}">✓</button>
+              <div class="avatar ${AVATAR_CLASS[item.addedBy] || ''}">${escapeHtml((item.addedBy || '?')[0])}</div>
+              <div class="item-body">
+                <div class="item-text">${escapeHtml(item.text)}</div>
+                <div class="item-meta">${item.purchased ? `נקנה ע"י ${escapeHtml(item.purchasedBy || '')}${item.purchasedAt ? ' · ' + fmtDateTime(item.purchasedAt) : ''}` : `נוסף ע"י ${escapeHtml(item.addedBy || '')}`}</div>
+              </div>
+              <button class="del-item-btn" data-delete-shopping="${item.id}">✕</button>
+            </div>
+          `).join('')}
+        </div>
+        <button class="btn btn-secondary" style="margin-top:14px;" id="shopping-close-btn">סגירה</button>
+      </div>
     </div>
   `;
 }
@@ -1566,6 +1791,102 @@ function attachHandlers() {
       }
     };
   });
+
+  const jokeFabBtn = document.getElementById('joke-fab-btn');
+  if (jokeFabBtn) jokeFabBtn.onclick = () => {
+    view.jokePopup = { index: Math.floor(Math.random() * JOKES.length) };
+    render();
+  };
+
+  const jokeNextBtn = document.getElementById('joke-next-btn');
+  if (jokeNextBtn) jokeNextBtn.onclick = () => {
+    view.jokePopup = { index: Math.floor(Math.random() * JOKES.length) };
+    render();
+  };
+
+  const jokeCloseBtn = document.getElementById('joke-close-btn');
+  if (jokeCloseBtn) jokeCloseBtn.onclick = () => { view.jokePopup = null; render(); };
+
+  document.querySelectorAll('#joke-star-row .star').forEach(el => {
+    el.onclick = async () => {
+      const stars = parseInt(el.getAttribute('data-star'), 10);
+      const idx = view.jokePopup.index;
+      const me = session.name;
+      try {
+        await setDoc(doc(db, 'jokeRatings', `${idx}__${me}`), {
+          jokeIndex: idx, sister: me, stars, createdAt: new Date().toISOString()
+        }, { merge: true });
+      } catch (e) {
+        alert('שגיאה בשמירת הדירוג, נסי שוב');
+      }
+    };
+  });
+
+  const empowerFabBtn = document.getElementById('empower-fab-btn');
+  if (empowerFabBtn) empowerFabBtn.onclick = () => {
+    view.empowerPopup = { text: personalizedEmpowerText(session.name) };
+    render();
+  };
+
+  const empowerCloseBtn = document.getElementById('empower-close-btn');
+  if (empowerCloseBtn) empowerCloseBtn.onclick = () => { view.empowerPopup = null; render(); };
+
+  const shoppingTabBtn = document.getElementById('shopping-tab-btn');
+  if (shoppingTabBtn) shoppingTabBtn.onclick = () => { view.shoppingOpen = true; render(); };
+
+  const shoppingCloseBtn = document.getElementById('shopping-close-btn');
+  if (shoppingCloseBtn) shoppingCloseBtn.onclick = () => { view.shoppingOpen = false; render(); };
+
+  const shoppingAddBtn = document.getElementById('shopping-add-btn');
+  if (shoppingAddBtn) {
+    shoppingAddBtn.onclick = async () => {
+      const inputEl = document.getElementById('shopping-item-input');
+      const text = inputEl.value.trim();
+      if (!text) return;
+      shoppingAddBtn.disabled = true;
+      try {
+        await addDoc(collection(db, 'shoppingList'), {
+          text,
+          addedBy: session.name,
+          createdAt: new Date().toISOString(),
+          purchased: false,
+          purchasedBy: null,
+          purchasedAt: null
+        });
+      } catch (e) {
+        alert('שגיאה בהוספת הפריט, נסי שוב');
+      }
+      shoppingAddBtn.disabled = false;
+    };
+    const shoppingItemInput = document.getElementById('shopping-item-input');
+    if (shoppingItemInput) shoppingItemInput.onkeydown = (e) => { if (e.key === 'Enter') shoppingAddBtn.click(); };
+  }
+
+  document.querySelectorAll('[data-toggle-purchased]').forEach(el => {
+    el.onclick = async () => {
+      const id = el.getAttribute('data-toggle-purchased');
+      const currentlyPurchased = el.getAttribute('data-currently') === '1';
+      try {
+        await setDoc(doc(db, 'shoppingList', id), currentlyPurchased
+          ? { purchased: false, purchasedBy: null, purchasedAt: null }
+          : { purchased: true, purchasedBy: session.name, purchasedAt: new Date().toISOString() }
+        , { merge: true });
+      } catch (e) {
+        alert('שגיאה בעדכון הפריט, נסי שוב');
+      }
+    };
+  });
+
+  document.querySelectorAll('[data-delete-shopping]').forEach(el => {
+    el.onclick = async () => {
+      const id = el.getAttribute('data-delete-shopping');
+      try {
+        await deleteDoc(doc(db, 'shoppingList', id));
+      } catch (e) {
+        alert('שגיאה במחיקת הפריט');
+      }
+    };
+  });
 }
 
 function subscribeAll(name, gen) {
@@ -1573,7 +1894,7 @@ function subscribeAll(name, gen) {
 
   const checkLoaded = () => {
     if (gen !== authGeneration) return;
-    if (loadedKeys.size >= 8 && view.screen === 'loading') {
+    if (loadedKeys.size >= 10 && view.screen === 'loading') {
       finishInitialLoad(name);
     } else {
       render();
@@ -1643,6 +1964,26 @@ function subscribeAll(name, gen) {
     checkLoaded();
   }, () => {
     loadedKeys.add('recipeCategories');
+    checkLoaded();
+  }));
+
+  unsubscribers.push(onSnapshot(collection(db, 'jokeRatings'), snap => {
+    if (gen !== authGeneration) return;
+    data.jokeRatings = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    loadedKeys.add('jokeRatings');
+    checkLoaded();
+  }, () => {
+    loadedKeys.add('jokeRatings');
+    checkLoaded();
+  }));
+
+  unsubscribers.push(onSnapshot(collection(db, 'shoppingList'), snap => {
+    if (gen !== authGeneration) return;
+    data.shoppingList = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    loadedKeys.add('shoppingList');
+    checkLoaded();
+  }, () => {
+    loadedKeys.add('shoppingList');
     checkLoaded();
   }));
 }
