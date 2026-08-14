@@ -369,6 +369,33 @@
   .game-instructions-body p { margin: 0 0 8px; }
   .game-instructions-checkbox { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); cursor: pointer; }
   .game-instructions-checkbox input { width: auto; }
+
+  .game-setup-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; }
+  .game-setup-card h3 { margin: 0 0 10px; font-size: 14px; color: var(--text-muted); }
+  .game-setup-opponents { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .game-setup-opt { display: flex; align-items: center; gap: 6px; padding: 10px 14px; border-radius: 12px; border: 2px solid var(--border); background: var(--bg); font-family: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer; color: var(--text); }
+  .game-setup-opt.selected { border-color: #17a398; background: rgba(23,163,152,0.12); color: #0f7a6f; }
+  .game-setup-difficulty { display: flex; gap: 8px; margin-bottom: 6px; }
+  .game-setup-difficulty .game-setup-opt { flex: 1; justify-content: center; }
+  .game-board-header { text-align: center; margin-bottom: 12px; }
+  .game-vs-line { display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; font-size: 13.5px; font-weight: 600; margin-bottom: 6px; }
+  .game-vs-sep { color: var(--text-muted); font-weight: 400; margin: 0 4px; }
+  .game-computer-icon { font-size: 18px; }
+  .game-status { font-size: 15px; font-weight: 700; color: #17a398; min-height: 20px; }
+  .game-status.game-status-over { color: #e07b1f; }
+  .ttt-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 300px; margin: 0 auto; }
+  .ttt-cell { aspect-ratio: 1; background: var(--card); border: 1px solid var(--border); border-radius: 14px; font-size: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
+  .ttt-cell:disabled { cursor: default; }
+  .ttt-cell.win-cell { background: rgba(23,163,152,0.22); box-shadow: 0 0 0 2px #17a398 inset; }
+  .c4-board { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; background: linear-gradient(160deg, #2f6fb0, #1a4f8a); padding: 8px; border-radius: 14px; max-width: 380px; margin: 0 auto; }
+  .c4-col-drop { background: rgba(255,255,255,0.2); border: none; border-radius: 8px; color: #fff; font-size: 16px; padding: 6px 0; cursor: pointer; }
+  .c4-col-drop:disabled { opacity: 0.3; cursor: default; }
+  .c4-cell { aspect-ratio: 1; background: #0d3868; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .c4-disc { width: 82%; height: 82%; border-radius: 50%; }
+  .c4-disc.empty { visibility: hidden; }
+  .c4-disc.red { background: radial-gradient(circle at 35% 30%, #ff8a75, #e63b2e); }
+  .c4-disc.yellow { background: radial-gradient(circle at 35% 30%, #fff2a8, #f2c40c); }
+  .c4-cell.win-cell .c4-disc { box-shadow: 0 0 0 3px #fff, 0 0 14px 4px #fff; }
 </style>
 </head>
 <body>
@@ -759,15 +786,25 @@ function personalizedEmpowerText(name) {
 }
 
 const NAMES = ['ריקי', 'ברוריה', 'דורית'];
-const APP_VERSION = '2.8.0';
+const APP_VERSION = '2.9.0';
 const APP_UPDATED = '14.08.2026';
 const AVATAR_CLASS = { 'ריקי': 'ricky', 'ברוריה': 'bruria', 'דורית': 'dorit' };
 
 // Games hub catalog. Each game starts locked (coming soon) until it's actually built and deployed -
 // flip `locked` to false and add `instructionsHtml` only once that specific game's screen/logic exists.
 const GAMES_CATALOG = [
-  { id: 'tictactoe', title: 'איקס עיגול', icon: '⭕', color: 'g-teal', locked: true, instructionsHtml: '' },
-  { id: 'connect4', title: '4 בשורה', icon: '🔴', color: 'g-blue', locked: true, instructionsHtml: '' },
+  { id: 'tictactoe', title: 'איקס עיגול', icon: '⭕', color: 'g-teal', locked: false, instructionsHtml: `
+    <p>המטרה: לסדר שלושה סימונים ברצף - אופקי, אנכי או אלכסוני - לפני היריבה.</p>
+    <p>בוחרים נגד מי משחקים: המחשב (עם רמת קושי - קל / בינוני / קשה) או אחת האחיות, בזמן אמת.</p>
+    <p>מי שפותחת את המשחק מסמנת ❌ ומתחילה ראשונה. לוחצים על משבצת ריקה כדי לסמן בתורכן.</p>
+    <p>המשחק נשמר אוטומטית - אפשר לצאת ולחזור בהמשך מאותה נקודה, או ללחוץ "משחק חדש" כדי להתחיל מחדש.</p>
+  ` },
+  { id: 'connect4', title: '4 בשורה', icon: '🔴', color: 'g-blue', locked: false, instructionsHtml: `
+    <p>המטרה: לחבר ארבעה דיסקים ברצף - אופקי, אנכי או אלכסוני - לפני היריבה.</p>
+    <p>לוחצות על החץ מעל עמודה כדי להפיל דיסק - הוא נופל למקום הפנוי הנמוך ביותר באותה עמודה.</p>
+    <p>בוחרים נגד מי משחקים: המחשב (עם רמת קושי) או אחת האחיות, בזמן אמת.</p>
+    <p>המשחק נשמר אוטומטית עד שמסיימות, ואפשר להתחיל מחדש בכל שלב.</p>
+  ` },
   { id: 'sudoku', title: 'סודוקו', icon: '🔢', color: 'g-purple', locked: true, instructionsHtml: '' },
   { id: 'wordle', title: 'וורדל עברי', icon: '🔤', color: 'g-green', locked: true, instructionsHtml: '' },
   { id: 'crossword', title: 'תשחץ', icon: '📝', color: 'g-orange', locked: true, instructionsHtml: '' },
@@ -1048,6 +1085,8 @@ function render() {
   else if (view.screen === 'empowerment') app.innerHTML = renderEmpowerment();
   else if (view.screen === 'recipes') app.innerHTML = renderRecipes();
   else if (view.screen === 'games') app.innerHTML = renderGamesHub();
+  else if (view.screen === 'game-tictactoe') app.innerHTML = renderGameScreen('tictactoe');
+  else if (view.screen === 'game-connect4') app.innerHTML = renderGameScreen('connect4');
   attachHandlers();
 }
 
@@ -1704,6 +1743,415 @@ function renderGameInstructionsModal() {
       </div>
     </div>
   `;
+}
+
+// --- Generic opponent-setup / resume-prompt / new-game-confirm UI, shared by every board game ---
+function otherSisters(me) { return NAMES.filter(n => n !== me); }
+
+function renderGameOpponentSetup(gameId, title, icon) {
+  const draft = view.gameSetupDraft || {};
+  const canStart = draft.opponentMode === 'sister' ? !!draft.opponentName : (draft.opponentMode === 'computer' ? !!draft.difficulty : false);
+  return `
+    <div class="back-row">
+      <button class="btn btn-secondary btn-small" data-back-to-games-hub>→ חזרה</button>
+      <h1 style="margin:0; font-size:17px;">${icon} ${escapeHtml(title)}</h1>
+    </div>
+    <div class="game-setup-card">
+      <h3>נגד מי משחקים?</h3>
+      <div class="game-setup-opponents">
+        <button class="game-setup-opt ${draft.opponentMode === 'computer' ? 'selected' : ''}" data-game-setup-opponent="computer">🖥️ מחשב</button>
+        ${otherSisters(session.name).map(n => `
+          <button class="game-setup-opt ${draft.opponentMode === 'sister' && draft.opponentName === n ? 'selected' : ''}" data-game-setup-opponent="sister" data-game-setup-name="${n}">
+            <span class="avatar ${AVATAR_CLASS[n] || ''}">${n[0]}</span> ${escapeHtml(n)}
+          </button>
+        `).join('')}
+      </div>
+      ${draft.opponentMode === 'computer' ? `
+        <h3>רמת קושי</h3>
+        <div class="game-setup-difficulty">
+          ${['easy', 'medium', 'hard'].map(d => `
+            <button class="game-setup-opt ${draft.difficulty === d ? 'selected' : ''}" data-game-setup-difficulty="${d}">${d === 'easy' ? 'קל' : d === 'medium' ? 'בינוני' : 'קשה'}</button>
+          `).join('')}
+        </div>
+      ` : ''}
+      <button class="btn btn-primary" style="width:100%; margin-top:8px;" data-game-setup-start ${canStart ? '' : 'disabled'}>בואי נתחיל!</button>
+    </div>
+    ${view.gameResumePrompt ? renderGameResumePrompt() : ''}
+  `;
+}
+
+function renderGameResumePrompt() {
+  const p = view.gameResumePrompt;
+  if (!p) return '';
+  return `
+    <div class="modal-overlay">
+      <div class="modal-box">
+        <h3 style="margin:0 0 10px; font-size:16px;">יש משחק שמור מול ${escapeHtml(p.opponentLabel)}</h3>
+        <p style="font-size:13.5px; color: var(--text-muted); margin-bottom:14px;">רוצות להמשיך אותו, או להתחיל משחק חדש?</p>
+        <button class="btn btn-primary" style="width:100%; margin-bottom:8px;" data-game-resume-continue>המשך משחק</button>
+        <button class="btn btn-secondary" style="width:100%;" data-game-resume-new>התחלה חדשה</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderGameConfirmNewGame() {
+  return `
+    <div class="modal-overlay">
+      <div class="modal-box">
+        <h3 style="margin:0 0 10px; font-size:16px;">להתחיל משחק חדש?</h3>
+        <p style="font-size:13.5px; color: var(--text-muted); margin-bottom:14px;">המשחק הנוכחי יימחק ולא ניתן יהיה לשחזר אותו.</p>
+        <button class="btn btn-primary" style="width:100%; margin-bottom:8px;" data-game-confirm-new>כן, התחילי מחדש</button>
+        <button class="btn btn-secondary" style="width:100%;" data-game-cancel-new>ביטול</button>
+      </div>
+    </div>
+  `;
+}
+
+async function startNewGameSession(gameId, sessionKey, draft) {
+  const me = session.name;
+  const mode = draft.opponentMode;
+  let initialBoard;
+  if (gameId === 'tictactoe') initialBoard = Array(9).fill(null);
+  else if (gameId === 'connect4') initialBoard = Array(C4_COLS * C4_ROWS).fill(null);
+  const players = mode === 'computer' ? { X: me, O: 'מחשב' } : { X: me, O: draft.opponentName };
+  const state = {
+    board: initialBoard,
+    currentTurn: 'X',
+    players,
+    mode,
+    difficulty: draft.difficulty || null,
+    winner: null,
+    winLine: null,
+    startedAt: new Date().toISOString(),
+    startedBy: me
+  };
+  await saveGameSession(gameId, sessionKey, state);
+}
+
+function renderGameScreen(gameId) {
+  const g = GAMES_CATALOG.find(x => x.id === gameId);
+  if (!g) return '<p>המשחק הזה לא נמצא.</p>';
+  if (!view.activeGameSessionKey) return renderGameOpponentSetup(gameId, g.title, g.icon);
+  if (gameId === 'tictactoe') return renderTicTacToeBoard(gameId, view.activeGameSessionKey);
+  if (gameId === 'connect4') return renderConnect4Board(gameId, view.activeGameSessionKey);
+  return '<p>המשחק הזה עדיין בבנייה.</p>';
+}
+
+// --- איקס עיגול (tic-tac-toe) ---
+const TTT_LINES = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
+
+function tttCheckWinner(board) {
+  for (const line of TTT_LINES) {
+    const [a, b, c2] = line;
+    if (board[a] && board[a] === board[b] && board[a] === board[c2]) return { winner: board[a], line };
+  }
+  if (board.every(x => x)) return { winner: 'draw', line: null };
+  return { winner: null, line: null };
+}
+
+function tttEmptyCells(board) { return board.map((c2, i) => c2 ? null : i).filter(i => i !== null); }
+
+function tttMinimax(board, depth, isMax) {
+  const result = tttCheckWinner(board);
+  if (result.winner === 'O') return 10 - depth;
+  if (result.winner === 'X') return depth - 10;
+  if (result.winner === 'draw') return 0;
+  const empties = tttEmptyCells(board);
+  if (isMax) {
+    let best = -Infinity;
+    for (const i of empties) { const b = board.slice(); b[i] = 'O'; best = Math.max(best, tttMinimax(b, depth + 1, false)); }
+    return best;
+  } else {
+    let best = Infinity;
+    for (const i of empties) { const b = board.slice(); b[i] = 'X'; best = Math.min(best, tttMinimax(b, depth + 1, true)); }
+    return best;
+  }
+}
+
+function tttPickComputerMove(board, difficulty) {
+  const empties = tttEmptyCells(board);
+  if (!empties.length) return null;
+  if (difficulty === 'easy') return empties[Math.floor(Math.random() * empties.length)];
+  if (difficulty === 'medium') {
+    for (const i of empties) { const b = board.slice(); b[i] = 'O'; if (tttCheckWinner(b).winner === 'O') return i; }
+    for (const i of empties) { const b = board.slice(); b[i] = 'X'; if (tttCheckWinner(b).winner === 'X') return i; }
+    if (!board[4]) return 4;
+    return empties[Math.floor(Math.random() * empties.length)];
+  }
+  let bestScore = -Infinity, bestMove = empties[0];
+  for (const i of empties) {
+    const b = board.slice(); b[i] = 'O';
+    const score = tttMinimax(b, 0, false);
+    if (score > bestScore) { bestScore = score; bestMove = i; }
+  }
+  return bestMove;
+}
+
+function renderTicTacToeBoard(gameId, sessionKey) {
+  const gs = findGameSession(gameId, sessionKey);
+  if (!gs) return '<p>שגיאה בטעינת המשחק.</p>';
+  const st = gs.state;
+  const me = session.name;
+  const mySymbol = st.players.X === me ? 'X' : (st.players.O === me ? 'O' : null);
+  const isMyTurn = !st.winner && mySymbol === st.currentTurn;
+  const opponentLabel = mySymbol === 'X' ? st.players.O : st.players.X;
+  let statusText;
+  if (st.winner === 'draw') statusText = 'תיקו! 🤝';
+  else if (st.winner === mySymbol) statusText = 'ניצחת! 🎉';
+  else if (st.winner) statusText = `${escapeHtml(opponentLabel)} ניצחה הפעם 😅`;
+  else if (st.mode === 'computer' && st.currentTurn === 'O') statusText = 'המחשב חושב... 🤔';
+  else statusText = isMyTurn ? 'תורך!' : `ממתינה לתור של ${escapeHtml(opponentLabel)}`;
+
+  return `
+    <div class="back-row">
+      <button class="btn btn-secondary btn-small" data-back-to-games-hub>→ חזרה</button>
+      <h1 style="margin:0; font-size:17px;">⭕ איקס עיגול</h1>
+    </div>
+    <div class="game-board-header">
+      <div class="game-vs-line">
+        <span class="avatar ${AVATAR_CLASS[me] || ''}">${me[0]}</span> את (${mySymbol === 'X' ? '❌' : '⭕'})
+        <span class="game-vs-sep">מול</span>
+        ${st.mode === 'computer' ? '<span class="game-computer-icon">🖥️</span>' : `<span class="avatar ${AVATAR_CLASS[opponentLabel] || ''}">${(opponentLabel || '?')[0]}</span>`}
+        ${escapeHtml(opponentLabel)} (${mySymbol === 'X' ? '⭕' : '❌'})
+      </div>
+      <div class="game-status ${st.winner ? 'game-status-over' : ''}">${statusText}</div>
+    </div>
+    <div class="ttt-board">
+      ${st.board.map((cell, i) => `
+        <button class="ttt-cell ${st.winLine && st.winLine.includes(i) ? 'win-cell' : ''}" data-ttt-cell="${i}" ${(!isMyTurn || cell || st.winner) ? 'disabled' : ''}>${cell === 'X' ? '❌' : cell === 'O' ? '⭕' : ''}</button>
+      `).join('')}
+    </div>
+    <button class="btn btn-secondary" style="width:100%; margin-top:14px;" data-game-new-game>🔄 משחק חדש / החלפת יריבה</button>
+    ${view.gameConfirmNewGame ? renderGameConfirmNewGame() : ''}
+  `;
+}
+
+async function playTicTacToeMove(idx) {
+  const gameId = 'tictactoe';
+  const sessionKey = view.activeGameSessionKey;
+  const gs = findGameSession(gameId, sessionKey);
+  if (!gs) return;
+  const st = gs.state;
+  const me = session.name;
+  const mySymbol = st.players.X === me ? 'X' : (st.players.O === me ? 'O' : null);
+  if (st.winner || st.board[idx] || mySymbol !== st.currentTurn) return;
+  const board = st.board.slice();
+  board[idx] = mySymbol;
+  const result = tttCheckWinner(board);
+  const newState = { ...st, board, currentTurn: mySymbol === 'X' ? 'O' : 'X', winner: result.winner, winLine: result.line };
+  try {
+    await saveGameSession(gameId, sessionKey, newState);
+  } catch (e) {
+    alert('שגיאה בשמירת המהלך, נסי שוב');
+    return;
+  }
+  if (!newState.winner && st.mode === 'computer' && newState.currentTurn === 'O') {
+    setTimeout(() => computerTicTacToeMove(sessionKey), 550);
+  }
+}
+
+async function computerTicTacToeMove(sessionKey) {
+  const gameId = 'tictactoe';
+  const gs = findGameSession(gameId, sessionKey);
+  if (!gs || gs.state.winner) return;
+  const st = gs.state;
+  const idx = tttPickComputerMove(st.board.slice(), st.difficulty);
+  if (idx == null) return;
+  const board = st.board.slice();
+  board[idx] = 'O';
+  const result = tttCheckWinner(board);
+  const newState = { ...st, board, currentTurn: 'X', winner: result.winner, winLine: result.line };
+  try { await saveGameSession(gameId, sessionKey, newState); } catch (e) { /* opponent will see the retry on her next action */ }
+}
+
+// --- 4 בשורה (connect four) ---
+const C4_COLS = 7, C4_ROWS = 6;
+
+function c4Idx(row, col) { return row * C4_COLS + col; }
+function c4LowestEmptyRow(board, col) {
+  for (let row = C4_ROWS - 1; row >= 0; row--) { if (!board[c4Idx(row, col)]) return row; }
+  return -1;
+}
+function c4ValidCols(board) {
+  const cols = [];
+  for (let col = 0; col < C4_COLS; col++) { if (c4LowestEmptyRow(board, col) !== -1) cols.push(col); }
+  return cols;
+}
+function c4Drop(board, col, symbol) {
+  const row = c4LowestEmptyRow(board, col);
+  if (row === -1) return null;
+  const b = board.slice();
+  b[c4Idx(row, col)] = symbol;
+  return b;
+}
+function c4CheckWinner(board) {
+  const dirs = [[0, 1], [1, 0], [1, 1], [1, -1]];
+  for (let row = 0; row < C4_ROWS; row++) {
+    for (let col = 0; col < C4_COLS; col++) {
+      const cell = board[c4Idx(row, col)];
+      if (!cell) continue;
+      for (const [dr, dc] of dirs) {
+        const line = [c4Idx(row, col)];
+        let r = row, c2 = col, ok = true;
+        for (let k = 1; k < 4; k++) {
+          r += dr; c2 += dc;
+          if (r < 0 || r >= C4_ROWS || c2 < 0 || c2 >= C4_COLS || board[c4Idx(r, c2)] !== cell) { ok = false; break; }
+          line.push(c4Idx(r, c2));
+        }
+        if (ok) return { winner: cell, line };
+      }
+    }
+  }
+  if (board.every(x => x)) return { winner: 'draw', line: null };
+  return { winner: null, line: null };
+}
+function c4Evaluate(board) {
+  let score = 0;
+  const dirs = [[0, 1], [1, 0], [1, 1], [1, -1]];
+  for (let row = 0; row < C4_ROWS; row++) {
+    for (let col = 0; col < C4_COLS; col++) {
+      for (const [dr, dc] of dirs) {
+        const cells = [];
+        let ok = true;
+        for (let k = 0; k < 4; k++) {
+          const r = row + dr * k, c2 = col + dc * k;
+          if (r < 0 || r >= C4_ROWS || c2 < 0 || c2 >= C4_COLS) { ok = false; break; }
+          cells.push(board[c4Idx(r, c2)]);
+        }
+        if (!ok) continue;
+        const oCount = cells.filter(x => x === 'O').length;
+        const xCount = cells.filter(x => x === 'X').length;
+        if (oCount > 0 && xCount > 0) continue;
+        if (oCount === 4) score += 10000; else if (oCount === 3) score += 50; else if (oCount === 2) score += 10; else if (oCount === 1) score += 1;
+        if (xCount === 4) score -= 10000; else if (xCount === 3) score -= 50; else if (xCount === 2) score -= 10; else if (xCount === 1) score -= 1;
+      }
+    }
+  }
+  return score;
+}
+function c4Minimax(board, depth, alpha, beta, isMax) {
+  const result = c4CheckWinner(board);
+  if (result.winner === 'O') return 100000 + depth;
+  if (result.winner === 'X') return -100000 - depth;
+  if (result.winner === 'draw') return 0;
+  if (depth === 0) return c4Evaluate(board);
+  const cols = c4ValidCols(board);
+  if (isMax) {
+    let best = -Infinity;
+    for (const col of cols) {
+      best = Math.max(best, c4Minimax(c4Drop(board, col, 'O'), depth - 1, alpha, beta, false));
+      alpha = Math.max(alpha, best);
+      if (alpha >= beta) break;
+    }
+    return best;
+  } else {
+    let best = Infinity;
+    for (const col of cols) {
+      best = Math.min(best, c4Minimax(c4Drop(board, col, 'X'), depth - 1, alpha, beta, true));
+      beta = Math.min(beta, best);
+      if (alpha >= beta) break;
+    }
+    return best;
+  }
+}
+function c4PickComputerMove(board, difficulty) {
+  const cols = c4ValidCols(board);
+  if (!cols.length) return null;
+  const centerOrder = [3, 2, 4, 1, 5, 0, 6].filter(c2 => cols.includes(c2));
+  if (difficulty === 'easy') return cols[Math.floor(Math.random() * cols.length)];
+  if (difficulty === 'medium') {
+    for (const col of cols) { if (c4CheckWinner(c4Drop(board, col, 'O')).winner === 'O') return col; }
+    for (const col of cols) { if (c4CheckWinner(c4Drop(board, col, 'X')).winner === 'X') return col; }
+    return centerOrder[0];
+  }
+  let bestScore = -Infinity, bestCol = centerOrder[0];
+  for (const col of centerOrder) {
+    const score = c4Minimax(c4Drop(board, col, 'O'), 5, -Infinity, Infinity, false);
+    if (score > bestScore) { bestScore = score; bestCol = col; }
+  }
+  return bestCol;
+}
+
+function renderConnect4Board(gameId, sessionKey) {
+  const gs = findGameSession(gameId, sessionKey);
+  if (!gs) return '<p>שגיאה בטעינת המשחק.</p>';
+  const st = gs.state;
+  const me = session.name;
+  const mySymbol = st.players.X === me ? 'X' : (st.players.O === me ? 'O' : null);
+  const isMyTurn = !st.winner && mySymbol === st.currentTurn;
+  const opponentLabel = mySymbol === 'X' ? st.players.O : st.players.X;
+  let statusText;
+  if (st.winner === 'draw') statusText = 'תיקו! 🤝';
+  else if (st.winner === mySymbol) statusText = 'ניצחת! 🎉';
+  else if (st.winner) statusText = `${escapeHtml(opponentLabel)} ניצחה הפעם 😅`;
+  else if (st.mode === 'computer' && st.currentTurn === 'O') statusText = 'המחשב חושב... 🤔';
+  else statusText = isMyTurn ? 'תורך!' : `ממתינה לתור של ${escapeHtml(opponentLabel)}`;
+  const validCols = c4ValidCols(st.board);
+
+  return `
+    <div class="back-row">
+      <button class="btn btn-secondary btn-small" data-back-to-games-hub>→ חזרה</button>
+      <h1 style="margin:0; font-size:17px;">🔴 4 בשורה</h1>
+    </div>
+    <div class="game-board-header">
+      <div class="game-vs-line">
+        <span class="avatar ${AVATAR_CLASS[me] || ''}">${me[0]}</span> את (${mySymbol === 'X' ? '🔴' : '🟡'})
+        <span class="game-vs-sep">מול</span>
+        ${st.mode === 'computer' ? '<span class="game-computer-icon">🖥️</span>' : `<span class="avatar ${AVATAR_CLASS[opponentLabel] || ''}">${(opponentLabel || '?')[0]}</span>`}
+        ${escapeHtml(opponentLabel)} (${mySymbol === 'X' ? '🟡' : '🔴'})
+      </div>
+      <div class="game-status ${st.winner ? 'game-status-over' : ''}">${statusText}</div>
+    </div>
+    <div class="c4-board">
+      ${Array.from({ length: C4_COLS }).map((_, col) => `
+        <button class="c4-col-drop" data-c4-col="${col}" ${(!isMyTurn || !validCols.includes(col) || st.winner) ? 'disabled' : ''}>⬇</button>
+      `).join('')}
+      ${st.board.map((cell, i) => `
+        <div class="c4-cell ${st.winLine && st.winLine.includes(i) ? 'win-cell' : ''}"><span class="c4-disc ${cell === 'X' ? 'red' : cell === 'O' ? 'yellow' : 'empty'}"></span></div>
+      `).join('')}
+    </div>
+    <button class="btn btn-secondary" style="width:100%; margin-top:14px;" data-game-new-game>🔄 משחק חדש / החלפת יריבה</button>
+    ${view.gameConfirmNewGame ? renderGameConfirmNewGame() : ''}
+  `;
+}
+
+async function playConnect4Move(col) {
+  const gameId = 'connect4';
+  const sessionKey = view.activeGameSessionKey;
+  const gs = findGameSession(gameId, sessionKey);
+  if (!gs) return;
+  const st = gs.state;
+  const me = session.name;
+  const mySymbol = st.players.X === me ? 'X' : (st.players.O === me ? 'O' : null);
+  if (st.winner || mySymbol !== st.currentTurn) return;
+  const board = c4Drop(st.board, col, mySymbol);
+  if (!board) return;
+  const result = c4CheckWinner(board);
+  const newState = { ...st, board, currentTurn: mySymbol === 'X' ? 'O' : 'X', winner: result.winner, winLine: result.line };
+  try {
+    await saveGameSession(gameId, sessionKey, newState);
+  } catch (e) {
+    alert('שגיאה בשמירת המהלך, נסי שוב');
+    return;
+  }
+  if (!newState.winner && st.mode === 'computer' && newState.currentTurn === 'O') {
+    setTimeout(() => computerConnect4Move(sessionKey), 550);
+  }
+}
+
+async function computerConnect4Move(sessionKey) {
+  const gameId = 'connect4';
+  const gs = findGameSession(gameId, sessionKey);
+  if (!gs || gs.state.winner) return;
+  const st = gs.state;
+  const col = c4PickComputerMove(st.board.slice(), st.difficulty);
+  if (col == null) return;
+  const board = c4Drop(st.board, col, 'O');
+  if (!board) return;
+  const result = c4CheckWinner(board);
+  const newState = { ...st, board, currentTurn: 'X', winner: result.winner, winLine: result.line };
+  try { await saveGameSession(gameId, sessionKey, newState); } catch (e) { /* opponent will see the retry on her next action */ }
 }
 
 function shoppingActiveList() {
@@ -2979,6 +3427,133 @@ function attachHandlers() {
       render();
     };
   }
+
+  const backToGamesHub = document.querySelector('[data-back-to-games-hub]');
+  if (backToGamesHub) backToGamesHub.onclick = () => {
+    view.screen = 'games';
+    view.gameSetupDraft = null;
+    view.gameResumePrompt = null;
+    view.gameConfirmNewGame = false;
+    render();
+  };
+
+  document.querySelectorAll('[data-game-setup-opponent]').forEach(el => {
+    el.onclick = () => {
+      const mode = el.getAttribute('data-game-setup-opponent');
+      view.gameSetupDraft = view.gameSetupDraft || {};
+      view.gameSetupDraft.opponentMode = mode;
+      view.gameSetupDraft.opponentName = mode === 'sister' ? el.getAttribute('data-game-setup-name') : null;
+      render();
+    };
+  });
+
+  document.querySelectorAll('[data-game-setup-difficulty]').forEach(el => {
+    el.onclick = () => {
+      view.gameSetupDraft = view.gameSetupDraft || {};
+      view.gameSetupDraft.difficulty = el.getAttribute('data-game-setup-difficulty');
+      render();
+    };
+  });
+
+  const gameSetupStartBtn = document.querySelector('[data-game-setup-start]');
+  if (gameSetupStartBtn) {
+    gameSetupStartBtn.onclick = async () => {
+      const gameId = view.screen.replace('game-', '');
+      const draft = view.gameSetupDraft || {};
+      if (!draft.opponentMode) return;
+      const sessionKey = draft.opponentMode === 'computer' ? gameSessionKeySolo(session.name) : gameSessionKeyPair(session.name, draft.opponentName);
+      const existing = findGameSession(gameId, sessionKey);
+      if (existing && existing.state && !existing.state.winner) {
+        view.gameResumePrompt = {
+          sessionKey, gameId, freshDraft: draft,
+          opponentLabel: draft.opponentMode === 'computer' ? 'המחשב' : draft.opponentName
+        };
+        render();
+        return;
+      }
+      try {
+        await startNewGameSession(gameId, sessionKey, draft);
+      } catch (e) {
+        alert('שגיאה בפתיחת המשחק, נסי שוב');
+        return;
+      }
+      view.activeGameSessionKey = sessionKey;
+      view.gameSetupDraft = null;
+      render();
+    };
+  }
+
+  const gameResumeContinueBtn = document.querySelector('[data-game-resume-continue]');
+  if (gameResumeContinueBtn) {
+    gameResumeContinueBtn.onclick = () => {
+      view.activeGameSessionKey = view.gameResumePrompt.sessionKey;
+      view.gameResumePrompt = null;
+      view.gameSetupDraft = null;
+      render();
+    };
+  }
+
+  const gameResumeNewBtn = document.querySelector('[data-game-resume-new]');
+  if (gameResumeNewBtn) {
+    gameResumeNewBtn.onclick = async () => {
+      const { sessionKey, gameId, freshDraft } = view.gameResumePrompt;
+      try {
+        await startNewGameSession(gameId, sessionKey, freshDraft);
+      } catch (e) {
+        alert('שגיאה בפתיחת המשחק, נסי שוב');
+        return;
+      }
+      view.activeGameSessionKey = sessionKey;
+      view.gameResumePrompt = null;
+      view.gameSetupDraft = null;
+      render();
+    };
+  }
+
+  const gameNewGameBtn = document.querySelector('[data-game-new-game]');
+  if (gameNewGameBtn) {
+    gameNewGameBtn.onclick = () => {
+      view.gameConfirmNewGame = true;
+      render();
+    };
+  }
+
+  const gameConfirmNewBtn = document.querySelector('[data-game-confirm-new]');
+  if (gameConfirmNewBtn) {
+    gameConfirmNewBtn.onclick = async () => {
+      const gameId = view.screen.replace('game-', '');
+      const sessionKey = view.activeGameSessionKey;
+      try {
+        if (sessionKey) await clearGameSession(gameId, sessionKey);
+      } catch (e) { /* non-critical - a stale session doc is harmless, worst case it resurfaces as a resume prompt */ }
+      view.activeGameSessionKey = null;
+      view.gameConfirmNewGame = false;
+      view.gameSetupDraft = null;
+      render();
+    };
+  }
+
+  const gameCancelNewBtn = document.querySelector('[data-game-cancel-new]');
+  if (gameCancelNewBtn) {
+    gameCancelNewBtn.onclick = () => {
+      view.gameConfirmNewGame = false;
+      render();
+    };
+  }
+
+  document.querySelectorAll('[data-ttt-cell]').forEach(el => {
+    el.onclick = async () => {
+      const idx = parseInt(el.getAttribute('data-ttt-cell'), 10);
+      await playTicTacToeMove(idx);
+    };
+  });
+
+  document.querySelectorAll('[data-c4-col]').forEach(el => {
+    el.onclick = async () => {
+      const col = parseInt(el.getAttribute('data-c4-col'), 10);
+      await playConnect4Move(col);
+    };
+  });
 }
 
 function subscribeAll(name, gen) {
