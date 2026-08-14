@@ -1620,21 +1620,31 @@ function subscribeAll(name, gen) {
     data.empowermentQuotes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     loadedKeys.add('empowermentQuotes');
     checkLoaded();
-  }, () => {}));
+  }, () => {
+    // Non-critical collection: don't let a permission/rules hiccup here block the whole app from loading.
+    loadedKeys.add('empowermentQuotes');
+    checkLoaded();
+  }));
 
   unsubscribers.push(onSnapshot(collection(db, 'recipes'), snap => {
     if (gen !== authGeneration) return;
     data.recipes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     loadedKeys.add('recipes');
     checkLoaded();
-  }, () => {}));
+  }, () => {
+    loadedKeys.add('recipes');
+    checkLoaded();
+  }));
 
   unsubscribers.push(onSnapshot(collection(db, 'recipeCategories'), snap => {
     if (gen !== authGeneration) return;
     data.recipeCategories = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     loadedKeys.add('recipeCategories');
     checkLoaded();
-  }, () => {}));
+  }, () => {
+    loadedKeys.add('recipeCategories');
+    checkLoaded();
+  }));
 }
 
 function finishInitialLoad(me) {
