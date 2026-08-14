@@ -383,12 +383,12 @@
   .game-computer-icon { font-size: 18px; }
   .game-status { font-size: 15px; font-weight: 700; color: #17a398; min-height: 20px; }
   .game-status.game-status-over { color: #e07b1f; }
-  .ttt-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 300px; margin: 0 auto; }
+  .ttt-board { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; max-width: 300px; width: 100%; margin: 0 auto; }
   .ttt-cell { aspect-ratio: 1; background: var(--card); border: 1px solid var(--border); border-radius: 14px; font-size: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
   .ttt-cell:disabled { cursor: default; }
   .ttt-cell.win-cell { background: rgba(23,163,152,0.22); box-shadow: 0 0 0 2px #17a398 inset; }
-  .c4-board { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; background: linear-gradient(160deg, #2f6fb0, #1a4f8a); padding: 8px; border-radius: 14px; max-width: 380px; margin: 0 auto; }
-  .c4-col-drop { background: rgba(255,255,255,0.2); border: none; border-radius: 8px; color: #fff; font-size: 16px; padding: 6px 0; cursor: pointer; }
+  .c4-board { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; background: linear-gradient(160deg, #2f6fb0, #1a4f8a); padding: 8px; border-radius: 14px; max-width: 380px; width: 100%; margin: 0 auto; }
+  .c4-col-drop { background: rgba(255,255,255,0.2); border: none; border-radius: 8px; color: #fff; font-size: 16px; padding: 6px 0; cursor: pointer; min-width: 0; }
   .c4-col-drop:disabled { opacity: 0.3; cursor: default; }
   .c4-cell { aspect-ratio: 1; background: #0d3868; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
   .c4-disc { width: 82%; height: 82%; border-radius: 50%; }
@@ -397,7 +397,7 @@
   .c4-disc.yellow { background: radial-gradient(circle at 35% 30%, #fff2a8, #f2c40c); }
   .c4-cell.win-cell .c4-disc { box-shadow: 0 0 0 3px #fff, 0 0 14px 4px #fff; }
 
-  .sudoku-board { display: grid; grid-template-columns: repeat(9, 1fr); gap: 1px; background: var(--border); border: 2px solid var(--text); border-radius: 8px; overflow: hidden; max-width: 360px; margin: 0 auto; }
+  .sudoku-board { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 1px; background: var(--border); border: 2px solid var(--text); border-radius: 8px; overflow: hidden; max-width: 360px; width: 100%; margin: 0 auto; }
   .sudoku-cell { aspect-ratio: 1; background: var(--card); border: none; font-size: 16px; font-weight: 600; color: var(--text); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
   .sudoku-cell.given { background: var(--bg); color: var(--text-muted); cursor: default; font-weight: 700; }
   .sudoku-cell.related { background: rgba(23,163,152,0.08); }
@@ -405,7 +405,7 @@
   .sudoku-cell.conflict { color: #d84440; background: rgba(216,68,64,0.14); }
   .sudoku-cell.border-right { border-right: 2px solid var(--text); }
   .sudoku-cell.border-bottom { border-bottom: 2px solid var(--text); }
-  .sudoku-numpad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; max-width: 360px; margin: 12px auto 0; }
+  .sudoku-numpad { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; max-width: 360px; width: 100%; margin: 12px auto 0; }
   .sudoku-num-btn { aspect-ratio: 1; border: 1px solid var(--border); background: var(--card); border-radius: 8px; font-size: 16px; font-weight: 700; color: var(--text); cursor: pointer; }
   .sudoku-clear-btn { color: var(--text-muted); font-size: 14px; }
   .sudoku-race-progress { margin-top: 12px; font-size: 12.5px; color: var(--text-muted); }
@@ -801,7 +801,7 @@ function personalizedEmpowerText(name) {
 }
 
 const NAMES = ['ריקי', 'ברוריה', 'דורית'];
-const APP_VERSION = '2.10.0';
+const APP_VERSION = '2.10.3';
 const APP_UPDATED = '14.08.2026';
 const AVATAR_CLASS = { 'ריקי': 'ricky', 'ברוריה': 'bruria', 'דורית': 'dorit' };
 
@@ -3700,6 +3700,14 @@ function attachHandlers() {
   document.querySelectorAll('[data-open-game]').forEach(el => {
     el.onclick = () => {
       const gameId = el.getAttribute('data-open-game');
+      // Always clear any stale session state left over from a *different* game before entering this
+      // one - otherwise renderGameScreen can mistake a leftover activeGameSessionKey from the last
+      // game played for a live session of this one, and fail to load ("שגיאה בטעינת המשחק").
+      view.activeGameSessionKey = null;
+      view.gameSetupDraft = null;
+      view.gameResumePrompt = null;
+      view.gameConfirmNewGame = false;
+      view.sudokuSelectedCell = null;
       const alreadySeen = !!(data.userState.gamesInstructionsSeen || {})[gameId];
       if (alreadySeen) {
         // Instructions already acknowledged in a previous session - go straight into the game screen
@@ -3734,6 +3742,7 @@ function attachHandlers() {
   const backToGamesHub = document.querySelector('[data-back-to-games-hub]');
   if (backToGamesHub) backToGamesHub.onclick = () => {
     view.screen = 'games';
+    view.activeGameSessionKey = null;
     view.gameSetupDraft = null;
     view.gameResumePrompt = null;
     view.gameConfirmNewGame = false;
