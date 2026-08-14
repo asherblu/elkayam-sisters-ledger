@@ -41,8 +41,7 @@ service cloud.firestore {
     }
 
     match /recipes/{id} {
-      allow read, create, delete: if isSister();
-      allow update: if false;
+      allow read, create, update, delete: if isSister();
     }
 
     match /recipeCategories/{name} {
@@ -60,6 +59,18 @@ service cloud.firestore {
 
     match /shoppingList/{id} {
       allow read, create, update, delete: if isSister();
+    }
+
+    match /quoteFavorites/{id} {
+      allow read: if isSister();
+      allow create: if isSister() && request.resource.data.sister == myName();
+      allow delete: if isSister() && resource.data.sister == myName();
+      allow update: if false;
+    }
+
+    match /recipeComments/{id} {
+      allow read, create: if isSister();
+      allow update, delete: if false;
     }
   }
 }

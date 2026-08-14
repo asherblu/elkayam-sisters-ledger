@@ -98,7 +98,6 @@
   .balance-line.even { color: var(--text-muted); }
 
   .back-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-  .back-row button { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text); padding: 4px 8px; }
 
   .balance-hero { text-align: center; padding: 18px 10px; background: var(--card); border: 1px solid var(--border); border-radius: 14px; margin-bottom: 16px; }
   .balance-hero .amount { font-size: 30px; font-weight: 700; margin: 4px 0; }
@@ -259,6 +258,67 @@
   .buy-check { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border); background: #fff; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 15px; color: transparent; padding: 0; }
   .shopping-item.purchased .buy-check { background: var(--owed-to-me); border-color: var(--owed-to-me); color: #fff; }
   .del-item-btn { background: none; border: none; color: var(--text-muted); font-size: 17px; cursor: pointer; flex-shrink: 0; padding: 2px 4px; }
+
+  .weather-login-fab {
+    position: fixed; top: 14px; left: 14px; z-index: 45;
+    width: 54px; height: 54px; border-radius: 50%; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 24px; color: #fff;
+    background: linear-gradient(145deg, #6ec3f0, #2f8fcf); box-shadow: 0 5px 0 #1f6d9f, 0 8px 14px rgba(31,109,159,0.35);
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+  }
+  .weather-login-fab:active { transform: translateY(4px); box-shadow: 0 1px 0 #1f6d9f, 0 2px 6px rgba(31,109,159,0.3); }
+  .weather-modal { max-width: 380px; }
+  .weather-scene { position: relative; height: 190px; border-radius: 14px; overflow: hidden; margin-bottom: 14px; }
+  .scene-day-clear { background: linear-gradient(180deg, #7ec8f2 0%, #bfe6a8 70%, #8fce6a 100%); }
+  .scene-day-cloudy { background: linear-gradient(180deg, #a9b9c4 0%, #c7d0b8 70%, #8fce6a 100%); }
+  .scene-day-rain { background: linear-gradient(180deg, #6b7b87 0%, #7c8a76 70%, #5d7a4a 100%); }
+  .scene-day-snow { background: linear-gradient(180deg, #cfe0ec 0%, #eef3ee 70%, #e8ecdf 100%); }
+  .scene-night-clear { background: linear-gradient(180deg, #0c1e3d 0%, #1c3050 70%, #142a20 100%); }
+  .scene-night-cloudy { background: linear-gradient(180deg, #212b38 0%, #2b3a3a 70%, #1c2a1c 100%); }
+  .scene-night-rain { background: linear-gradient(180deg, #10161f 0%, #202a28 70%, #16241a 100%); }
+  .scene-night-snow { background: linear-gradient(180deg, #24344a 0%, #3a4a52 70%, #3a4438 100%); }
+  .weather-scene .scene-emoji { position: absolute; font-size: 26px; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.25)); }
+  .weather-scene .w-sun { top: 12px; left: 14px; font-size: 34px; }
+  .weather-scene .w-moon { top: 10px; left: 16px; font-size: 30px; }
+  .weather-scene .w-star { position: absolute; font-size: 11px; color: #fff; opacity: 0.9; }
+  .weather-scene .w-cloud { top: 16px; font-size: 26px; opacity: 0.92; }
+  .weather-scene .w-house { bottom: 30px; right: 14px; font-size: 40px; }
+  .weather-scene .w-cow { bottom: 24px; right: 72px; font-size: 24px; }
+  .weather-scene .w-chick { bottom: 22px; font-size: 17px; }
+  .weather-scene .w-flower { bottom: 14px; font-size: 13px; }
+  .weather-scene .w-umbrella { bottom: 32px; font-size: 22px; }
+  .weather-scene .w-zzz { position: absolute; font-size: 12px; opacity: 0.85; }
+  .weather-scene .w-raindrop { position: absolute; top: -12px; width: 2px; height: 14px; background: rgba(255,255,255,0.6); animation: w-rainfall 0.9s linear infinite; }
+  @keyframes w-rainfall { to { transform: translateY(210px); } }
+  .weather-scene .w-snowflake { position: absolute; top: -12px; font-size: 12px; color: #fff; animation: w-snowfall 6s linear infinite; }
+  @keyframes w-snowfall { to { transform: translateY(210px); } }
+  .weather-scene-info { position: absolute; bottom: 8px; left: 8px; background: rgba(255,255,255,0.88); border-radius: 10px; padding: 6px 10px; font-size: 12px; color: #2c2a26; text-align: right; }
+  .weather-scene-info .weather-temp { font-size: 20px; font-weight: 700; line-height: 1.1; }
+  .weather-daily { display: flex; gap: 8px; margin-bottom: 14px; }
+  .weather-day { flex: 1; text-align: center; background: var(--bg); border-radius: 8px; padding: 8px 4px; font-size: 12px; }
+  .weather-loc-form { margin-bottom: 12px; }
+  .weather-loc-form input { margin-bottom: 8px; }
+  .weather-loc-results { display: flex; flex-direction: column; gap: 6px; max-height: 120px; overflow-y: auto; margin-bottom: 8px; }
+  .weather-loc-result { background: var(--bg); border-radius: 8px; padding: 8px 10px; cursor: pointer; font-size: 13px; }
+  .weather-loading, .weather-error { text-align: center; padding: 26px 0; color: var(--text-muted); font-size: 14px; }
+
+  .quote-item-row { display: flex; align-items: flex-start; gap: 8px; }
+  .quote-fav-btn { background: none; border: none; font-size: 20px; cursor: pointer; padding: 0 2px; flex-shrink: 0; line-height: 1.3; }
+  .quote-fav-by { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+  .recipe-thumb { width: 100%; max-height: 140px; object-fit: cover; border-radius: 8px; margin-bottom: 8px; }
+  .recipe-photo-full { max-width: 100%; border-radius: 10px; margin-bottom: 10px; }
+  .recipe-photo-preview-wrap { margin-top: 8px; }
+  .recipe-photo-preview { max-width: 100%; border-radius: 10px; display: block; margin-bottom: 6px; }
+  .checkbox-label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text); cursor: pointer; }
+  .checkbox-label input { width: auto; }
+  .recipe-actions { display: flex; gap: 8px; margin: 10px 0; flex-wrap: wrap; }
+  .recipe-actions button { flex: 1; min-width: 90px; }
+  .recipe-comments { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+  .recipe-comment { background: var(--bg); border-radius: 8px; padding: 8px 10px; }
+  .recipe-comment-text { font-size: 13.5px; }
+  .recipe-comment-add-row { display: flex; gap: 8px; }
+  .recipe-comment-add-row input { flex: 1; }
 </style>
 </head>
 <body>
@@ -569,6 +629,24 @@ const JOKE_STAR_PHRASES = {
   5: 'עפה על הבדיחה הזאת!'
 };
 
+const RECIPE_NOTIF_TEMPLATES = [
+  'וואיי וואי איזה "{title}" {name} הכינה והעלתה לכן.... אני מריירת פה...',
+  'התראת טעימות: {name} העלתה מתכון חדש בשם "{title}" - תריצו למטבח!',
+  'שברו את האינטרנט - {name} פרסמה מתכון בשם "{title}", תיכף כולן מבשלות.',
+  'מתכון טרי מהתנור של {name}: "{title}". תזמינו אותה לפני שכולן יגיעו קודם.',
+  'יש חדש בקטלוג: "{title}" מאת {name}. הקיבה כבר מקרקרת.',
+  '{name} לא נחה - עוד מתכון עלה, "{title}", ואני כבר מריחה אותו מכאן.',
+  'עדכון חם מהמטבח: "{title}" מאת {name}. תתכוננו לתור למקרר.',
+  'פינת מתכונים: {name} תרמה את "{title}" - עצה חינם: תקראו לפני שהבטן מתחילה לנהום.',
+  'אזעקת בישול: "{title}" חדש הופיע, תודה ל{name}. מישהי שמה לב שהמסך שלי מלא ריר?',
+  '{name} עשתה את זה שוב - "{title}" זמין עכשיו. אני כבר מדמיינת את הטעם.'
+];
+
+function buildRecipeNotificationText(r) {
+  const template = RECIPE_NOTIF_TEMPLATES[Math.floor(Math.random() * RECIPE_NOTIF_TEMPLATES.length)];
+  return template.replace('{title}', r.title).replace('{name}', r.addedBy || '');
+}
+
 const ASHER_JOKES = [
   "תזכרו להגיד תודה לאשר – הבחור שחיווט לכן אפליקציה שלמה באותן ידיים שמחווטות מתקן התפלה שלם.",
   "מחקר מדעי חדש (שנערך הרגע, על ידי) מוכיח: גיס אחד מוכשר עם וולוו S90 שווה יותר מכל צוות פיתוח.",
@@ -630,7 +708,7 @@ function personalizedEmpowerText(name) {
 }
 
 const NAMES = ['ריקי', 'ברוריה', 'דורית'];
-const APP_VERSION = '2.3.0';
+const APP_VERSION = '2.5.0';
 const APP_UPDATED = '14.08.2026';
 const AVATAR_CLASS = { 'ריקי': 'ricky', 'ברוריה': 'bruria', 'דורית': 'dorit' };
 const PET_NAMES = ['כפרוש', 'נשמה', 'חיים שלי', 'עיניים שלי'];
@@ -701,12 +779,89 @@ function markNotesRead(name, key, iso) {
   return setDoc(doc(db, 'userState', name), { notesReadStatus: { [key]: iso } }, { merge: true });
 }
 
+function markRecipesSeen(name, iso) {
+  return setDoc(doc(db, 'userState', name), { lastSeenRecipeAt: iso }, { merge: true });
+}
+
+function compressImageFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('read failed'));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('image load failed'));
+      img.onload = () => {
+        const maxDim = 1100;
+        let width = img.width;
+        let height = img.height;
+        if (width > maxDim || height > maxDim) {
+          if (width >= height) { height = Math.round(height * maxDim / width); width = maxDim; }
+          else { width = Math.round(width * maxDim / height); height = maxDim; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        let quality = 0.72;
+        let dataUrl = canvas.toDataURL('image/jpeg', quality);
+        while (dataUrl.length > 700000 && quality > 0.35) {
+          quality -= 0.12;
+          dataUrl = canvas.toDataURL('image/jpeg', quality);
+        }
+        resolve(dataUrl);
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function buildRecipePrintHtml(r) {
+  return `<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="UTF-8"><title>${escapeHtml(r.title)}</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 24px; color: #2c2a26; }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  .meta { color: #8a8578; font-size: 13px; margin-bottom: 16px; }
+  h2 { font-size: 15px; color: #8a6d3b; margin: 16px 0 6px; }
+  img { max-width: 100%; border-radius: 10px; margin-bottom: 12px; }
+  li { margin-bottom: 4px; }
+</style>
+</head><body>
+<h1>${escapeHtml(r.title)}</h1>
+<div class="meta">${r.category ? escapeHtml(r.category) + ' · ' : ''}${r.servings ? escapeHtml(r.servings) + ' מנות · ' : ''}${r.prepTime ? escapeHtml(r.prepTime) : ''}</div>
+${r.photoDataUrl ? `<img src="${r.photoDataUrl}">` : ''}
+${(r.ingredients || []).length ? `<h2>מרכיבים</h2><ul>${(r.ingredients || []).map(i => `<li>${escapeHtml(i)}</li>`).join('')}</ul>` : ''}
+${(r.instructions || []).length ? `<h2>אופן ההכנה</h2><ol>${(r.instructions || []).map(i => `<li>${escapeHtml(i)}</li>`).join('')}</ol>` : ''}
+${r.notes ? `<h2>הערות</h2><div>${escapeHtml(r.notes)}</div>` : ''}
+</body></html>`;
+}
+
+function printRecipe(r) {
+  const w = window.open('', '_blank');
+  if (!w) { alert('נא לאפשר חלונות קופצים כדי להדפיס'); return; }
+  w.document.write(buildRecipePrintHtml(r));
+  w.document.close();
+  w.onload = () => { w.focus(); w.print(); };
+}
+
+function exportRecipeAsPdf(r) {
+  alert('בחלון ההדפסה שייפתח - בחרי ביעד "שמירה כ-PDF" (Save as PDF) כדי לשמור את המתכון כקובץ PDF.');
+  const w = window.open('', '_blank');
+  if (!w) { alert('נא לאפשר חלונות קופצים כדי לייצא PDF'); return; }
+  w.document.write(buildRecipePrintHtml(r));
+  w.document.close();
+  w.onload = () => { w.focus(); w.print(); };
+}
+
 let data = {
   transactions: [],
   activityLog: [],
   sharedNotesFlat: [],
   personalNotesFlat: [],
   empowermentQuotes: [],
+  quoteFavorites: [],
+  recipeComments: [],
   recipes: [],
   recipeCategories: [],
   jokeRatings: [],
@@ -808,6 +963,8 @@ function renderLoading() {
 
 function renderLogin() {
   return `
+    <button class="weather-login-fab" id="weather-fab-btn" title="מזג האוויר" aria-label="מזג האוויר">🌤️</button>
+    ${view.weatherPopup ? renderWeatherModal() : ''}
     <div class="banner">מחוברת לענן - הנתונים מסונכרנים אוטומטית בין כל המכשירים</div>
     <div class="bills-wrap" aria-hidden="true">
       <div class="bill b200"><span class="sign">₪</span><span class="denom">200</span></div>
@@ -1101,15 +1258,57 @@ function recipeCategoryList() {
   return Array.from(set).sort((a, b) => a.localeCompare(b, 'he'));
 }
 
+function quoteKeyFor(entry) {
+  return entry.isUser ? `user_${entry.id}` : `seed_${entry.index}`;
+}
+
+function buildQuoteEntries() {
+  const seedEntries = EMPOWERMENT_QUOTES.map((text, index) => ({ isUser: false, index, text }));
+  const userEntries = data.empowermentQuotes.map(q => ({ isUser: true, id: q.id, text: q.text, addedBy: q.addedBy, createdAt: q.createdAt }));
+  return { seedEntries, userEntries };
+}
+
+function favoritesForKey(key) {
+  return data.quoteFavorites.filter(f => f.quoteKey === key);
+}
+
+function isFavoritedByMe(key) {
+  return favoritesForKey(key).some(f => f.sister === session.name);
+}
+
+function renderQuoteItem(entry) {
+  const key = quoteKeyFor(entry);
+  const favs = favoritesForKey(key);
+  const mine = favs.some(f => f.sister === session.name);
+  return `
+    <div class="tx-item quote-item">
+      <div class="quote-item-row">
+        <div class="tx-desc" style="flex:1;">${escapeHtml(entry.text)}</div>
+        <button class="quote-fav-btn" data-toggle-fav="${key}" title="הוספה למועדפים">${mine ? '❤️' : '🤍'}</button>
+      </div>
+      ${entry.isUser ? `<div class="tx-meta" style="margin-top:6px;">נוסף ע"י ${escapeHtml(entry.addedBy || '')}${entry.createdAt ? ' · ' + fmtDateTime(entry.createdAt) : ''}</div>` : ''}
+      ${favs.length ? `<div class="quote-fav-by">מועדף על: ${favs.map(f => escapeHtml(f.sister)).join(', ')}</div>` : ''}
+    </div>
+  `;
+}
+
 function renderEmpowerment() {
-  const userQuotes = data.empowermentQuotes.slice().sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+  const { seedEntries, userEntries } = buildQuoteEntries();
+  const userEntriesSorted = userEntries.slice().sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+  const showFavOnly = !!view.showFavoritesOnly;
+  const allEntries = seedEntries.concat(userEntries);
+  const myFavEntries = allEntries.filter(e => isFavoritedByMe(quoteKeyFor(e)));
+
   return `
     <div class="back-row">
       <button class="btn btn-secondary btn-small" id="back-to-dash-from-empower">→ חזרה</button>
       <h1 style="margin:0; font-size:17px;">העצמה נשית</h1>
     </div>
-    <div class="banner">בכל כניסה לאפליקציה מופיע משפט אחד אקראי מתוך ${EMPOWERMENT_QUOTES.length + userQuotes.length} משפטים</div>
-    <button class="btn btn-primary toggle-add" id="toggle-add-quote-btn">${view.showAddQuote ? 'סגירת טופס' : '+ הוספת משפט משלך'}</button>
+    <div class="banner">בכל כניסה לאפליקציה מופיע משפט אחד אקראי מתוך ${EMPOWERMENT_QUOTES.length + userEntries.length} משפטים</div>
+    <div class="row" style="margin-bottom:12px;">
+      <button class="btn btn-primary toggle-add" id="toggle-add-quote-btn">${view.showAddQuote ? 'סגירת טופס' : '+ הוספת משפט משלך'}</button>
+      <button class="btn btn-secondary" id="toggle-favorites-btn">${showFavOnly ? '📋 כל המשפטים' : `❤️ מועדפים (${myFavEntries.length})`}</button>
+    </div>
     ${view.showAddQuote ? `
       <div class="add-form">
         <h3>משפט העצמה חדש</h3>
@@ -1120,21 +1319,21 @@ function renderEmpowerment() {
         <button class="btn btn-primary" id="save-quote-btn">שמירה</button>
       </div>
     ` : ''}
-    ${userQuotes.length ? `
-      <h3 style="font-size:14px; margin:18px 0 10px;">משפטים שהוספתן (${userQuotes.length})</h3>
+    ${showFavOnly ? `
+      <h3 style="font-size:14px; margin:18px 0 10px;">המשפטים המועדפים עליי (${myFavEntries.length})</h3>
+      ${myFavEntries.length === 0 ? `<div class="empty">עדיין לא סימנת משפטים כמועדפים - לחצי על הלב ליד משפט שאהבת</div>` : `<div class="tx-list">${myFavEntries.map(e => renderQuoteItem(e)).join('')}</div>`}
+    ` : `
+      ${userEntriesSorted.length ? `
+        <h3 style="font-size:14px; margin:18px 0 10px;">משפטים שהוספתן (${userEntriesSorted.length})</h3>
+        <div class="tx-list">
+          ${userEntriesSorted.map(e => renderQuoteItem(e)).join('')}
+        </div>
+      ` : ''}
+      <h3 style="font-size:14px; margin:18px 0 10px;">אוסף ההשראה (${EMPOWERMENT_QUOTES.length})</h3>
       <div class="tx-list">
-        ${userQuotes.map(q => `
-          <div class="tx-item">
-            <div class="tx-desc">${escapeHtml(q.text)}</div>
-            <div class="tx-meta" style="margin-top:6px;">נוסף ע"י ${escapeHtml(q.addedBy || '')}${q.createdAt ? ' · ' + fmtDateTime(q.createdAt) : ''}</div>
-          </div>
-        `).join('')}
+        ${seedEntries.map(e => renderQuoteItem(e)).join('')}
       </div>
-    ` : ''}
-    <h3 style="font-size:14px; margin:18px 0 10px;">אוסף ההשראה (${EMPOWERMENT_QUOTES.length})</h3>
-    <div class="tx-list">
-      ${EMPOWERMENT_QUOTES.map(t => `<div class="tx-item"><div class="tx-desc">${escapeHtml(t)}</div></div>`).join('')}
-    </div>
+    `}
   `;
 }
 
@@ -1181,15 +1380,36 @@ function renderCategoryGroup(cat, recipes) {
 
 function renderRecipeCard(r) {
   const isOpen = !!(view.openRecipes && view.openRecipes[r.id]);
+  const comments = data.recipeComments.filter(cm => cm.recipeId === r.id).sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || ''));
   return `
     <div class="recipe-card" data-toggle-recipe="${r.id}">
+      ${r.photoDataUrl && !isOpen ? `<img src="${r.photoDataUrl}" class="recipe-thumb">` : ''}
       <div class="recipe-title">${escapeHtml(r.title)}</div>
       <div class="recipe-meta">${r.servings ? `${escapeHtml(r.servings)} מנות · ` : ''}${r.prepTime ? `${escapeHtml(r.prepTime)} · ` : ''}נוסף ע"י ${escapeHtml(r.addedBy || '')}</div>
       ${isOpen ? `
         <div class="recipe-detail">
+          ${r.photoDataUrl ? `<img src="${r.photoDataUrl}" class="recipe-photo-full">` : ''}
           ${(r.ingredients || []).length ? `<h4>מרכיבים</h4><ul>${(r.ingredients || []).map(i => `<li>${escapeHtml(i)}</li>`).join('')}</ul>` : ''}
           ${(r.instructions || []).length ? `<h4>אופן ההכנה</h4><ol>${(r.instructions || []).map(i => `<li>${escapeHtml(i)}</li>`).join('')}</ol>` : ''}
           ${r.notes ? `<h4>הערות</h4><div>${escapeHtml(r.notes)}</div>` : ''}
+          <div class="recipe-actions">
+            <button class="btn btn-secondary btn-small" data-edit-recipe="${r.id}">✏️ עריכה</button>
+            <button class="btn btn-secondary btn-small" data-print-recipe="${r.id}">🖨️ הדפסה</button>
+            <button class="btn btn-secondary btn-small" data-pdf-recipe="${r.id}">📄 יצוא PDF</button>
+          </div>
+          <h4>הערות ושאלות</h4>
+          <div class="recipe-comments">
+            ${comments.length === 0 ? `<div class="tx-meta">אין עדיין תגובות</div>` : comments.map(cm => `
+              <div class="recipe-comment">
+                <div class="recipe-comment-text">${escapeHtml(cm.text)}</div>
+                <div class="tx-meta">${escapeHtml(cm.author || '')}${cm.createdAt ? ' · ' + fmtDateTime(cm.createdAt) : ''}</div>
+              </div>
+            `).join('')}
+          </div>
+          <div class="recipe-comment-add-row">
+            <input type="text" class="recipe-comment-input" data-comment-recipe="${r.id}" placeholder="הוספת הערה או שאלה...">
+            <button class="btn btn-primary btn-small" data-send-comment="${r.id}">שליחה</button>
+          </div>
           <div class="tx-bottom" style="margin-top:10px;">
             <span></span>
             <button class="del-btn" data-delete-recipe="${r.id}">מחיקה</button>
@@ -1202,26 +1422,44 @@ function renderRecipeCard(r) {
 
 function renderAddRecipeForm(cats) {
   const draft = view.recipeDraft || { ingredients: [''], instructions: [''] };
+  const editing = !!view.editingRecipeId;
   return `
     <div class="add-form">
-      <h3>מתכון חדש</h3>
+      <h3>${editing ? 'עריכת מתכון' : 'מתכון חדש'}</h3>
       <div class="field">
         <label>שם המתכון</label>
-        <input type="text" id="recipe-title-input" placeholder="למשל: עוגת שוקולד של סבתא">
+        <input type="text" id="recipe-title-input" value="${escapeHtml(draft.title || '')}" placeholder="למשל: עוגת שוקולד של סבתא">
       </div>
       <div class="field">
         <label>קטגוריה</label>
-        <input type="text" id="recipe-category-input" list="recipe-category-list" placeholder="למשל: קינוחים, עיקריות, סלטים...">
+        <input type="text" id="recipe-category-input" value="${escapeHtml(draft.category || '')}" list="recipe-category-list" placeholder="למשל: קינוחים, עיקריות, סלטים...">
         <datalist id="recipe-category-list">
           ${cats.map(c => `<option value="${escapeHtml(c)}"></option>`).join('')}
         </datalist>
       </div>
       <div class="row">
-        <div class="field"><label>מספר מנות</label><input type="text" id="recipe-servings-input" placeholder="לדוגמה: 4"></div>
-        <div class="field"><label>זמן הכנה</label><input type="text" id="recipe-preptime-input" placeholder="לדוגמה: 45 דקות"></div>
+        <div class="field"><label>מספר מנות</label><input type="text" id="recipe-servings-input" value="${escapeHtml(draft.servings || '')}" placeholder="לדוגמה: 4"></div>
+        <div class="field"><label>זמן הכנה</label><input type="text" id="recipe-preptime-input" value="${escapeHtml(draft.prepTime || '')}" placeholder="לדוגמה: 45 דקות"></div>
       </div>
       <div class="field">
-        <label>מרכיבים</label>
+        <label>תמונה (אופציונלי - של המנה המוכנה, או צילום של מתכון שלם)</label>
+        <input type="file" accept="image/*" id="recipe-photo-input">
+        ${draft.photoDataUrl ? `
+          <div class="recipe-photo-preview-wrap">
+            <img src="${draft.photoDataUrl}" class="recipe-photo-preview">
+            <button type="button" class="row-remove-btn" id="remove-recipe-photo-btn">✕ הסרת תמונה</button>
+          </div>
+        ` : ''}
+        ${view.recipePhotoError ? `<div class="error">${escapeHtml(view.recipePhotoError)}</div>` : ''}
+      </div>
+      <div class="field checkbox-field">
+        <label class="checkbox-label">
+          <input type="checkbox" id="recipe-is-photo-checkbox" ${draft.isPhotoRecipe ? 'checked' : ''}>
+          זהו צילום של מתכון שלם (למשל מעיתון) - אין חובה להקליד מרכיבים ושלבים
+        </label>
+      </div>
+      <div class="field">
+        <label>מרכיבים${draft.isPhotoRecipe ? ' (אופציונלי כשמצורפת תמונה)' : ''}</label>
         ${draft.ingredients.map((val, i) => `
           <div class="ing-row">
             <input type="text" class="ing-input" data-idx="${i}" value="${escapeHtml(val)}" placeholder="לדוגמה: 2 כוסות קמח">
@@ -1231,7 +1469,7 @@ function renderAddRecipeForm(cats) {
         <button type="button" class="row-add-btn" id="add-ing-row-btn">+ הוספת מרכיב</button>
       </div>
       <div class="field">
-        <label>אופן ההכנה</label>
+        <label>אופן ההכנה${draft.isPhotoRecipe ? ' (אופציונלי כשמצורפת תמונה)' : ''}</label>
         ${draft.instructions.map((val, i) => `
           <div class="step-row">
             <span class="tx-meta">${i + 1}.</span>
@@ -1243,10 +1481,10 @@ function renderAddRecipeForm(cats) {
       </div>
       <div class="field">
         <label>הערות (אופציונלי)</label>
-        <textarea id="recipe-notes-input" rows="2" placeholder="טיפים, תחליפים וכו'"></textarea>
+        <textarea id="recipe-notes-input" rows="2" placeholder="טיפים, תחליפים וכו'">${escapeHtml(draft.notes || '')}</textarea>
       </div>
       ${view.addRecipeError ? `<div class="error">${escapeHtml(view.addRecipeError)}</div>` : ''}
-      <button class="btn btn-primary" id="save-recipe-btn">שמירת מתכון</button>
+      <button class="btn btn-primary" id="save-recipe-btn">${editing ? 'עדכון מתכון' : 'שמירת מתכון'}</button>
     </div>
   `;
 }
@@ -1343,6 +1581,176 @@ function renderShoppingModal() {
   `;
 }
 
+const DEFAULT_WEATHER_LOCATION = { name: "פרדס חנה כרכור", lat: 32.47408, lon: 34.97781 };
+
+function loadSavedWeatherLocation() {
+  try {
+    const raw = localStorage.getItem('weatherLocation');
+    if (!raw) return DEFAULT_WEATHER_LOCATION;
+    const parsed = JSON.parse(raw);
+    if (parsed && parsed.name && typeof parsed.lat === 'number' && typeof parsed.lon === 'number') return parsed;
+  } catch (e) {}
+  return DEFAULT_WEATHER_LOCATION;
+}
+
+function saveWeatherLocation(loc) {
+  try { localStorage.setItem('weatherLocation', JSON.stringify(loc)); } catch (e) {}
+}
+
+async function fetchWeatherData(lat, lon) {
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code,is_day,cloud_cover,precipitation&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Asia%2FJerusalem&forecast_days=3`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('weather fetch failed');
+  return res.json();
+}
+
+async function geocodeCityName(name) {
+  const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(name)}&count=5&language=he`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('geocode failed');
+  const j = await res.json();
+  return j.results || [];
+}
+
+const WEATHER_CODE_TEXT = {
+  0: 'בהיר', 1: 'בהיר בעיקר', 2: 'מעונן חלקית', 3: 'מעונן',
+  45: 'ערפל', 48: 'ערפל קפוא',
+  51: 'טפטוף קל', 53: 'טפטוף', 55: 'טפטוף חזק', 56: 'טפטוף קפוא', 57: 'טפטוף קפוא חזק',
+  61: 'גשם קל', 63: 'גשם', 65: 'גשם חזק', 66: 'גשם קפוא', 67: 'גשם קפוא חזק',
+  71: 'שלג קל', 73: 'שלג', 75: 'שלג חזק', 77: 'גרגירי שלג',
+  80: 'ממטרים קלים', 81: 'ממטרים', 82: 'ממטרים חזקים',
+  85: 'ממטרי שלג קלים', 86: 'ממטרי שלג חזקים',
+  95: 'סופת רעמים', 96: 'סופת רעמים עם ברד', 99: 'סופת רעמים עם ברד חזקה'
+};
+
+function weatherCodeText(code) {
+  return WEATHER_CODE_TEXT[code] || 'לא ידוע';
+}
+
+const WEATHER_RAIN_CODES = [51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82, 95, 96, 99];
+const WEATHER_SNOW_CODES = [71, 73, 75, 77, 85, 86];
+
+function weatherSceneKey(code, isDay) {
+  const day = isDay ? 'day' : 'night';
+  let cond;
+  if (WEATHER_SNOW_CODES.includes(code)) cond = 'snow';
+  else if (WEATHER_RAIN_CODES.includes(code)) cond = 'rain';
+  else if (code === 0 || code === 1) cond = 'clear';
+  else cond = 'cloudy';
+  return `${day}-${cond}`;
+}
+
+function weatherDayLabel(iso) {
+  const d = new Date(iso + 'T12:00:00');
+  const days = ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'];
+  return days[d.getDay()];
+}
+
+function renderWeatherSceneLayer(sceneKey) {
+  const [day, cond] = sceneKey.split('-');
+  const isDay = day === 'day';
+  const isNight = !isDay;
+  const isRain = cond === 'rain';
+  const isSnow = cond === 'snow';
+  const isCloudy = cond === 'cloudy' || isRain || isSnow;
+  let html = '';
+  if (isDay) {
+    html += `<span class="scene-emoji w-sun">${isCloudy ? '⛅' : '☀️'}</span>`;
+  } else {
+    html += `<span class="scene-emoji w-moon">🌙</span>`;
+    html += `<span class="scene-emoji w-star" style="top:20px; left:60px;">⭐</span>`;
+    html += `<span class="scene-emoji w-star" style="top:34px; left:90px;">⭐</span>`;
+    html += `<span class="scene-emoji w-star" style="top:16px; left:120px;">⭐</span>`;
+  }
+  if (isCloudy) {
+    html += `<span class="scene-emoji w-cloud" style="left:120px;">☁️</span>`;
+    html += `<span class="scene-emoji w-cloud" style="left:170px; top:34px; font-size:20px;">☁️</span>`;
+  }
+  html += `<span class="scene-emoji w-house">🏡</span>`;
+  if (isNight) {
+    html += `<span class="scene-emoji w-zzz" style="bottom:60px; right:80px;">💤</span>`;
+  }
+  if (isRain) {
+    html += `<span class="scene-emoji w-umbrella" style="right:70px;">☂️</span>`;
+    for (let i = 0; i < 10; i++) {
+      html += `<span class="w-raindrop" style="left:${10 + i * 30}px; animation-delay:${(i % 5) * 0.15}s;"></span>`;
+    }
+  } else if (isSnow) {
+    for (let i = 0; i < 8; i++) {
+      html += `<span class="w-snowflake" style="left:${10 + i * 36}px; animation-delay:${(i % 4) * 1.4}s;">❄️</span>`;
+    }
+  } else {
+    html += `<span class="scene-emoji w-cow" style="right:72px;">🐄</span>`;
+    html += `<span class="scene-emoji w-chick" style="right:130px;">🐔</span>`;
+    html += `<span class="scene-emoji w-chick" style="right:150px; bottom:18px;">🐔</span>`;
+    html += `<span class="scene-emoji w-flower" style="right:10px;">🌸</span>`;
+    html += `<span class="scene-emoji w-flower" style="right:200px;">🌼</span>`;
+  }
+  return html;
+}
+
+function renderWeatherModal() {
+  const wp = view.weatherPopup;
+  if (!wp) return '';
+  if (wp.loading) {
+    return `
+      <div class="modal-overlay" id="weather-modal-overlay">
+        <div class="modal-box weather-modal">
+          <div class="weather-loading">טוענת תחזית עבור ${escapeHtml(wp.location.name)}...</div>
+          <button class="btn btn-secondary" id="weather-close-btn">סגירה</button>
+        </div>
+      </div>
+    `;
+  }
+  if (wp.error) {
+    return `
+      <div class="modal-overlay" id="weather-modal-overlay">
+        <div class="modal-box weather-modal">
+          <div class="weather-error">לא הצלחנו לטעון תחזית כרגע. נסי שוב מאוחר יותר.</div>
+          <div class="modal-actions">
+            <button class="btn btn-secondary" id="weather-close-btn">סגירה</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+  const cur = wp.current;
+  const sceneKey = weatherSceneKey(cur.weather_code, cur.is_day === 1);
+  return `
+    <div class="modal-overlay" id="weather-modal-overlay">
+      <div class="modal-box weather-modal">
+        <div class="weather-scene scene-${sceneKey}">
+          ${renderWeatherSceneLayer(sceneKey)}
+          <div class="weather-scene-info">
+            <div class="weather-loc">📍 ${escapeHtml(wp.location.name)}</div>
+            <div class="weather-temp">${Math.round(cur.temperature_2m)}°</div>
+            <div>${weatherCodeText(cur.weather_code)}</div>
+          </div>
+        </div>
+        <div class="weather-daily">
+          ${(wp.daily || []).map(d => `<div class="weather-day"><div>${weatherDayLabel(d.date)}</div><div>${Math.round(d.max)}° / ${Math.round(d.min)}°</div></div>`).join('')}
+        </div>
+        ${view.showWeatherLocForm ? `
+          <div class="weather-loc-form">
+            <input type="text" id="weather-city-input" placeholder="שם עיר...">
+            <button class="btn btn-secondary btn-small" id="weather-city-search-btn">חיפוש</button>
+            ${wp.locResults && wp.locResults.length ? `
+              <div class="weather-loc-results">
+                ${wp.locResults.map((r, i) => `<div class="weather-loc-result" data-pick-loc="${i}">${escapeHtml(r.name)}${r.admin1 ? ', ' + escapeHtml(r.admin1) : ''}</div>`).join('')}
+              </div>
+            ` : ''}
+            ${wp.locError ? `<div class="error">${escapeHtml(wp.locError)}</div>` : ''}
+          </div>
+        ` : ''}
+        <div class="modal-actions">
+          <button class="btn btn-secondary btn-small" id="weather-change-loc-btn">${view.showWeatherLocForm ? 'ביטול' : '📍 שינוי מיקום'}</button>
+          <button class="btn btn-primary" id="weather-close-btn">סגירה</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function renderLoginPopup() {
   const popup = view.loginPopup;
   return `
@@ -1376,6 +1784,83 @@ function renderDeleteModal() {
 }
 
 function attachHandlers() {
+  const weatherFabBtn = document.getElementById('weather-fab-btn');
+  if (weatherFabBtn) weatherFabBtn.onclick = async () => {
+    const loc = loadSavedWeatherLocation();
+    view.weatherPopup = { loading: true, location: loc };
+    view.showWeatherLocForm = false;
+    render();
+    try {
+      const wdata = await fetchWeatherData(loc.lat, loc.lon);
+      const daily = (wdata.daily && wdata.daily.time || []).map((date, i) => ({
+        date,
+        max: wdata.daily.temperature_2m_max[i],
+        min: wdata.daily.temperature_2m_min[i]
+      }));
+      view.weatherPopup = { loading: false, location: loc, current: wdata.current, daily };
+    } catch (e) {
+      view.weatherPopup = { loading: false, error: true, location: loc };
+    }
+    render();
+  };
+
+  const weatherCloseBtn = document.getElementById('weather-close-btn');
+  if (weatherCloseBtn) weatherCloseBtn.onclick = () => {
+    view.weatherPopup = null;
+    view.showWeatherLocForm = false;
+    render();
+  };
+
+  const weatherChangeLocBtn = document.getElementById('weather-change-loc-btn');
+  if (weatherChangeLocBtn) weatherChangeLocBtn.onclick = () => {
+    view.showWeatherLocForm = !view.showWeatherLocForm;
+    render();
+  };
+
+  const weatherCitySearchBtn = document.getElementById('weather-city-search-btn');
+  if (weatherCitySearchBtn) {
+    weatherCitySearchBtn.onclick = async () => {
+      const inputEl = document.getElementById('weather-city-input');
+      const name = (inputEl.value || '').trim();
+      if (!name) return;
+      weatherCitySearchBtn.disabled = true;
+      try {
+        const results = await geocodeCityName(name);
+        view.weatherPopup.locResults = results;
+        view.weatherPopup.locError = results.length ? '' : 'לא נמצאה עיר בשם הזה';
+      } catch (e) {
+        view.weatherPopup.locError = 'שגיאה בחיפוש, נסי שוב';
+      }
+      render();
+    };
+    const weatherCityInput = document.getElementById('weather-city-input');
+    if (weatherCityInput) weatherCityInput.onkeydown = (e) => { if (e.key === 'Enter') weatherCitySearchBtn.click(); };
+  }
+
+  document.querySelectorAll('[data-pick-loc]').forEach(el => {
+    el.onclick = async () => {
+      const i = parseInt(el.getAttribute('data-pick-loc'), 10);
+      const picked = view.weatherPopup.locResults[i];
+      const loc = { name: picked.name, lat: picked.latitude, lon: picked.longitude };
+      saveWeatherLocation(loc);
+      view.showWeatherLocForm = false;
+      view.weatherPopup = { loading: true, location: loc };
+      render();
+      try {
+        const wdata = await fetchWeatherData(loc.lat, loc.lon);
+        const daily = (wdata.daily && wdata.daily.time || []).map((date, idx) => ({
+          date,
+          max: wdata.daily.temperature_2m_max[idx],
+          min: wdata.daily.temperature_2m_min[idx]
+        }));
+        view.weatherPopup = { loading: false, location: loc, current: wdata.current, daily };
+      } catch (e) {
+        view.weatherPopup = { loading: false, error: true, location: loc };
+      }
+      render();
+    };
+  });
+
   document.querySelectorAll('[data-select-name]').forEach(el => {
     el.onclick = () => {
       view.selectedName = el.getAttribute('data-select-name');
@@ -1645,6 +2130,34 @@ function attachHandlers() {
   const backFromEmpower = document.getElementById('back-to-dash-from-empower');
   if (backFromEmpower) backFromEmpower.onclick = () => { view.screen = 'dashboard'; render(); };
 
+  const toggleFavoritesBtn = document.getElementById('toggle-favorites-btn');
+  if (toggleFavoritesBtn) toggleFavoritesBtn.onclick = () => {
+    view.showFavoritesOnly = !view.showFavoritesOnly;
+    render();
+  };
+
+  document.querySelectorAll('[data-toggle-fav]').forEach(el => {
+    el.onclick = async () => {
+      const key = el.getAttribute('data-toggle-fav');
+      const me = session.name;
+      const docId = `${key}__${me}`;
+      const already = data.quoteFavorites.some(f => f.quoteKey === key && f.sister === me);
+      el.disabled = true;
+      try {
+        if (already) {
+          await deleteDoc(doc(db, 'quoteFavorites', docId));
+        } else {
+          await setDoc(doc(db, 'quoteFavorites', docId), {
+            quoteKey: key, sister: me, createdAt: new Date().toISOString()
+          });
+        }
+      } catch (e) {
+        alert('שגיאה בעדכון המועדפים, נסי שוב');
+      }
+      el.disabled = false;
+    };
+  });
+
   const toggleAddQuoteBtn = document.getElementById('toggle-add-quote-btn');
   if (toggleAddQuoteBtn) toggleAddQuoteBtn.onclick = () => {
     view.showAddQuote = !view.showAddQuote;
@@ -1683,6 +2196,8 @@ function attachHandlers() {
     view.screen = 'recipes';
     view.showAddRecipe = false;
     view.addRecipeError = '';
+    view.recipePhotoError = '';
+    view.editingRecipeId = null;
     view.recipeDraft = { ingredients: [''], instructions: [''] };
     render();
   };
@@ -1734,8 +2249,43 @@ function attachHandlers() {
   const toggleAddRecipeBtn = document.getElementById('toggle-add-recipe-btn');
   if (toggleAddRecipeBtn) toggleAddRecipeBtn.onclick = () => {
     view.showAddRecipe = !view.showAddRecipe;
-    if (view.showAddRecipe) view.recipeDraft = { ingredients: [''], instructions: [''] };
+    if (view.showAddRecipe) {
+      view.recipeDraft = { ingredients: [''], instructions: [''] };
+      view.editingRecipeId = null;
+    }
     view.addRecipeError = '';
+    view.recipePhotoError = '';
+    render();
+  };
+
+  const recipePhotoInput = document.getElementById('recipe-photo-input');
+  if (recipePhotoInput) {
+    recipePhotoInput.onchange = async () => {
+      const file = recipePhotoInput.files && recipePhotoInput.files[0];
+      if (!file) return;
+      syncRecipeDraftFromDom();
+      view.recipePhotoError = '';
+      try {
+        const dataUrl = await compressImageFile(file);
+        view.recipeDraft.photoDataUrl = dataUrl;
+      } catch (e) {
+        view.recipePhotoError = 'שגיאה בטעינת התמונה, נסי תמונה אחרת';
+      }
+      render();
+    };
+  }
+
+  const removeRecipePhotoBtn = document.getElementById('remove-recipe-photo-btn');
+  if (removeRecipePhotoBtn) removeRecipePhotoBtn.onclick = () => {
+    syncRecipeDraftFromDom();
+    view.recipeDraft.photoDataUrl = null;
+    render();
+  };
+
+  const recipeIsPhotoCheckbox = document.getElementById('recipe-is-photo-checkbox');
+  if (recipeIsPhotoCheckbox) recipeIsPhotoCheckbox.onchange = () => {
+    syncRecipeDraftFromDom();
+    view.recipeDraft.isPhotoRecipe = recipeIsPhotoCheckbox.checked;
     render();
   };
 
@@ -1783,6 +2333,8 @@ function attachHandlers() {
       const notes = (draft.notes || '').trim();
       const ingredients = draft.ingredients.map(s => s.trim()).filter(Boolean);
       const instructions = draft.instructions.map(s => s.trim()).filter(Boolean);
+      const isPhotoRecipe = !!draft.isPhotoRecipe;
+      const photoDataUrl = draft.photoDataUrl || null;
 
       if (!title) {
         view.addRecipeError = 'יש להזין שם למתכון';
@@ -1794,7 +2346,12 @@ function attachHandlers() {
         render();
         return;
       }
-      if (!ingredients.length) {
+      if (isPhotoRecipe && !photoDataUrl) {
+        view.addRecipeError = 'יש לצרף תמונה של המתכון המצולם';
+        render();
+        return;
+      }
+      if (!isPhotoRecipe && !ingredients.length) {
         view.addRecipeError = 'יש להזין לפחות מרכיב אחד';
         render();
         return;
@@ -1802,12 +2359,19 @@ function attachHandlers() {
 
       saveRecipeBtn.disabled = true;
       try {
-        await addDoc(collection(db, 'recipes'), {
+        const payload = {
           title, category, servings, prepTime, notes,
-          ingredients, instructions,
-          addedBy: session.name,
-          createdAt: new Date().toISOString()
-        });
+          ingredients, instructions, isPhotoRecipe, photoDataUrl
+        };
+        if (view.editingRecipeId) {
+          await setDoc(doc(db, 'recipes', view.editingRecipeId), payload, { merge: true });
+        } else {
+          await addDoc(collection(db, 'recipes'), {
+            ...payload,
+            addedBy: session.name,
+            createdAt: new Date().toISOString()
+          });
+        }
         await setDoc(doc(db, 'recipeCategories', category), {
           name: category,
           addedBy: session.name,
@@ -1815,6 +2379,8 @@ function attachHandlers() {
         }, { merge: true });
         view.showAddRecipe = false;
         view.addRecipeError = '';
+        view.recipePhotoError = '';
+        view.editingRecipeId = null;
         view.recipeDraft = { ingredients: [''], instructions: [''] };
       } catch (e) {
         view.addRecipeError = 'שגיאה בשמירת המתכון, נסי שוב';
@@ -1831,6 +2397,82 @@ function attachHandlers() {
         await deleteDoc(doc(db, 'recipes', id));
       } catch (e2) {
         alert('שגיאה במחיקת המתכון');
+      }
+    };
+  });
+
+  document.querySelectorAll('[data-edit-recipe]').forEach(el => {
+    el.onclick = (e) => {
+      e.stopPropagation();
+      const id = el.getAttribute('data-edit-recipe');
+      const r = data.recipes.find(x => x.id === id);
+      if (!r) return;
+      view.recipeDraft = {
+        id: r.id,
+        title: r.title || '',
+        category: r.category || '',
+        servings: r.servings || '',
+        prepTime: r.prepTime || '',
+        notes: r.notes || '',
+        ingredients: (r.ingredients && r.ingredients.length) ? r.ingredients.slice() : [''],
+        instructions: (r.instructions && r.instructions.length) ? r.instructions.slice() : [''],
+        photoDataUrl: r.photoDataUrl || null,
+        isPhotoRecipe: !!r.isPhotoRecipe
+      };
+      view.editingRecipeId = r.id;
+      view.showAddRecipe = true;
+      view.addRecipeError = '';
+      view.recipePhotoError = '';
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+  });
+
+  document.querySelectorAll('[data-print-recipe]').forEach(el => {
+    el.onclick = (e) => {
+      e.stopPropagation();
+      const id = el.getAttribute('data-print-recipe');
+      const r = data.recipes.find(x => x.id === id);
+      if (r) printRecipe(r);
+    };
+  });
+
+  document.querySelectorAll('[data-pdf-recipe]').forEach(el => {
+    el.onclick = (e) => {
+      e.stopPropagation();
+      const id = el.getAttribute('data-pdf-recipe');
+      const r = data.recipes.find(x => x.id === id);
+      if (r) exportRecipeAsPdf(r);
+    };
+  });
+
+  document.querySelectorAll('[data-send-comment]').forEach(el => {
+    el.onclick = async (e) => {
+      e.stopPropagation();
+      const id = el.getAttribute('data-send-comment');
+      const inputEl = document.querySelector(`.recipe-comment-input[data-comment-recipe="${id}"]`);
+      const text = ((inputEl && inputEl.value) || '').trim();
+      if (!text) return;
+      el.disabled = true;
+      try {
+        await addDoc(collection(db, 'recipeComments'), {
+          recipeId: id, text, author: session.name, createdAt: new Date().toISOString()
+        });
+        if (inputEl) inputEl.value = '';
+      } catch (e2) {
+        alert('שגיאה בשליחת התגובה, נסי שוב');
+      }
+      el.disabled = false;
+    };
+  });
+
+  document.querySelectorAll('.recipe-comment-input').forEach(el => {
+    el.onclick = (e) => e.stopPropagation();
+    el.onkeydown = (e) => {
+      if (e.key === 'Enter') {
+        const id = el.getAttribute('data-comment-recipe');
+        const btn = document.querySelector(`[data-send-comment="${id}"]`);
+        if (btn) btn.click();
       }
     };
   });
@@ -1937,7 +2579,7 @@ function subscribeAll(name, gen) {
 
   const checkLoaded = () => {
     if (gen !== authGeneration) return;
-    if (loadedKeys.size >= 10 && view.screen === 'loading') {
+    if (loadedKeys.size >= 12 && view.screen === 'loading') {
       finishInitialLoad(name);
     } else {
       render();
@@ -1990,6 +2632,16 @@ function subscribeAll(name, gen) {
     checkLoaded();
   }));
 
+  unsubscribers.push(onSnapshot(collection(db, 'quoteFavorites'), snap => {
+    if (gen !== authGeneration) return;
+    data.quoteFavorites = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    loadedKeys.add('quoteFavorites');
+    checkLoaded();
+  }, () => {
+    loadedKeys.add('quoteFavorites');
+    checkLoaded();
+  }));
+
   unsubscribers.push(onSnapshot(collection(db, 'recipes'), snap => {
     if (gen !== authGeneration) return;
     data.recipes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -2007,6 +2659,16 @@ function subscribeAll(name, gen) {
     checkLoaded();
   }, () => {
     loadedKeys.add('recipeCategories');
+    checkLoaded();
+  }));
+
+  unsubscribers.push(onSnapshot(collection(db, 'recipeComments'), snap => {
+    if (gen !== authGeneration) return;
+    data.recipeComments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    loadedKeys.add('recipeComments');
+    checkLoaded();
+  }, () => {
+    loadedKeys.add('recipeComments');
     checkLoaded();
   }));
 
@@ -2037,10 +2699,23 @@ function finishInitialLoad(me) {
   const unseenTx = data.transactions.filter(tx =>
     (tx.payer === me || tx.payee === me) && tx.enteredBy !== me && !seenMap[tx.id]
   );
-  const notifications = unseenTx.map(tx => buildTxNotificationText(tx, me, pet));
+  const txNotifications = unseenTx.map(tx => buildTxNotificationText(tx, me, pet));
   if (unseenTx.length) {
     Promise.all(unseenTx.map(tx => markTxSeen(me, tx.id))).catch(() => {});
   }
+
+  // New-recipe notifications: watermark-based (userState.lastSeenRecipeAt), not per-doc like tx.
+  // First-ever run (no watermark yet) silently baselines to "now" instead of flooding with every
+  // recipe that already existed before this feature shipped.
+  const lastSeenRecipeAt = data.userState.lastSeenRecipeAt;
+  const unseenRecipes = lastSeenRecipeAt
+    ? data.recipes.filter(r => r.addedBy !== me && r.createdAt && r.createdAt > lastSeenRecipeAt)
+    : [];
+  const recipeNotifications = unseenRecipes.map(r => buildRecipeNotificationText(r));
+  const newestRecipeCreatedAt = data.recipes.reduce((m, r) => (r.createdAt && r.createdAt > m) ? r.createdAt : m, lastSeenRecipeAt || '');
+  markRecipesSeen(me, newestRecipeCreatedAt || new Date().toISOString()).catch(() => {});
+
+  const notifications = txNotifications.concat(recipeNotifications);
   const quote = pickRandomQuote();
   view = {
     screen: 'dashboard',
