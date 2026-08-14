@@ -786,7 +786,7 @@ function personalizedEmpowerText(name) {
 }
 
 const NAMES = ['ריקי', 'ברוריה', 'דורית'];
-const APP_VERSION = '2.9.0';
+const APP_VERSION = '2.9.1';
 const APP_UPDATED = '14.08.2026';
 const AVATAR_CLASS = { 'ריקי': 'ricky', 'ברוריה': 'bruria', 'דורית': 'dorit' };
 
@@ -821,12 +821,20 @@ function findGameSession(gameId, sessionKey) {
   return data.gameSessions.find(s => s.id === `${gameId}__${sessionKey}`);
 }
 async function saveGameSession(gameId, sessionKey, state) {
-  return setDoc(doc(db, 'gameSessions', `${gameId}__${sessionKey}`), {
-    gameId, sessionKey, state, updatedAt: new Date().toISOString()
-  }, { merge: true });
+  const id = `${gameId}__${sessionKey}`;
+  const updatedAt = new Date().toISOString();
+  // Optimistic local update: don't wait for the onSnapshot echo to come back before the next render()
+  // reads data.gameSessions, since against real Firestore that echo can lag just enough (unlike the
+  // synchronous test stub) to show a stale "game not found" screen right after starting/moving.
+  const idx = data.gameSessions.findIndex(s => s.id === id);
+  const rec = { id, gameId, sessionKey, state, updatedAt };
+  if (idx === -1) data.gameSessions.push(rec); else data.gameSessions[idx] = rec;
+  return setDoc(doc(db, 'gameSessions', id), { gameId, sessionKey, state, updatedAt }, { merge: true });
 }
 async function clearGameSession(gameId, sessionKey) {
-  return deleteDoc(doc(db, 'gameSessions', `${gameId}__${sessionKey}`));
+  const id = `${gameId}__${sessionKey}`;
+  data.gameSessions = data.gameSessions.filter(s => s.id !== id);
+  return deleteDoc(doc(db, 'gameSessions', id));
 }
 const PET_NAMES = ['כפרוש', 'נשמה', 'חיים שלי', 'עיניים שלי'];
 const EMAIL_MAP = {
