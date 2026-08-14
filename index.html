@@ -273,6 +273,15 @@
   .buy-check { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border); background: #fff; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 15px; color: transparent; padding: 0; }
   .shopping-item.purchased .buy-check { background: var(--owed-to-me); border-color: var(--owed-to-me); color: #fff; }
   .del-item-btn { background: none; border: none; color: var(--text-muted); font-size: 17px; cursor: pointer; flex-shrink: 0; padding: 2px 4px; }
+  .shopping-note-btn { background: none; border: none; color: var(--text-muted); font-size: 15px; cursor: pointer; flex-shrink: 0; padding: 2px 4px; }
+  .shopping-note-btn.has-note { color: var(--accent); }
+  .shopping-item-notes { font-size: 12.5px; color: var(--text-muted); margin-top: 4px; background: var(--bg); border-radius: 6px; padding: 4px 8px; white-space: pre-wrap; word-break: break-word; }
+  .shopping-item-thumb { max-width: 120px; max-height: 120px; border-radius: 8px; display: block; margin-top: 6px; }
+  .shopping-note-editor { margin-top: 8px; padding: 8px; background: var(--bg); border-radius: 8px; display: flex; flex-direction: column; gap: 6px; }
+  .shopping-note-editor textarea { min-height: 50px; font-size: 13.5px; }
+  .shopping-section-label { font-size: 12.5px; font-weight: 700; color: var(--text-muted); margin: 12px 0 6px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; }
+  .shopping-section-label .chev { transition: transform 0.15s ease; }
+  .shopping-section-label.open .chev { transform: rotate(180deg); }
 
   .weather-modal { max-width: 380px; }
   .weather-scene { position: relative; height: 190px; border-radius: 14px; overflow: hidden; margin-bottom: 14px; }
@@ -723,7 +732,7 @@ function personalizedEmpowerText(name) {
 }
 
 const NAMES = ['ריקי', 'ברוריה', 'דורית'];
-const APP_VERSION = '2.6.0';
+const APP_VERSION = '2.7.0';
 const APP_UPDATED = '14.08.2026';
 const AVATAR_CLASS = { 'ריקי': 'ricky', 'ברוריה': 'bruria', 'דורית': 'dorit' };
 const PET_NAMES = ['כפרוש', 'נשמה', 'חיים שלי', 'עיניים שלי'];
@@ -1539,7 +1548,7 @@ function renderAddRecipeForm(cats) {
 }
 
 function renderFabButtons() {
-  const shoppingCount = data.shoppingList.length;
+  const shoppingCount = data.shoppingList.filter(i => !i.purchased).length;
   const relaxPlaying = !!view.relaxPlaying;
   return `
     <div class="fab-col right">
@@ -1602,18 +1611,54 @@ function renderEmpowerModal() {
   `;
 }
 
-function shoppingSortedList() {
-  const list = data.shoppingList.slice();
-  list.sort((a, b) => {
-    if (!!a.purchased !== !!b.purchased) return a.purchased ? 1 : -1;
-    if (a.purchased) return (a.purchasedAt || '').localeCompare(b.purchasedAt || '');
-    return (a.createdAt || '').localeCompare(b.createdAt || '');
-  });
-  return list;
+function shoppingActiveList() {
+  return data.shoppingList.filter(i => !i.purchased).sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || ''));
+}
+
+function shoppingArchiveList() {
+  return data.shoppingList.filter(i => i.purchased).sort((a, b) => (b.purchasedAt || '').localeCompare(a.purchasedAt || ''));
+}
+
+function renderShoppingItem(item) {
+  const isEditing = view.shoppingEditingNoteId === item.id;
+  const draft = isEditing ? (view.shoppingNoteDraft || { notes: item.notes || '', photoDataUrl: item.photoDataUrl || null }) : null;
+  return `
+    <div class="shopping-item ${item.purchased ? 'purchased' : ''}">
+      <button class="buy-check" data-toggle-purchased="${item.id}" data-currently="${item.purchased ? '1' : '0'}">✓</button>
+      <div class="avatar ${AVATAR_CLASS[item.addedBy] || ''}">${escapeHtml((item.addedBy || '?')[0])}</div>
+      <div class="item-body">
+        <div class="item-text">${escapeHtml(item.text)}</div>
+        <div class="item-meta">${item.purchased ? `נקנה ע"י ${escapeHtml(item.purchasedBy || '')}${item.purchasedAt ? ' · ' + fmtDateTime(item.purchasedAt) : ''}` : `נוסף ע"י ${escapeHtml(item.addedBy || '')}`}</div>
+        ${!isEditing && item.notes ? `<div class="shopping-item-notes">📝 ${escapeHtml(item.notes)}</div>` : ''}
+        ${!isEditing && item.photoDataUrl ? `<img src="${item.photoDataUrl}" class="shopping-item-thumb">` : ''}
+        ${isEditing ? `
+          <div class="shopping-note-editor">
+            <textarea id="shopping-note-textarea" placeholder="הערה (לדוגמה: מותג, כמות...)">${escapeHtml(draft.notes || '')}</textarea>
+            <input type="file" accept="image/*" id="shopping-note-photo-input">
+            ${draft.photoDataUrl ? `
+              <div class="recipe-photo-preview-wrap">
+                <img src="${draft.photoDataUrl}" class="recipe-photo-preview">
+                <button type="button" class="row-remove-btn" id="remove-shopping-note-photo-btn">✕ הסרת תמונה</button>
+              </div>
+            ` : ''}
+            ${view.shoppingNotePhotoError ? `<div class="error">${escapeHtml(view.shoppingNotePhotoError)}</div>` : ''}
+            <div class="modal-actions">
+              <button type="button" class="btn btn-primary btn-small" id="save-shopping-note-btn" data-item-id="${item.id}">שמירה</button>
+              <button type="button" class="btn btn-secondary btn-small" id="cancel-shopping-note-btn">ביטול</button>
+            </div>
+          </div>
+        ` : ''}
+      </div>
+      <button class="shopping-note-btn ${(item.notes || item.photoDataUrl) ? 'has-note' : ''}" data-edit-shopping-note="${item.id}" title="הערה ותמונה">✎</button>
+      <button class="del-item-btn" data-delete-shopping="${item.id}">✕</button>
+    </div>
+  `;
 }
 
 function renderShoppingModal() {
-  const list = shoppingSortedList();
+  const active = shoppingActiveList();
+  const archive = shoppingArchiveList();
+  const archiveOpen = !!view.shoppingArchiveOpen;
   return `
     <div class="modal-overlay" id="shopping-modal-overlay">
       <div class="modal-box shopping-modal">
@@ -1623,18 +1668,15 @@ function renderShoppingModal() {
           <button class="btn btn-primary btn-small" id="shopping-add-btn">הוספה</button>
         </div>
         <div class="shopping-list">
-          ${list.length === 0 ? '<div class="empty">הרשימה ריקה</div>' : list.map(item => `
-            <div class="shopping-item ${item.purchased ? 'purchased' : ''}">
-              <button class="buy-check" data-toggle-purchased="${item.id}" data-currently="${item.purchased ? '1' : '0'}">✓</button>
-              <div class="avatar ${AVATAR_CLASS[item.addedBy] || ''}">${escapeHtml((item.addedBy || '?')[0])}</div>
-              <div class="item-body">
-                <div class="item-text">${escapeHtml(item.text)}</div>
-                <div class="item-meta">${item.purchased ? `נקנה ע"י ${escapeHtml(item.purchasedBy || '')}${item.purchasedAt ? ' · ' + fmtDateTime(item.purchasedAt) : ''}` : `נוסף ע"י ${escapeHtml(item.addedBy || '')}`}</div>
-              </div>
-              <button class="del-item-btn" data-delete-shopping="${item.id}">✕</button>
-            </div>
-          `).join('')}
+          ${active.length === 0 ? '<div class="empty">הרשימה ריקה</div>' : active.map(item => renderShoppingItem(item)).join('')}
         </div>
+        ${archive.length ? `
+          <div class="shopping-section-label ${archiveOpen ? 'open' : ''}" id="shopping-archive-toggle">
+            <span>🗄️ ארכיון קניות (${archive.length})</span>
+            <span class="chev">▾</span>
+          </div>
+          ${archiveOpen ? `<div class="shopping-list">${archive.map(item => renderShoppingItem(item)).join('')}</div>` : ''}
+        ` : ''}
         <button class="btn btn-secondary" style="margin-top:14px;" id="shopping-close-btn">סגירה</button>
       </div>
     </div>
@@ -2658,7 +2700,13 @@ function attachHandlers() {
   };
 
   const shoppingCloseBtn = document.getElementById('shopping-close-btn');
-  if (shoppingCloseBtn) shoppingCloseBtn.onclick = () => { view.shoppingOpen = false; render(); };
+  if (shoppingCloseBtn) shoppingCloseBtn.onclick = () => {
+    view.shoppingOpen = false;
+    view.shoppingEditingNoteId = null;
+    view.shoppingNoteDraft = null;
+    view.shoppingNotePhotoError = '';
+    render();
+  };
 
   const shoppingAddBtn = document.getElementById('shopping-add-btn');
   if (shoppingAddBtn) {
@@ -2674,7 +2722,9 @@ function attachHandlers() {
           createdAt: new Date().toISOString(),
           purchased: false,
           purchasedBy: null,
-          purchasedAt: null
+          purchasedAt: null,
+          notes: null,
+          photoDataUrl: null
         });
       } catch (e) {
         alert('שגיאה בהוספת הפריט, נסי שוב');
@@ -2705,11 +2755,95 @@ function attachHandlers() {
       const id = el.getAttribute('data-delete-shopping');
       try {
         await deleteDoc(doc(db, 'shoppingList', id));
+        if (view.shoppingEditingNoteId === id) {
+          view.shoppingEditingNoteId = null;
+          view.shoppingNoteDraft = null;
+        }
       } catch (e) {
         alert('שגיאה במחיקת הפריט');
       }
     };
   });
+
+  const shoppingArchiveToggle = document.getElementById('shopping-archive-toggle');
+  if (shoppingArchiveToggle) shoppingArchiveToggle.onclick = () => {
+    view.shoppingArchiveOpen = !view.shoppingArchiveOpen;
+    render();
+  };
+
+  function syncShoppingNoteDraftFromDom() {
+    if (!view.shoppingNoteDraft) return;
+    const notesEl = document.getElementById('shopping-note-textarea');
+    if (notesEl) view.shoppingNoteDraft.notes = notesEl.value;
+  }
+
+  document.querySelectorAll('[data-edit-shopping-note]').forEach(el => {
+    el.onclick = () => {
+      const id = el.getAttribute('data-edit-shopping-note');
+      if (view.shoppingEditingNoteId === id) {
+        view.shoppingEditingNoteId = null;
+        view.shoppingNoteDraft = null;
+      } else {
+        const item = data.shoppingList.find(x => x.id === id);
+        view.shoppingEditingNoteId = id;
+        view.shoppingNoteDraft = { notes: (item && item.notes) || '', photoDataUrl: (item && item.photoDataUrl) || null };
+      }
+      view.shoppingNotePhotoError = '';
+      render();
+    };
+  });
+
+  const shoppingNotePhotoInput = document.getElementById('shopping-note-photo-input');
+  if (shoppingNotePhotoInput) {
+    shoppingNotePhotoInput.onchange = async () => {
+      const file = shoppingNotePhotoInput.files && shoppingNotePhotoInput.files[0];
+      if (!file) return;
+      syncShoppingNoteDraftFromDom();
+      view.shoppingNotePhotoError = '';
+      try {
+        const dataUrl = await compressImageFile(file);
+        view.shoppingNoteDraft.photoDataUrl = dataUrl;
+      } catch (e) {
+        view.shoppingNotePhotoError = 'שגיאה בטעינת התמונה, נסי תמונה אחרת';
+      }
+      render();
+    };
+  }
+
+  const removeShoppingNotePhotoBtn = document.getElementById('remove-shopping-note-photo-btn');
+  if (removeShoppingNotePhotoBtn) removeShoppingNotePhotoBtn.onclick = () => {
+    syncShoppingNoteDraftFromDom();
+    view.shoppingNoteDraft.photoDataUrl = null;
+    render();
+  };
+
+  const saveShoppingNoteBtn = document.getElementById('save-shopping-note-btn');
+  if (saveShoppingNoteBtn) {
+    saveShoppingNoteBtn.onclick = async () => {
+      syncShoppingNoteDraftFromDom();
+      const id = saveShoppingNoteBtn.getAttribute('data-item-id');
+      const notes = (view.shoppingNoteDraft.notes || '').trim() || null;
+      const photoDataUrl = view.shoppingNoteDraft.photoDataUrl || null;
+      saveShoppingNoteBtn.disabled = true;
+      try {
+        await setDoc(doc(db, 'shoppingList', id), { notes, photoDataUrl }, { merge: true });
+        view.shoppingEditingNoteId = null;
+        view.shoppingNoteDraft = null;
+      } catch (e) {
+        alert('שגיאה בשמירת ההערה, נסי שוב');
+      }
+      saveShoppingNoteBtn.disabled = false;
+      render();
+    };
+  }
+
+  const cancelShoppingNoteBtn = document.getElementById('cancel-shopping-note-btn');
+  if (cancelShoppingNoteBtn) cancelShoppingNoteBtn.onclick = () => {
+    view.shoppingEditingNoteId = null;
+    view.shoppingNoteDraft = null;
+    view.shoppingNotePhotoError = '';
+    render();
+  };
 }
 
 function subscribeAll(name, gen) {
