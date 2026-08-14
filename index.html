@@ -167,6 +167,53 @@
   .popup-notif { font-size: 14px; background: var(--bg); border-radius: 8px; padding: 8px 10px; margin-bottom: 6px; line-height: 1.4; }
 
   .loading-wrap { text-align: center; padding: 60px 10px; color: var(--text-muted); font-size: 15px; }
+
+  .hero-buttons { display: flex; gap: 14px; margin-bottom: 18px; }
+  .btn-3d {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 6px; padding: 16px 10px; border: none; border-radius: 18px; cursor: pointer;
+    font-family: inherit; font-size: 12.5px; font-weight: 700; color: #fff;
+    transition: transform 0.08s ease, box-shadow 0.08s ease;
+  }
+  .btn-3d .icon-circle {
+    width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 22px; background: rgba(255,255,255,0.25);
+  }
+  .btn-3d.empower {
+    background: linear-gradient(145deg, #e07bb0, #c94f8f);
+    box-shadow: 0 5px 0 #a03a70, 0 8px 14px rgba(160,58,112,0.35);
+  }
+  .btn-3d.empower:active { transform: translateY(4px); box-shadow: 0 1px 0 #a03a70, 0 2px 6px rgba(160,58,112,0.3); }
+  .btn-3d.recipes {
+    background: linear-gradient(145deg, #4fa377, #2f7a55);
+    box-shadow: 0 5px 0 #1f5a3d, 0 8px 14px rgba(31,90,61,0.35);
+  }
+  .btn-3d.recipes:active { transform: translateY(4px); box-shadow: 0 1px 0 #1f5a3d, 0 2px 6px rgba(31,90,61,0.3); }
+
+  .popup-quote { font-size: 13.5px; color: var(--accent); background: var(--bg); border-radius: 10px; padding: 10px 12px; margin: 4px 0 14px; line-height: 1.5; }
+
+  .category-group { margin-bottom: 14px; }
+  .category-header {
+    display: flex; align-items: center; gap: 8px; padding: 12px 14px; background: var(--card);
+    border: 1px solid var(--border); border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 14.5px;
+  }
+  .category-header .chev { margin-inline-start: auto; transition: transform 0.15s; font-size: 12px; color: var(--text-muted); }
+  .category-header.open .chev { transform: rotate(180deg); }
+  .category-body { padding: 10px 4px 0; display: flex; flex-direction: column; gap: 8px; }
+  .recipe-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; cursor: pointer; }
+  .recipe-card .recipe-title { font-weight: 600; font-size: 14.5px; }
+  .recipe-card .recipe-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .recipe-detail { margin-top: 10px; border-top: 1px dashed var(--border); padding-top: 10px; font-size: 13.5px; }
+  .recipe-detail h4 { margin: 10px 0 6px; font-size: 13px; color: var(--accent); }
+  .recipe-detail h4:first-child { margin-top: 0; }
+  .recipe-detail ul, .recipe-detail ol { margin: 0 0 6px; padding-inline-start: 20px; }
+  .recipe-detail li { margin-bottom: 4px; }
+  .ing-row, .step-row { display: flex; gap: 6px; margin-bottom: 6px; align-items: center; }
+  .ing-row input, .step-row input { flex: 1; }
+  .row-remove-btn { background: none; border: none; color: var(--i-owe); font-size: 18px; cursor: pointer; padding: 4px 8px; flex-shrink: 0; }
+  .row-add-btn { background: var(--bg); border: 1px dashed var(--border); border-radius: 8px; padding: 8px; font-size: 13px; color: var(--text-muted); cursor: pointer; width: 100%; margin-bottom: 4px; }
+
+  .app-version-footer { text-align: center; font-size: 11px; color: var(--text-muted); opacity: 0.75; margin-top: 26px; line-height: 1.6; }
 </style>
 </head>
 <body>
@@ -194,7 +241,227 @@ const fbApp = initializeApp(firebaseConfig);
 const auth = getAuth(fbApp);
 const db = getFirestore(fbApp);
 
+const EMPOWERMENT_QUOTES = [
+  "את חזקה יותר ממה שאת מדמיינת.",
+  "תאמיני בעצמך, כי את מסוגלת להשיג כל יעד.",
+  "כל יום מביא הזדמנות לגדול ולהתקדם.",
+  "את ראויה לכל אהבה והערכה.",
+  "בתוכך טמון הכוח האמיתי, השתמשי בו.",
+  "אין צורך במושלמות כדי להיות מדהימה.",
+  "העולם צריך נשים אמיצות כמוך.",
+  "תתגאי בהצלחות שלך, הן מגיעות לך בזכות.",
+  "אל תוותרי על החלומות שלך, הם ברי הגשמה.",
+  "השמיים הם הגבול למה שאת יכולה להשיג.",
+  "את מסוגלת להתמודד עם כל אתגר.",
+  "אין עוד כמוך, את ייחודית במינך.",
+  "תהני מהמסע של חייך, כל רגע יקר.",
+  "הכוח לשנות את העולם נמצא בידיים שלך.",
+  "תאהבי את עצמך כמו שאת, כי את נפלאה.",
+  "את יוצרת את המציאות שלך במו ידייך.",
+  "תעזי להיות שונה, זה מה שמייחד אותך.",
+  "אין דבר שעומד בפני הרצון שלך.",
+  "את יכולה להשיג כל מטרה שתציבי.",
+  "האמיני ביכולות שלך, הן בלתי ניתנות לתיאור.",
+  "כל צעד שאת עושה מקרב אותך להצלחה.",
+  "את יכולה להתמודד עם כל מצב.",
+  "החיים הם מה שאת עושה מהם.",
+  "את חשובה ומשמעותית יותר ממה שאת חושבת.",
+  "בתוכך הכוח לשנות את חייך.",
+  "את חכמה, חזקה ויפה.",
+  "תאמיני בעצמך, את מדהימה.",
+  "כל אישה יכולה להיות כל מה שהיא חולמת עליו.",
+  "את יכולה להוביל ולהשפיע על הסביבה שלך.",
+  "את ראויה לכל הטוב שבעולם.",
+  "יש לך את הכוח לשנות את העתיד שלך.",
+  "את יכולה להיות מודל לחיקוי לאחרות.",
+  "כל יום הוא הזדמנות חדשה לצמוח ולהתפתח.",
+  "את לא לבד, יש לך את הכוח והתמיכה שאת צריכה.",
+  "את יכולה להתמודד עם כל מה שיבוא.",
+  "תאהבי את עצמך – זה הסיפור הכי יפה שתכתבי אי פעם.",
+  "אישה שבטוחה בעצמה היא כוח שאי אפשר לעצור.",
+  "את לא צריכה להיות מושלמת כדי להיות נפלאה.",
+  "את ראויה לכל האהבה שבעולם – במיוחד שלך לעצמך.",
+  "לעולם אל תמעיטי בערך שלך – את יהלום אמיתי.",
+  "אישה חזקה לא מחכה להזדמנות – היא יוצרת אותה.",
+  "אין דבר שאישה לא יכולה לעשות – רק דברים שהיא עדיין לא ניסתה.",
+  "הכוח שלך לא נמדד במה שעברת, אלא באיך שקמת בכל פעם מחדש.",
+  "את יותר חזקה ממה שאת חושבת, וחכמה יותר ממה שאת יודעת.",
+  "כשאישה מחליטה – העולם זז.",
+  "אישה מצליחה היא זו שלא מפחדת להיכשל.",
+  "החלומות שלך לא גדולים מדי – הם בדיוק בגודל המתאים לך.",
+  "לעולם אל תתנצלי על השאיפות שלך – הן הדלק שלך להצלחה.",
+  "נשים לא רק משנות את העולם – הן מובילות אותו.",
+  "את לא כאן כדי להיות רגילה – את כאן כדי להיות יוצאת דופן.",
+  "עופי גבוה – את נולדת עם כנפיים.",
+  "תפסיקי לחכות לרגע הנכון – הרגע הנכון הוא עכשיו.",
+  "אם את חולמת את זה, את יכולה להשיג את זה.",
+  "שום דבר לא בלתי אפשרי – גם המילה Impossible אומרת I'm Possible.",
+  "תהיי הגרסה הכי טובה של עצמך, לא של מישהו אחר.",
+  "את לא חייבת להיות כל מה שהעולם מצפה ממך – תהיי כל מה שאת רוצה להיות.",
+  "כל יום הוא הזדמנות להיות טובה יותר ממה שהיית אתמול.",
+  "אישה חזקה היא זו שיודעת להרים אחרות.",
+  "את לא צריכה אישור מאף אחד כדי לזרוח.",
+  "כשאת זוהרת, את נותנת לאחרות אישור לזרוח גם כן.",
+  "נשים חזקות לא מחכות לתור שלהן – הן יוצרות את הבמה שלהן.",
+  "אישה שמאמינה בעצמה היא אישה שמשנה את העולם.",
+  "הנהגה נשית היא לא רק כוח – היא חיונית לשינוי.",
+  "לעולם אל תתני לפחד להחליט עבורך.",
+  "את לא רק חלק מהמשחק – את יכולה לכתוב את החוקים.",
+  "היופי שלך לא נמדד באיך שאת נראית, אלא באיך שאת גורמת לאחרים להרגיש.",
+  "אישה יפה היא זו שגאה בעצמה, לא משנה מה גודלה או צורתה.",
+  "החיוך שלך הוא הנשק החזק ביותר שלך.",
+  "תלבשי מה שאת אוהבת – העולם יסתדר עם זה.",
+  "הזוהר האמיתי שלך מתחיל מבפנים.",
+  "אישה חזקה יודעת לאהוב, אבל גם יודעת מתי להתרחק.",
+  "החופש הכי גדול הוא להיות מי שאת בלי פחד.",
+  "לעולם אל תוותרי על החלומות שלך בשביל אף אחד.",
+  "אהבה אמיתית מתחילה באהבה עצמית.",
+  "אל תפחדי להיות עצמאית – זו המתנה הכי גדולה שתוכלי לתת לעצמך.",
+  "את יכולה להשיג כל דבר – כל עוד את מאמינה בעצמך.",
+  "כל אישה נולדה עם כוח פנימי – תאמיני בו.",
+  "אם מישהי אחרת עשתה את זה – גם את יכולה.",
+  "אין דבר כזה 'מאוחר מדי' – את תמיד בזמן הנכון להתחיל מחדש.",
+  "הקול שלך חשוב – תשתמשי בו.",
+  "אישה חזקה לא מפחדת ליפול – כי היא יודעת שהיא יכולה לקום.",
+  "את לא לבד – יש מיליוני נשים חזקות שתומכות בך.",
+  "את נועדת לגדולות – אל תסתפקי בפחות.",
+  "הדרך שלך אולי לא תהיה קלה, אבל היא תהיה שווה את זה.",
+  "את לא צריכה להיות מושלמת כדי להיות מדהימה – את מדהימה בדיוק כמו שאת.",
+  "נשים מבינות את חשיבות קולן רק כאשר משתיקים אותם.",
+  "אף פעם אל תגבילי את עצמך בגלל הדמיון המוגבל של אחרים.",
+  "אם רוצים שמשהו ייאמר מבקשים מגבר, אך אם רוצים שמשהו יתקדם וייעשה, מבקשים מאישה.",
+  "השיגו את המיטב מעצמכן, על ידי כך שתהפכו ניצוצות קטנטנים של הזדמנות, ללהבות גדולות של הישגים.",
+  "ותרו על סיפור העבר שעוצר אתכן מללכת קדימה. ספרו לעצמכן סיפור חדש שאתן מוכנות להקים וליצור.",
+  "להיות מודעת לעצמך פירושו להבין את החוזקות והחולשות שלך.",
+  "אישה חזקה יודעת מה היא רוצה, אל תפסיקי לחלום ולשאוף, הגדירי את מטרותיך ואפשרי לעצמך לפעול למענן.",
+  "קחי יוזמה ולמדי את עצמך בכל יום משהו חדש. אישה חכמה היא אישה חזקה.",
+  "ברגע שאת עוזרת לאחרים, את עוזרת לעצמך.",
+  "תאמיני בעצמך ואל תפחדי לחלום בגדול.",
+  "החברה מחנכת גברים להתנצל על החולשות שלהם ומחנכת נשים להתנצל על החוזקות שלהן.",
+  "אנחנו נוכחות בחשיבות קולנו, רק כאשר אנו מושתקות.",
+  "לא תגיעי להצלחה על ידי זה שתייחלי לה, אלא על ידי זה שתעבדי בשבילה.",
+  "האתגר הוא לא להיות מושלמת, הוא להיות שלמה.",
+  "את משיגה אומץ, חוזק וביטחון עם כל התנסות בה את נעצרת להסתכל לפחד בפנים.",
+  "אף אחד לא יכול לגרום לך להרגיש נחותה ללא הסכמתך.",
+  "אישה היא מן עניין שכזה, שכל כמה שתתעמק בו, עדיין תמצא בה חידושים על גבי חידושים.",
+  "ביסודם של כל הדברים הגדולים נמצאת אישה.",
+  "האמיני בעצמך ואל תתני לאנשים להניא אותך מלהתקדם.",
+  "אישה חזקה יכולה למוטט כל הר שנקלע בדרכה.",
+  "\"אנחנו לא משיגים שום דבר בעולם הזה לבד, וכל מה שיקרה הוא תוצאה של אריגת חוטים בודדים מאחד לשני.\" — סנדרה דיי אוקונור",
+  "\"אני רוצה שהמורשת שלי תהיה שהן יודעות שהן יכולות לחלום בגדול.\" — קתרין ג'ונסון",
+  "\"אל תוותרי. שמרי על החלומות שלך בחיים. אומץ הוא הדבר היחיד שאת חייבת.\" — ג'ונקו טביי",
+  "\"לא כולנו אמורות להיות אותו הדבר, לחשוב אותו הדבר ולהאמין אותו הדבר. מהשוני נובעת כל היצירתיות וכל הפתרונות.\" — אופרה ווינפרי",
+  "\"בעבודתנו ובחיינו עלינו להכיר בכך שהבדל הוא סיבה לחגיגה ולצמיחה, ולא סיבה להרס.\" — אודרה לורד",
+  "\"ההצלחה מביאה בעטיה מטרה חדשה.\" — בטי דייויס",
+  "\"את צריכה להאמין בעצמך ולהיות בעד עצמך עם כל מה שאת עושה.\" — מרילין מונרו",
+  "\"כשאת מרגישה בלי ביטחון, תזכרי שזה לא חוסר יכולת, זה הרגע שמאפשר לך לשנות את העולם.\" — אדל היימנס",
+  "\"אם תרצי לזוז הלאה, עליך להיות מה שאת, לא מה שהעולם רוצה שתהיי.\" — ביונסה",
+  "\"הישגינו כנשים תלויים לא רק בכוח הפיזי שלנו, אלא גם באמון שיש לנו בעצמנו.\" — וירג'יניה וולף",
+  "\"אין דבר יותר מושך מאישה שמתמקדת בעצמה, בטוחה בעצמה ומאמינה בעצמה.\" — מאיה אנג'לו",
+  "\"את יכולה להתחיל מחדש כל בוקר.\" — ברנדה סטראוס",
+  "\"קחי אחריות על עצמך. זהו הכוח שלך.\" — איימי קואל",
+  "\"כילדה, מעולם לא שמעתי אישה אומרת לי 'אני אוהבת את הגוף שלי'.\" — קייט וינסלט",
+  "\"אני לא מפסיקה כשאני עייפה. אני מפסיקה רק כשאני מסיימת.\" — מרילין מונרו",
+  "\"את משיגה אומץ, חוזק וביטחון עם כל התנסות בה את נעצרת להביט בפחד בעיניים.\" — אלינור רוזוולט",
+  "\"מאבק פוליטי אשר אין נשים בליבו, מעליו, מתחתיו ובתוכו, אינו מאבק כלל.\" — ארונדהטי רוי",
+  "\"אני בת אנוש, שום דבר אנושי לא זר לי.\" — מאיה אנג'לו",
+  "\"הזיכרונות מהחיים שלנו, מהעבודה שלנו ומהחסדים שלנו ימשיכו באחרות.\" — רוזה פארקס",
+  "\"החברה מחנכת גברים להתנצל על החולשות שלהם ומחנכת נשים להתנצל על החוזקות שלהן.\" — לואיס ויס",
+  "\"אנחנו נוכחות בחשיבות קולנו רק כאשר אנו מושתקות.\" — מלאלה יוספזאי",
+  "\"ייתכן שיהיה עלייך להילחם בקרב יותר מפעם אחת כדי לנצח בו.\" — מרגרט תאצ'ר",
+  "\"הדבר הטוב ביותר לאחוז בו בחיים הוא אחת בשנייה.\" — אודרי הפבורן",
+  "\"חשבי כמו מלכה. מלכה לא חוששת להיכשל.\" — אופרה ווינפרי",
+  "\"אני מייחסת את הצלחתי לכך שמעולם לא ויתרתי או חיפשתי תירוץ.\" — פלורנס נייטינגייל",
+  "\"אין זה חשוב באמת להחליט בגיל צעיר מה בדיוק רוצים לעשות – חשוב הרבה יותר להחליט איך רוצים לחיות.\" — גולדה מאיר",
+  "\"הכאן והעכשיו הוא כל שיש לנו.\" — אן ריצ'רדס",
+  "\"אף אחד לא יכול לגרום לך להרגיש נחותה ללא הסכמתך.\" — אלינור רוזוולט",
+  "\"אל תבזבזי זמן בלהכות על הקיר בתקווה שיהפוך לדלת.\" — קוקו שאנל",
+  "\"תבטחי בעצמך, ותהיי סוג האדם שתשמחי לחיות איתו את חייך.\" — גולדה מאיר",
+  "\"השיגי את המיטב מעצמך על ידי כך שתהפכי ניצוצות קטנים של הזדמנות ללהבות גדולות של הישגים.\" — גולדה מאיר",
+  "\"אני מאמינה ביכולתי להשפיע וליצור שינויים חיוביים בסביבתי.\"",
+  "\"האמון בעצמי מהווה את היסוד להצלחה שלי ולקידום הצוות שלי להשגת מטרותיו.\"",
+  "\"הערכתי לעצמי וליכולתי להתמודד עם כל אתגר מאפשרת לי לצמוח ולהתפתח.\"",
+  "\"אני מחפשת הזדמנויות להביא לידי ביטוי את יכולות ההנהגה שבי.\"",
+  "\"אני נידונה לעבודת פרך נצחית; ההצלחה מביאה בעטיה מטרה חדשה.\" — בטי דייויס",
+  "\"קחי אחריות על עצמך – זהו הכוח שלך.\"",
+  "דעי לפנות לעצמך זמן בשגרה היומיומית על מנת להכיר את עצמך בצורה הטובה ביותר.",
+  "מחר יתחיל פרק חדש בחיים שלך, והוא הולך להיות מעניין.",
+  "היום את יכולה להתרגש מכל דבר קטן שבדרך.",
+  "מרגש לחשוב שחלק מהרגעים היפים ביותר בחייך עדיין לפניך.",
+  "כל התחלה מרגשת, גם אם היא מפחידה מעט.",
+  "הפכי את החיים שלך למרגשים כל כך, שאפילו היעד יקנא בך.",
+  "כלום לא מרגש כמו לפגוש אנשים חדשים ולשמוע את הסיפורים שלהם, ולקבל השראה.",
+  "תלחמי בימים הרעים כדי להרוויח את הימים הטובים בחייך.",
+  "לפעמים הלב צריך יותר זמן לקבל את מה שהמוח כבר יודע.",
+  "כל צעד קדימה, גם הקטן ביותר, הוא ניצחון.",
+  "תני לעצמך רשות לנוח בלי להרגיש אשמה.",
+  "היכולת שלך להתחדש היא בלתי מוגבלת.",
+  "כל מה שאת צריכה כבר נמצא בתוכך.",
+  "תזכרי: את בחרת להגיע עד לכאן, ואת יכולה להמשיך הלאה.",
+  "הכוח האמיתי הוא לדעת מתי לנוח ומתי לקום ולהמשיך.",
+  "תני לעצמך קרדיט על כל מה שהצלחת בו, גם הדברים הקטנים.",
+  "היום הוא הזדמנות טובה בדיוק כמו כל יום אחר להתחיל מחדש.",
+  "תסמכי על התהליך, גם כשהוא לא נראה ברור.",
+  "הביטחון שלך לא תלוי באישור של אף אחד אחר.",
+  "תני לעצמך רשות לטעות – זה חלק מהדרך, לא סטייה ממנה.",
+  "כל מה שעברת עד היום הפך אותך לחזקה יותר משהיית אתמול.",
+  "תזכרי לחגוג גם את ההצלחות הקטנות, לא רק את הגדולות.",
+  "הדרך שלך היא שלך בלבד, אין צורך להשוות אותה לדרך של אחרות.",
+  "מותר לך לבקש עזרה, זה לא סימן לחולשה אלא לחוכמה.",
+  "היום הזה שייך לך – תעצבי אותו כרצונך.",
+  "כל בוקר הוא הזדמנות חדשה להתחיל מחדש, בלי קשר למה שהיה אתמול.",
+  "תני לעצמך את החסד שאת נותנת לאחרים.",
+  "היכולת לאהוב את עצמך היא הבסיס לכל אהבה אחרת.",
+  "תזכרי שגם דברים גדולים מתחילים בצעד קטן אחד.",
+  "האומץ לא אומר חוסר פחד, אלא הליכה קדימה גם כשמפחיד.",
+  "תני לעצמך רשות לזרוח, בלי להתנצל על זה.",
+  "כשאת משקיעה בעצמך, את משקיעה בכל מי שסביבך.",
+  "מותר לך לשנות כיוון – זה לא כישלון, זה גמישות.",
+  "כוחך הפנימי גדול משמעותית מכל ספק שמנסה להאט אותך.",
+  "תזכרי: את לא צריכה להוכיח כלום לאף אחד חוץ מלעצמך.",
+  "הביטחון נבנה צעד אחר צעד, לא ביום אחד.",
+  "תני לעצמך רגע בכל יום להודות לעצמך על מה שעברת.",
+  "היכולת שלך להתמודד עם קושי היא עדות לכוח שלך, לא לחולשה.",
+  "כל אתגר שעברת הכשיר אותך לאתגר הבא.",
+  "תזכרי שיש לך את כל מה שצריך כדי להצליח – זה כבר בפנים.",
+  "מותר לך לנוח בלי להרגיש שאת מפגרת מאחור.",
+  "כשאת אומרת \"לא\" למשהו שלא מתאים לך, את אומרת \"כן\" לעצמך.",
+  "תזכרי: את הגיבורה של הסיפור שלך.",
+  "הצלחה לא נמדדת רק בתוצאה, אלא גם בדרך שעברת כדי להגיע אליה.",
+  "מותר לך להיות גאה בעצמך בלי להסביר למה.",
+  "תני לעצמך את ההזדמנות לנסות, גם אם אין ודאות שתצליחי.",
+  "כשאת מקשיבה לעצמך, את תמיד יודעת מה נכון לך.",
+  "היכולת להתחיל מחדש היא אחת המתנות הכי גדולות שיש לך.",
+  "תזכרי לנשום, גם כשהיום מרגיש כבד מדי.",
+  "כל יום שאת בוחרת להמשיך, את מוכיחה לעצמך כמה את חזקה.",
+  "מותר לך לקחת רגע לעצמך – זה לא אנוכיות, זה הכרח.",
+  "תני לעצמך את הקרדיט על כל דבר שלמדת לעשות מחדש.",
+  "כוח אמיתי הוא גם לדעת לבקש תמיכה כשצריך.",
+  "תזכרי: מה שנראה כמו סוף, לעיתים הוא רק תחילתו של פרק חדש.",
+  "היכולת שלך להתמודד עם שינוי היא עדות אמיתית לחוסן שלך.",
+  "כשאת אוהבת את עצמך, את מלמדת גם את הסובבים אותך איך לאהוב אותך.",
+  "תני לעצמך רשות להיות בתהליך, בלי לדרוש מעצמך שלמות מיידית.",
+  "מותר לך להתגעגע לעבר ועדיין לצעוד קדימה.",
+  "כל מה שאת נותנת לעולם חוזר אלייך, בדרך זו או אחרת.",
+  "תזכרי לחגוג את עצמך היום, לא רק ביום מיוחד.",
+  "היכולת לאהוב ולתת היא אחד הכוחות הגדולים שלך.",
+  "תני לעצמך הזדמנות להיות טובה יותר מאתמול, בלי להשוות לאף אחת אחרת.",
+  "כוחך לא נמדד בכמה פעמים נפלת, אלא בכמה פעמים קמת.",
+  "תזכרי: את לא צריכה לעשות הכל לבד.",
+  "מותר לך להרגיש הכל – גם את הקושי וגם את השמחה, בלי לשפוט את עצמך.",
+  "תני לעצמך את הזמן שאת צריכה כדי לרפא.",
+  "כל יום שאת בוחרת בעצמך, את בונה עתיד חזק יותר.",
+  "היכולת שלך להתמיד היא אחד הכוחות הגדולים ביותר שלך.",
+  "תזכרי: הביטחון שלך לא תלוי במה שאחרים חושבים.",
+  "מותר לך לחלום מחדש, בכל גיל ובכל שלב.",
+  "כל מסע גדול מתחיל בהחלטה קטנה להתחיל.",
+  "תני לעצמך קרדיט על היום שעברת, גם אם לא הכל הלך כמתוכנן.",
+  "היכולת שלך לצמוח מתוך קושי היא מה שהופך אותך למי שאת."
+];
+
 const NAMES = ['ריקי', 'ברוריה', 'דורית'];
+const APP_VERSION = '2.1.0';
+const APP_UPDATED = '14.08.2026';
 const AVATAR_CLASS = { 'ריקי': 'ricky', 'ברוריה': 'bruria', 'דורית': 'dorit' };
 const PET_NAMES = ['כפרוש', 'נשמה', 'חיים שלי', 'עיניים שלי'];
 const EMAIL_MAP = {
@@ -225,6 +492,12 @@ function getLoginGreetingBase() {
 
 function pickPetName() {
   return PET_NAMES[Math.floor(Math.random() * PET_NAMES.length)];
+}
+
+function pickRandomQuote() {
+  const all = EMPOWERMENT_QUOTES.concat(data.empowermentQuotes.map(q => q.text));
+  if (!all.length) return '';
+  return all[Math.floor(Math.random() * all.length)];
 }
 
 function buildTxNotificationText(tx, me, pet) {
@@ -263,6 +536,9 @@ let data = {
   activityLog: [],
   sharedNotesFlat: [],
   personalNotesFlat: [],
+  empowermentQuotes: [],
+  recipes: [],
+  recipeCategories: [],
   userState: { notesReadStatus: {}, txSeenStatus: {} }
 };
 
@@ -349,6 +625,8 @@ function render() {
   else if (view.screen === 'farewell') app.innerHTML = renderFarewell();
   else if (view.screen === 'log') app.innerHTML = renderLog();
   else if (view.screen === 'personalNotes') app.innerHTML = renderPersonalNotes();
+  else if (view.screen === 'empowerment') app.innerHTML = renderEmpowerment();
+  else if (view.screen === 'recipes') app.innerHTML = renderRecipes();
   attachHandlers();
 }
 
@@ -387,6 +665,10 @@ function renderLogin() {
       </div>
     ` : ''}
     ${view.showChangePw ? renderChangePassword() : ''}
+    <div class="app-version-footer">
+      גרסה ${APP_VERSION} · עודכן לאחרונה ${APP_UPDATED}<br>
+      נוצר ע"י אשר בלומנפלד עבור האחיות האהובות ❤️
+    </div>
   `;
 }
 
@@ -429,6 +711,10 @@ function renderDashboard() {
       </div>
     </div>
     ${view.loginPopup ? renderLoginPopup() : ''}
+    <div class="hero-buttons">
+      <button class="btn-3d empower" id="open-empowerment-btn"><span class="icon-circle">💪</span>העצמה נשית</button>
+      <button class="btn-3d recipes" id="open-recipes-btn"><span class="icon-circle">🍽️</span>מתכונים משותפים</button>
+    </div>
     ${others.map(other => {
       const net = computeBalance(me, other);
       const label = balanceLabel(me, other, net);
@@ -632,12 +918,170 @@ function renderNoteItem(n, kind) {
   `;
 }
 
+function recipeCategoryList() {
+  const set = new Set();
+  data.recipeCategories.forEach(c => { if (c.name) set.add(c.name); });
+  data.recipes.forEach(r => { if (r.category) set.add(r.category); });
+  return Array.from(set).sort((a, b) => a.localeCompare(b, 'he'));
+}
+
+function renderEmpowerment() {
+  const userQuotes = data.empowermentQuotes.slice().sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+  return `
+    <div class="back-row">
+      <button class="btn btn-secondary btn-small" id="back-to-dash-from-empower">→ חזרה</button>
+      <h1 style="margin:0; font-size:17px;">העצמה נשית</h1>
+    </div>
+    <div class="banner">בכל כניסה לאפליקציה מופיע משפט אחד אקראי מתוך ${EMPOWERMENT_QUOTES.length + userQuotes.length} משפטים</div>
+    <button class="btn btn-primary toggle-add" id="toggle-add-quote-btn">${view.showAddQuote ? 'סגירת טופס' : '+ הוספת משפט משלך'}</button>
+    ${view.showAddQuote ? `
+      <div class="add-form">
+        <h3>משפט העצמה חדש</h3>
+        <div class="field">
+          <textarea id="quote-input" rows="3" placeholder="כתבי כאן משפט מעצים..."></textarea>
+        </div>
+        ${view.addQuoteError ? `<div class="error">${escapeHtml(view.addQuoteError)}</div>` : ''}
+        <button class="btn btn-primary" id="save-quote-btn">שמירה</button>
+      </div>
+    ` : ''}
+    ${userQuotes.length ? `
+      <h3 style="font-size:14px; margin:18px 0 10px;">משפטים שהוספתן (${userQuotes.length})</h3>
+      <div class="tx-list">
+        ${userQuotes.map(q => `
+          <div class="tx-item">
+            <div class="tx-desc">${escapeHtml(q.text)}</div>
+            <div class="tx-meta" style="margin-top:6px;">נוסף ע"י ${escapeHtml(q.addedBy || '')}${q.createdAt ? ' · ' + fmtDateTime(q.createdAt) : ''}</div>
+          </div>
+        `).join('')}
+      </div>
+    ` : ''}
+    <h3 style="font-size:14px; margin:18px 0 10px;">אוסף ההשראה (${EMPOWERMENT_QUOTES.length})</h3>
+    <div class="tx-list">
+      ${EMPOWERMENT_QUOTES.map(t => `<div class="tx-item"><div class="tx-desc">${escapeHtml(t)}</div></div>`).join('')}
+    </div>
+  `;
+}
+
+function renderRecipes() {
+  const cats = recipeCategoryList();
+  const grouped = {};
+  data.recipes.forEach(r => {
+    const c = r.category || 'ללא קטגוריה';
+    if (!grouped[c]) grouped[c] = [];
+    grouped[c].push(r);
+  });
+  const allCatNames = new Set(cats);
+  Object.keys(grouped).forEach(c => allCatNames.add(c));
+  const orderedCats = Array.from(allCatNames).sort((a, b) => a.localeCompare(b, 'he'));
+
+  return `
+    <div class="back-row">
+      <button class="btn btn-secondary btn-small" id="back-to-dash-from-recipes">→ חזרה</button>
+      <h1 style="margin:0; font-size:17px;">מתכונים משותפים</h1>
+    </div>
+    <button class="btn btn-primary toggle-add" id="toggle-add-recipe-btn">${view.showAddRecipe ? 'סגירת טופס' : '+ הוספת מתכון'}</button>
+    ${view.showAddRecipe ? renderAddRecipeForm(cats) : ''}
+    ${orderedCats.length === 0 ? `<div class="empty">אין עדיין מתכונים - תהיי הראשונה להוסיף!</div>` : orderedCats.map(cat => renderCategoryGroup(cat, grouped[cat] || [])).join('')}
+  `;
+}
+
+function renderCategoryGroup(cat, recipes) {
+  const isOpen = !!(view.openRecipeCategories && view.openRecipeCategories[cat]);
+  return `
+    <div class="category-group">
+      <div class="category-header ${isOpen ? 'open' : ''}" data-toggle-category="${escapeHtml(cat)}">
+        <span>📁 ${escapeHtml(cat)}</span>
+        <span class="tx-meta">(${recipes.length})</span>
+        <span class="chev">▾</span>
+      </div>
+      ${isOpen ? `
+        <div class="category-body">
+          ${recipes.length === 0 ? `<div class="empty">אין מתכונים בקטגוריה זו</div>` : recipes.map(r => renderRecipeCard(r)).join('')}
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+function renderRecipeCard(r) {
+  const isOpen = !!(view.openRecipes && view.openRecipes[r.id]);
+  return `
+    <div class="recipe-card" data-toggle-recipe="${r.id}">
+      <div class="recipe-title">${escapeHtml(r.title)}</div>
+      <div class="recipe-meta">${r.servings ? `${escapeHtml(r.servings)} מנות · ` : ''}${r.prepTime ? `${escapeHtml(r.prepTime)} · ` : ''}נוסף ע"י ${escapeHtml(r.addedBy || '')}</div>
+      ${isOpen ? `
+        <div class="recipe-detail">
+          ${(r.ingredients || []).length ? `<h4>מרכיבים</h4><ul>${(r.ingredients || []).map(i => `<li>${escapeHtml(i)}</li>`).join('')}</ul>` : ''}
+          ${(r.instructions || []).length ? `<h4>אופן ההכנה</h4><ol>${(r.instructions || []).map(i => `<li>${escapeHtml(i)}</li>`).join('')}</ol>` : ''}
+          ${r.notes ? `<h4>הערות</h4><div>${escapeHtml(r.notes)}</div>` : ''}
+          <div class="tx-bottom" style="margin-top:10px;">
+            <span></span>
+            <button class="del-btn" data-delete-recipe="${r.id}">מחיקה</button>
+          </div>
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+function renderAddRecipeForm(cats) {
+  const draft = view.recipeDraft || { ingredients: [''], instructions: [''] };
+  return `
+    <div class="add-form">
+      <h3>מתכון חדש</h3>
+      <div class="field">
+        <label>שם המתכון</label>
+        <input type="text" id="recipe-title-input" placeholder="למשל: עוגת שוקולד של סבתא">
+      </div>
+      <div class="field">
+        <label>קטגוריה</label>
+        <input type="text" id="recipe-category-input" list="recipe-category-list" placeholder="למשל: קינוחים, עיקריות, סלטים...">
+        <datalist id="recipe-category-list">
+          ${cats.map(c => `<option value="${escapeHtml(c)}"></option>`).join('')}
+        </datalist>
+      </div>
+      <div class="row">
+        <div class="field"><label>מספר מנות</label><input type="text" id="recipe-servings-input" placeholder="לדוגמה: 4"></div>
+        <div class="field"><label>זמן הכנה</label><input type="text" id="recipe-preptime-input" placeholder="לדוגמה: 45 דקות"></div>
+      </div>
+      <div class="field">
+        <label>מרכיבים</label>
+        ${draft.ingredients.map((val, i) => `
+          <div class="ing-row">
+            <input type="text" class="ing-input" data-idx="${i}" value="${escapeHtml(val)}" placeholder="לדוגמה: 2 כוסות קמח">
+            ${draft.ingredients.length > 1 ? `<button type="button" class="row-remove-btn" data-remove-ing="${i}">✕</button>` : ''}
+          </div>
+        `).join('')}
+        <button type="button" class="row-add-btn" id="add-ing-row-btn">+ הוספת מרכיב</button>
+      </div>
+      <div class="field">
+        <label>אופן ההכנה</label>
+        ${draft.instructions.map((val, i) => `
+          <div class="step-row">
+            <span class="tx-meta">${i + 1}.</span>
+            <input type="text" class="step-input" data-idx="${i}" value="${escapeHtml(val)}" placeholder="שלב ${i + 1}">
+            ${draft.instructions.length > 1 ? `<button type="button" class="row-remove-btn" data-remove-step="${i}">✕</button>` : ''}
+          </div>
+        `).join('')}
+        <button type="button" class="row-add-btn" id="add-step-row-btn">+ הוספת שלב</button>
+      </div>
+      <div class="field">
+        <label>הערות (אופציונלי)</label>
+        <textarea id="recipe-notes-input" rows="2" placeholder="טיפים, תחליפים וכו'"></textarea>
+      </div>
+      ${view.addRecipeError ? `<div class="error">${escapeHtml(view.addRecipeError)}</div>` : ''}
+      <button class="btn btn-primary" id="save-recipe-btn">שמירת מתכון</button>
+    </div>
+  `;
+}
+
 function renderLoginPopup() {
   const popup = view.loginPopup;
   return `
     <div class="modal-overlay" id="login-popup-overlay">
       <div class="modal-box popup-box">
         <div class="popup-text">${escapeHtml(popup.greeting)}</div>
+        ${popup.quote ? `<div class="popup-quote">💫 ${escapeHtml(popup.quote)}</div>` : ''}
         ${popup.notifications.length > 0 ? `
           <div class="popup-notif-list">
             ${popup.notifications.map(n => `<div class="popup-notif">${escapeHtml(n)}</div>`).join('')}
@@ -921,6 +1365,207 @@ function attachHandlers() {
     a.click();
     URL.revokeObjectURL(url);
   };
+
+  const openEmpowermentBtn = document.getElementById('open-empowerment-btn');
+  if (openEmpowermentBtn) openEmpowermentBtn.onclick = () => {
+    view.screen = 'empowerment';
+    view.showAddQuote = false;
+    view.addQuoteError = '';
+    render();
+  };
+
+  const backFromEmpower = document.getElementById('back-to-dash-from-empower');
+  if (backFromEmpower) backFromEmpower.onclick = () => { view.screen = 'dashboard'; render(); };
+
+  const toggleAddQuoteBtn = document.getElementById('toggle-add-quote-btn');
+  if (toggleAddQuoteBtn) toggleAddQuoteBtn.onclick = () => {
+    view.showAddQuote = !view.showAddQuote;
+    view.addQuoteError = '';
+    render();
+  };
+
+  const saveQuoteBtn = document.getElementById('save-quote-btn');
+  if (saveQuoteBtn) {
+    saveQuoteBtn.onclick = async () => {
+      const textEl = document.getElementById('quote-input');
+      const text = textEl.value.trim();
+      if (!text) {
+        view.addQuoteError = 'יש לכתוב משפט לפני השמירה';
+        render();
+        return;
+      }
+      saveQuoteBtn.disabled = true;
+      try {
+        await addDoc(collection(db, 'empowermentQuotes'), {
+          text,
+          addedBy: session.name,
+          createdAt: new Date().toISOString()
+        });
+        view.showAddQuote = false;
+        view.addQuoteError = '';
+      } catch (e) {
+        view.addQuoteError = 'שגיאה בשמירה, נסי שוב';
+      }
+      render();
+    };
+  }
+
+  const openRecipesBtn = document.getElementById('open-recipes-btn');
+  if (openRecipesBtn) openRecipesBtn.onclick = () => {
+    view.screen = 'recipes';
+    view.showAddRecipe = false;
+    view.addRecipeError = '';
+    view.recipeDraft = { ingredients: [''], instructions: [''] };
+    render();
+  };
+
+  const backFromRecipes = document.getElementById('back-to-dash-from-recipes');
+  if (backFromRecipes) backFromRecipes.onclick = () => { view.screen = 'dashboard'; render(); };
+
+  document.querySelectorAll('[data-toggle-category]').forEach(el => {
+    el.onclick = () => {
+      const cat = el.getAttribute('data-toggle-category');
+      view.openRecipeCategories = view.openRecipeCategories || {};
+      view.openRecipeCategories[cat] = !view.openRecipeCategories[cat];
+      render();
+    };
+  });
+
+  document.querySelectorAll('[data-toggle-recipe]').forEach(el => {
+    el.onclick = (e) => {
+      if (e.target.closest('[data-delete-recipe]')) return;
+      const id = el.getAttribute('data-toggle-recipe');
+      view.openRecipes = view.openRecipes || {};
+      view.openRecipes[id] = !view.openRecipes[id];
+      render();
+    };
+  });
+
+  function syncRecipeDraftFromDom() {
+    if (!view.recipeDraft) return;
+    const titleEl = document.getElementById('recipe-title-input');
+    const catEl = document.getElementById('recipe-category-input');
+    const servEl = document.getElementById('recipe-servings-input');
+    const prepEl = document.getElementById('recipe-preptime-input');
+    const notesEl = document.getElementById('recipe-notes-input');
+    if (titleEl) view.recipeDraft.title = titleEl.value;
+    if (catEl) view.recipeDraft.category = catEl.value;
+    if (servEl) view.recipeDraft.servings = servEl.value;
+    if (prepEl) view.recipeDraft.prepTime = prepEl.value;
+    if (notesEl) view.recipeDraft.notes = notesEl.value;
+    document.querySelectorAll('.ing-input').forEach(el => {
+      const i = parseInt(el.getAttribute('data-idx'), 10);
+      view.recipeDraft.ingredients[i] = el.value;
+    });
+    document.querySelectorAll('.step-input').forEach(el => {
+      const i = parseInt(el.getAttribute('data-idx'), 10);
+      view.recipeDraft.instructions[i] = el.value;
+    });
+  }
+
+  const toggleAddRecipeBtn = document.getElementById('toggle-add-recipe-btn');
+  if (toggleAddRecipeBtn) toggleAddRecipeBtn.onclick = () => {
+    view.showAddRecipe = !view.showAddRecipe;
+    if (view.showAddRecipe) view.recipeDraft = { ingredients: [''], instructions: [''] };
+    view.addRecipeError = '';
+    render();
+  };
+
+  const addIngRowBtn = document.getElementById('add-ing-row-btn');
+  if (addIngRowBtn) addIngRowBtn.onclick = () => {
+    syncRecipeDraftFromDom();
+    view.recipeDraft.ingredients.push('');
+    render();
+  };
+
+  document.querySelectorAll('[data-remove-ing]').forEach(el => {
+    el.onclick = () => {
+      syncRecipeDraftFromDom();
+      const i = parseInt(el.getAttribute('data-remove-ing'), 10);
+      if (view.recipeDraft.ingredients.length > 1) view.recipeDraft.ingredients.splice(i, 1);
+      render();
+    };
+  });
+
+  const addStepRowBtn = document.getElementById('add-step-row-btn');
+  if (addStepRowBtn) addStepRowBtn.onclick = () => {
+    syncRecipeDraftFromDom();
+    view.recipeDraft.instructions.push('');
+    render();
+  };
+
+  document.querySelectorAll('[data-remove-step]').forEach(el => {
+    el.onclick = () => {
+      syncRecipeDraftFromDom();
+      const i = parseInt(el.getAttribute('data-remove-step'), 10);
+      if (view.recipeDraft.instructions.length > 1) view.recipeDraft.instructions.splice(i, 1);
+      render();
+    };
+  });
+
+  const saveRecipeBtn = document.getElementById('save-recipe-btn');
+  if (saveRecipeBtn) {
+    saveRecipeBtn.onclick = async () => {
+      syncRecipeDraftFromDom();
+      const draft = view.recipeDraft;
+      const title = (draft.title || '').trim();
+      const category = (draft.category || '').trim();
+      const servings = (draft.servings || '').trim();
+      const prepTime = (draft.prepTime || '').trim();
+      const notes = (draft.notes || '').trim();
+      const ingredients = draft.ingredients.map(s => s.trim()).filter(Boolean);
+      const instructions = draft.instructions.map(s => s.trim()).filter(Boolean);
+
+      if (!title) {
+        view.addRecipeError = 'יש להזין שם למתכון';
+        render();
+        return;
+      }
+      if (!category) {
+        view.addRecipeError = 'יש לבחור או להזין קטגוריה';
+        render();
+        return;
+      }
+      if (!ingredients.length) {
+        view.addRecipeError = 'יש להזין לפחות מרכיב אחד';
+        render();
+        return;
+      }
+
+      saveRecipeBtn.disabled = true;
+      try {
+        await addDoc(collection(db, 'recipes'), {
+          title, category, servings, prepTime, notes,
+          ingredients, instructions,
+          addedBy: session.name,
+          createdAt: new Date().toISOString()
+        });
+        await setDoc(doc(db, 'recipeCategories', category), {
+          name: category,
+          addedBy: session.name,
+          createdAt: new Date().toISOString()
+        }, { merge: true });
+        view.showAddRecipe = false;
+        view.addRecipeError = '';
+        view.recipeDraft = { ingredients: [''], instructions: [''] };
+      } catch (e) {
+        view.addRecipeError = 'שגיאה בשמירת המתכון, נסי שוב';
+      }
+      render();
+    };
+  }
+
+  document.querySelectorAll('[data-delete-recipe]').forEach(el => {
+    el.onclick = async (e) => {
+      e.stopPropagation();
+      const id = el.getAttribute('data-delete-recipe');
+      try {
+        await deleteDoc(doc(db, 'recipes', id));
+      } catch (e2) {
+        alert('שגיאה במחיקת המתכון');
+      }
+    };
+  });
 }
 
 function subscribeAll(name, gen) {
@@ -928,7 +1573,7 @@ function subscribeAll(name, gen) {
 
   const checkLoaded = () => {
     if (gen !== authGeneration) return;
-    if (loadedKeys.size >= 5 && view.screen === 'loading') {
+    if (loadedKeys.size >= 8 && view.screen === 'loading') {
       finishInitialLoad(name);
     } else {
       render();
@@ -969,6 +1614,27 @@ function subscribeAll(name, gen) {
     loadedKeys.add('userState');
     checkLoaded();
   }, () => {}));
+
+  unsubscribers.push(onSnapshot(collection(db, 'empowermentQuotes'), snap => {
+    if (gen !== authGeneration) return;
+    data.empowermentQuotes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    loadedKeys.add('empowermentQuotes');
+    checkLoaded();
+  }, () => {}));
+
+  unsubscribers.push(onSnapshot(collection(db, 'recipes'), snap => {
+    if (gen !== authGeneration) return;
+    data.recipes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    loadedKeys.add('recipes');
+    checkLoaded();
+  }, () => {}));
+
+  unsubscribers.push(onSnapshot(collection(db, 'recipeCategories'), snap => {
+    if (gen !== authGeneration) return;
+    data.recipeCategories = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    loadedKeys.add('recipeCategories');
+    checkLoaded();
+  }, () => {}));
 }
 
 function finishInitialLoad(me) {
@@ -981,9 +1647,10 @@ function finishInitialLoad(me) {
   if (unseenTx.length) {
     Promise.all(unseenTx.map(tx => markTxSeen(me, tx.id))).catch(() => {});
   }
+  const quote = pickRandomQuote();
   view = {
     screen: 'dashboard',
-    loginPopup: { greeting: `${getLoginGreetingBase()}, ${me} ${pet}!`, notifications }
+    loginPopup: { greeting: `${getLoginGreetingBase()}, ${me} ${pet}!`, notifications, quote }
   };
   render();
 }

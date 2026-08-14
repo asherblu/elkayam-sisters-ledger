@@ -1,3 +1,11 @@
 .DS_Store
 Thumbs.db
 *.log
+
+# Personal work notes - never track/push these (kept local only)
+CLAUDE.md
+LESSONS.md
+PROJECT_LOG.md
+DECISIONS.md
+ZZ_*.keep
+*.stale*

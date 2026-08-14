@@ -34,5 +34,22 @@ service cloud.firestore {
     match /userState/{name} {
       allow read, write: if isSister() && myName() == name;
     }
+
+    match /empowermentQuotes/{id} {
+      allow read, create: if isSister();
+      allow update, delete: if false;
+    }
+
+    match /recipes/{id} {
+      allow read, create, delete: if isSister();
+      allow update: if false;
+    }
+
+    match /recipeCategories/{name} {
+      allow read: if isSister();
+      allow create: if isSister();
+      allow update: if isSister();
+      allow delete: if false;
+    }
   }
 }
