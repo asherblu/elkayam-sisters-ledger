@@ -396,6 +396,21 @@
   .c4-disc.red { background: radial-gradient(circle at 35% 30%, #ff8a75, #e63b2e); }
   .c4-disc.yellow { background: radial-gradient(circle at 35% 30%, #fff2a8, #f2c40c); }
   .c4-cell.win-cell .c4-disc { box-shadow: 0 0 0 3px #fff, 0 0 14px 4px #fff; }
+
+  .sudoku-board { display: grid; grid-template-columns: repeat(9, 1fr); gap: 1px; background: var(--border); border: 2px solid var(--text); border-radius: 8px; overflow: hidden; max-width: 360px; margin: 0 auto; }
+  .sudoku-cell { aspect-ratio: 1; background: var(--card); border: none; font-size: 16px; font-weight: 600; color: var(--text); display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; }
+  .sudoku-cell.given { background: var(--bg); color: var(--text-muted); cursor: default; font-weight: 700; }
+  .sudoku-cell.related { background: rgba(23,163,152,0.08); }
+  .sudoku-cell.selected { background: rgba(23,163,152,0.25); box-shadow: 0 0 0 2px #17a398 inset; }
+  .sudoku-cell.conflict { color: #d84440; background: rgba(216,68,64,0.14); }
+  .sudoku-cell.border-right { border-right: 2px solid var(--text); }
+  .sudoku-cell.border-bottom { border-bottom: 2px solid var(--text); }
+  .sudoku-numpad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; max-width: 360px; margin: 12px auto 0; }
+  .sudoku-num-btn { aspect-ratio: 1; border: 1px solid var(--border); background: var(--card); border-radius: 8px; font-size: 16px; font-weight: 700; color: var(--text); cursor: pointer; }
+  .sudoku-clear-btn { color: var(--text-muted); font-size: 14px; }
+  .sudoku-race-progress { margin-top: 12px; font-size: 12.5px; color: var(--text-muted); }
+  .sudoku-race-progress .progress-bar-track { background: var(--bg); border-radius: 999px; height: 10px; overflow: hidden; margin-top: 4px; }
+  .sudoku-race-progress .progress-bar-fill { background: linear-gradient(90deg, #4fd1c5, #17a398); height: 100%; transition: width 0.3s; }
 </style>
 </head>
 <body>
@@ -786,7 +801,7 @@ function personalizedEmpowerText(name) {
 }
 
 const NAMES = ['ריקי', 'ברוריה', 'דורית'];
-const APP_VERSION = '2.9.1';
+const APP_VERSION = '2.10.0';
 const APP_UPDATED = '14.08.2026';
 const AVATAR_CLASS = { 'ריקי': 'ricky', 'ברוריה': 'bruria', 'דורית': 'dorit' };
 
@@ -805,7 +820,12 @@ const GAMES_CATALOG = [
     <p>בוחרים נגד מי משחקים: המחשב (עם רמת קושי) או אחת האחיות, בזמן אמת.</p>
     <p>המשחק נשמר אוטומטית עד שמסיימות, ואפשר להתחיל מחדש בכל שלב.</p>
   ` },
-  { id: 'sudoku', title: 'סודוקו', icon: '🔢', color: 'g-purple', locked: true, instructionsHtml: '' },
+  { id: 'sudoku', title: 'סודוקו', icon: '🔢', color: 'g-purple', locked: false, instructionsHtml: `
+    <p>המטרה: למלא את כל הלוח כך שבכל שורה, עמודה וריבוע 3x3 יופיעו הספרות 1 עד 9 בדיוק פעם אחת.</p>
+    <p>בוחרות רמת קושי (קל / בינוני / קשה) ואיך לשחק: לבד בקצב שלכן, או במרוץ בזמן אמת מול אחת האחיות - שתיכן פותרות את אותו הלוח, ומי שמסיימת ראשונה מנצחת (רואים רק את אחוז ההתקדמות של האחות, לא את הלוח שלה).</p>
+    <p>לוחצות על משבצת ריקה ואז על ספרה מהלוח שמופיע למטה. משבצת עם התנגשות (אותה ספרה כבר קיימת באותה שורה/עמודה/ריבוע) תסומן באדום.</p>
+    <p>המשחק נשמר אוטומטית, ואפשר להתחיל לוח חדש בכל שלב.</p>
+  ` },
   { id: 'wordle', title: 'וורדל עברי', icon: '🔤', color: 'g-green', locked: true, instructionsHtml: '' },
   { id: 'crossword', title: 'תשחץ', icon: '📝', color: 'g-orange', locked: true, instructionsHtml: '' },
   { id: 'trivia', title: 'שאלון אמריקאי', icon: '❓', color: 'g-red', locked: true, instructionsHtml: '' },
@@ -1095,6 +1115,7 @@ function render() {
   else if (view.screen === 'games') app.innerHTML = renderGamesHub();
   else if (view.screen === 'game-tictactoe') app.innerHTML = renderGameScreen('tictactoe');
   else if (view.screen === 'game-connect4') app.innerHTML = renderGameScreen('connect4');
+  else if (view.screen === 'game-sudoku') app.innerHTML = renderGameScreen('sudoku');
   attachHandlers();
 }
 
@@ -1840,9 +1861,13 @@ async function startNewGameSession(gameId, sessionKey, draft) {
 function renderGameScreen(gameId) {
   const g = GAMES_CATALOG.find(x => x.id === gameId);
   if (!g) return '<p>המשחק הזה לא נמצא.</p>';
-  if (!view.activeGameSessionKey) return renderGameOpponentSetup(gameId, g.title, g.icon);
+  if (!view.activeGameSessionKey) {
+    if (gameId === 'sudoku') return renderSudokuSetup();
+    return renderGameOpponentSetup(gameId, g.title, g.icon);
+  }
   if (gameId === 'tictactoe') return renderTicTacToeBoard(gameId, view.activeGameSessionKey);
   if (gameId === 'connect4') return renderConnect4Board(gameId, view.activeGameSessionKey);
+  if (gameId === 'sudoku') return renderSudokuBoard(view.activeGameSessionKey);
   return '<p>המשחק הזה עדיין בבנייה.</p>';
 }
 
@@ -2160,6 +2185,276 @@ async function computerConnect4Move(sessionKey) {
   const result = c4CheckWinner(board);
   const newState = { ...st, board, currentTurn: 'X', winner: result.winner, winLine: result.line };
   try { await saveGameSession(gameId, sessionKey, newState); } catch (e) { /* opponent will see the retry on her next action */ }
+}
+
+// --- סודוקו ---
+function sdkRowOf(i) { return Math.floor(i / 9); }
+function sdkColOf(i) { return i % 9; }
+function sdkBoxOf(i) { return Math.floor(sdkRowOf(i) / 3) * 3 + Math.floor(sdkColOf(i) / 3); }
+function sdkSameUnit(a, b) { return sdkRowOf(a) === sdkRowOf(b) || sdkColOf(a) === sdkColOf(b) || sdkBoxOf(a) === sdkBoxOf(b); }
+
+function sdkValid(grid, i, val) {
+  const r = sdkRowOf(i), c2 = sdkColOf(i), b = sdkBoxOf(i);
+  for (let k = 0; k < 9; k++) {
+    if (grid[r * 9 + k] === val) return false;
+    if (grid[k * 9 + c2] === val) return false;
+    const br = Math.floor(b / 3) * 3 + Math.floor(k / 3);
+    const bc = (b % 3) * 3 + (k % 3);
+    if (grid[br * 9 + bc] === val) return false;
+  }
+  return true;
+}
+
+function sdkShuffled(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function sdkFindBestEmptyCell(grid) {
+  let best = -1, bestCount = 10, bestCands = null;
+  for (let i = 0; i < 81; i++) {
+    if (grid[i] !== 0) continue;
+    const cands = [];
+    for (let v = 1; v <= 9; v++) { if (sdkValid(grid, i, v)) cands.push(v); }
+    if (cands.length < bestCount) {
+      best = i; bestCount = cands.length; bestCands = cands;
+      if (cands.length === 0) break;
+    }
+  }
+  return best === -1 ? null : { index: best, candidates: bestCands };
+}
+
+function sdkSolveRandom(grid) {
+  const cell = sdkFindBestEmptyCell(grid);
+  if (!cell) return true;
+  const { index, candidates } = cell;
+  if (!candidates.length) return false;
+  for (const v of sdkShuffled(candidates)) {
+    grid[index] = v;
+    if (sdkSolveRandom(grid)) return true;
+    grid[index] = 0;
+  }
+  return false;
+}
+
+function sdkGenerateFullGrid() {
+  const grid = Array(81).fill(0);
+  sdkSolveRandom(grid);
+  return grid;
+}
+
+function sdkCountSolutions(grid, cap) {
+  if (cap <= 0) return 0;
+  const cell = sdkFindBestEmptyCell(grid);
+  if (!cell) return 1;
+  const { index, candidates } = cell;
+  if (!candidates.length) return 0;
+  let total = 0;
+  for (const v of candidates) {
+    grid[index] = v;
+    total += sdkCountSolutions(grid, cap - total);
+    grid[index] = 0;
+    if (total >= cap) break;
+  }
+  return total;
+}
+
+function sdkGeneratePuzzle(difficulty) {
+  const full = sdkGenerateFullGrid();
+  const targetClues = difficulty === 'easy' ? 40 : (difficulty === 'medium' ? 32 : 26);
+  const puzzle = full.slice();
+  const order = sdkShuffled(Array.from({ length: 81 }, (_, i) => i));
+  let clues = 81;
+  for (const idx of order) {
+    if (clues <= targetClues) break;
+    const backup = puzzle[idx];
+    puzzle[idx] = 0;
+    const solCount = sdkCountSolutions(puzzle.slice(), 2);
+    if (solCount === 1) {
+      clues--;
+    } else {
+      puzzle[idx] = backup;
+    }
+  }
+  return { puzzle, solution: full };
+}
+
+function sdkFindConflicts(board) {
+  const conflicts = new Set();
+  for (let i = 0; i < 81; i++) {
+    if (!board[i]) continue;
+    for (let k = 0; k < 81; k++) {
+      if (k === i || !board[k]) continue;
+      if (board[k] === board[i] && sdkSameUnit(i, k)) { conflicts.add(i); break; }
+    }
+  }
+  return conflicts;
+}
+
+function sdkBoardIsComplete(board) {
+  return board.length === 81 && board.every(v => v !== 0) && sdkFindConflicts(board).size === 0;
+}
+
+function sdkProgressPercent(board, solution) {
+  const filled = board.filter((v, i) => v && v === solution[i]).length;
+  return Math.round((filled / 81) * 100);
+}
+
+function fmtElapsed(startIso) {
+  const sec = Math.max(0, Math.floor((new Date().getTime() - new Date(startIso).getTime()) / 1000));
+  const m = Math.floor(sec / 60), s = sec % 60;
+  return `${m}:${String(s).padStart(2, '0')}`;
+}
+
+function sudokuSessionIsDone(state) {
+  if (state.mode === 'race') return !!state.winner;
+  const board = (state.boards && state.boards[session.name]) || [];
+  return sdkBoardIsComplete(board);
+}
+
+async function startNewSudokuSession(sessionKey, draft) {
+  const me = session.name;
+  const { puzzle, solution } = sdkGeneratePuzzle(draft.difficulty);
+  const players = draft.mode === 'race' ? [me, draft.opponentName] : [me];
+  const boards = {};
+  players.forEach(p => { boards[p] = puzzle.slice(); });
+  const state = {
+    mode: draft.mode,
+    difficulty: draft.difficulty,
+    puzzle, solution, players, boards,
+    finishedAt: {},
+    winner: null,
+    startedAt: new Date().toISOString(),
+    startedBy: me
+  };
+  await saveGameSession('sudoku', sessionKey, state);
+}
+
+function renderSudokuSetup() {
+  const draft = view.gameSetupDraft || {};
+  const canStart = !!draft.difficulty && (draft.mode === 'solo' || (draft.mode === 'race' && draft.opponentName));
+  return `
+    <div class="back-row">
+      <button class="btn btn-secondary btn-small" data-back-to-games-hub>→ חזרה</button>
+      <h1 style="margin:0; font-size:17px;">🔢 סודוקו</h1>
+    </div>
+    <div class="game-setup-card">
+      <h3>רמת קושי</h3>
+      <div class="game-setup-difficulty">
+        ${['easy', 'medium', 'hard'].map(d => `
+          <button class="game-setup-opt ${draft.difficulty === d ? 'selected' : ''}" data-sudoku-difficulty="${d}">${d === 'easy' ? 'קל' : d === 'medium' ? 'בינוני' : 'קשה'}</button>
+        `).join('')}
+      </div>
+      <h3>איך משחקים?</h3>
+      <div class="game-setup-opponents">
+        <button class="game-setup-opt ${draft.mode === 'solo' ? 'selected' : ''}" data-sudoku-mode="solo">🧩 לבד</button>
+        ${otherSisters(session.name).map(n => `
+          <button class="game-setup-opt ${draft.mode === 'race' && draft.opponentName === n ? 'selected' : ''}" data-sudoku-mode="race" data-sudoku-opponent="${n}">
+            <span class="avatar ${AVATAR_CLASS[n] || ''}">${n[0]}</span> מרוץ מול ${escapeHtml(n)}
+          </button>
+        `).join('')}
+      </div>
+      <button class="btn btn-primary" style="width:100%; margin-top:8px;" data-sudoku-start ${canStart ? '' : 'disabled'}>בואי נתחיל!</button>
+    </div>
+    ${view.gameResumePrompt ? renderGameResumePrompt() : ''}
+  `;
+}
+
+function renderSudokuBoard(sessionKey) {
+  const gs = findGameSession('sudoku', sessionKey);
+  if (!gs) return '<p>שגיאה בטעינת המשחק.</p>';
+  const st = gs.state;
+  const me = session.name;
+  const myBoard = (st.boards && st.boards[me]) || st.puzzle.slice();
+  const selected = view.sudokuSelectedCell;
+  const conflicts = sdkFindConflicts(myBoard);
+  const isComplete = sdkBoardIsComplete(myBoard);
+  const opponentName = st.mode === 'race' ? st.players.find(p => p !== me) : null;
+
+  let statusText;
+  if (st.mode === 'race') {
+    if (st.winner === me) statusText = `ניצחת במרוץ! 🏆 (${fmtElapsed(st.startedAt)})`;
+    else if (st.winner) statusText = `${escapeHtml(opponentName)} ניצחה במרוץ הפעם 😅`;
+    else statusText = `⏱️ ${fmtElapsed(st.startedAt)}`;
+  } else {
+    statusText = isComplete ? `🎉 פתרת בהצלחה! (${fmtElapsed(st.startedAt)})` : `⏱️ ${fmtElapsed(st.startedAt)}`;
+  }
+
+  const raceProgress = (st.mode === 'race' && !st.winner)
+    ? `<div class="sudoku-race-progress">
+        ההתקדמות של ${escapeHtml(opponentName)}: ${sdkProgressPercent(st.boards[opponentName] || [], st.solution)}%
+        <div class="progress-bar-track"><div class="progress-bar-fill" style="width:${sdkProgressPercent(st.boards[opponentName] || [], st.solution)}%"></div></div>
+      </div>`
+    : '';
+
+  const showNumpad = selected !== null && selected !== undefined && st.puzzle[selected] === 0 && !isComplete && !(st.mode === 'race' && st.winner);
+
+  return `
+    <div class="back-row">
+      <button class="btn btn-secondary btn-small" data-back-to-games-hub>→ חזרה</button>
+      <h1 style="margin:0; font-size:17px;">🔢 סודוקו</h1>
+    </div>
+    <div class="game-board-header">
+      <div class="game-status ${isComplete || st.winner ? 'game-status-over' : ''}">${statusText}</div>
+      ${raceProgress}
+    </div>
+    <div class="sudoku-board">
+      ${myBoard.map((val, i) => {
+        const given = st.puzzle[i] !== 0;
+        const isSelected = selected === i;
+        const conflict = conflicts.has(i);
+        const related = selected !== null && selected !== undefined && !isSelected && sdkSameUnit(selected, i);
+        const cls = ['sudoku-cell'];
+        if (given) cls.push('given');
+        if (isSelected) cls.push('selected');
+        if (conflict) cls.push('conflict');
+        if (related) cls.push('related');
+        if (sdkColOf(i) === 2 || sdkColOf(i) === 5) cls.push('border-right');
+        if (sdkRowOf(i) === 2 || sdkRowOf(i) === 5) cls.push('border-bottom');
+        const disabled = given || isComplete || (st.mode === 'race' && st.winner);
+        return `<button class="${cls.join(' ')}" data-sudoku-cell="${i}" ${disabled ? 'disabled' : ''}>${val || ''}</button>`;
+      }).join('')}
+    </div>
+    ${showNumpad ? `
+      <div class="sudoku-numpad">
+        ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button class="sudoku-num-btn" data-sudoku-num="${n}">${n}</button>`).join('')}
+        <button class="sudoku-num-btn sudoku-clear-btn" data-sudoku-num="0">✕</button>
+      </div>
+    ` : ''}
+    <button class="btn btn-secondary" style="width:100%; margin-top:14px;" data-game-new-game>🔄 לוח חדש</button>
+    ${view.gameConfirmNewGame ? renderGameConfirmNewGame() : ''}
+  `;
+}
+
+async function playSudokuMove(num) {
+  const gameId = 'sudoku';
+  const sessionKey = view.activeGameSessionKey;
+  const gs = findGameSession(gameId, sessionKey);
+  if (!gs) return;
+  const st = gs.state;
+  const me = session.name;
+  const idx = view.sudokuSelectedCell;
+  if (idx === null || idx === undefined || st.puzzle[idx] !== 0) return;
+  if (st.mode === 'race' && st.winner) return;
+  const myBoard = ((st.boards && st.boards[me]) || st.puzzle.slice()).slice();
+  myBoard[idx] = num;
+  const boards = { ...st.boards, [me]: myBoard };
+  const finishedAt = { ...(st.finishedAt || {}) };
+  let winner = st.winner || null;
+  if (sdkBoardIsComplete(myBoard) && !finishedAt[me]) {
+    finishedAt[me] = new Date().toISOString();
+    if (st.mode === 'race' && !winner) winner = me;
+  }
+  const newState = { ...st, boards, finishedAt, winner };
+  try {
+    await saveGameSession(gameId, sessionKey, newState);
+  } catch (e) {
+    alert('שגיאה בשמירת המהלך, נסי שוב');
+  }
 }
 
 function shoppingActiveList() {
@@ -3442,6 +3737,7 @@ function attachHandlers() {
     view.gameSetupDraft = null;
     view.gameResumePrompt = null;
     view.gameConfirmNewGame = false;
+    view.sudokuSelectedCell = null;
     render();
   };
 
@@ -3506,7 +3802,8 @@ function attachHandlers() {
     gameResumeNewBtn.onclick = async () => {
       const { sessionKey, gameId, freshDraft } = view.gameResumePrompt;
       try {
-        await startNewGameSession(gameId, sessionKey, freshDraft);
+        if (gameId === 'sudoku') await startNewSudokuSession(sessionKey, freshDraft);
+        else await startNewGameSession(gameId, sessionKey, freshDraft);
       } catch (e) {
         alert('שגיאה בפתיחת המשחק, נסי שוב');
         return;
@@ -3514,6 +3811,7 @@ function attachHandlers() {
       view.activeGameSessionKey = sessionKey;
       view.gameResumePrompt = null;
       view.gameSetupDraft = null;
+      view.sudokuSelectedCell = null;
       render();
     };
   }
@@ -3537,6 +3835,7 @@ function attachHandlers() {
       view.activeGameSessionKey = null;
       view.gameConfirmNewGame = false;
       view.gameSetupDraft = null;
+      view.sudokuSelectedCell = null;
       render();
     };
   }
@@ -3560,6 +3859,67 @@ function attachHandlers() {
     el.onclick = async () => {
       const col = parseInt(el.getAttribute('data-c4-col'), 10);
       await playConnect4Move(col);
+    };
+  });
+
+  document.querySelectorAll('[data-sudoku-difficulty]').forEach(el => {
+    el.onclick = () => {
+      view.gameSetupDraft = view.gameSetupDraft || {};
+      view.gameSetupDraft.difficulty = el.getAttribute('data-sudoku-difficulty');
+      render();
+    };
+  });
+
+  document.querySelectorAll('[data-sudoku-mode]').forEach(el => {
+    el.onclick = () => {
+      view.gameSetupDraft = view.gameSetupDraft || {};
+      const mode = el.getAttribute('data-sudoku-mode');
+      view.gameSetupDraft.mode = mode;
+      view.gameSetupDraft.opponentName = mode === 'race' ? el.getAttribute('data-sudoku-opponent') : null;
+      render();
+    };
+  });
+
+  const sudokuStartBtn = document.querySelector('[data-sudoku-start]');
+  if (sudokuStartBtn) {
+    sudokuStartBtn.onclick = async () => {
+      const draft = view.gameSetupDraft || {};
+      if (!draft.difficulty || !draft.mode) return;
+      if (draft.mode === 'race' && !draft.opponentName) return;
+      const sessionKey = draft.mode === 'solo' ? gameSessionKeySolo(session.name) : gameSessionKeyPair(session.name, draft.opponentName);
+      const existing = findGameSession('sudoku', sessionKey);
+      if (existing && existing.state && !sudokuSessionIsDone(existing.state)) {
+        view.gameResumePrompt = {
+          sessionKey, gameId: 'sudoku', freshDraft: draft,
+          opponentLabel: draft.mode === 'race' ? draft.opponentName : 'לבד'
+        };
+        render();
+        return;
+      }
+      try {
+        await startNewSudokuSession(sessionKey, draft);
+      } catch (e) {
+        alert('שגיאה בפתיחת המשחק, נסי שוב');
+        return;
+      }
+      view.activeGameSessionKey = sessionKey;
+      view.gameSetupDraft = null;
+      view.sudokuSelectedCell = null;
+      render();
+    };
+  }
+
+  document.querySelectorAll('[data-sudoku-cell]').forEach(el => {
+    el.onclick = () => {
+      view.sudokuSelectedCell = parseInt(el.getAttribute('data-sudoku-cell'), 10);
+      render();
+    };
+  });
+
+  document.querySelectorAll('[data-sudoku-num]').forEach(el => {
+    el.onclick = async () => {
+      const num = parseInt(el.getAttribute('data-sudoku-num'), 10);
+      await playSudokuMove(num);
     };
   });
 }
