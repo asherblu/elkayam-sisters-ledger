@@ -569,6 +569,49 @@ const JOKE_STAR_PHRASES = {
   5: 'עפה על הבדיחה הזאת!'
 };
 
+const ASHER_JOKES = [
+  "תזכרו להגיד תודה לאשר – הבחור שחיווט לכן אפליקציה שלמה באותן ידיים שמחווטות מתקן התפלה שלם.",
+  "מחקר מדעי חדש (שנערך הרגע, על ידי) מוכיח: גיס אחד מוכשר עם וולוו S90 שווה יותר מכל צוות פיתוח.",
+  "אם אשר היה מגדל את האפליקציה הזו בגינה, היא כבר הייתה נותנת פרי.",
+  "בזמן שהאפליקציה נטענת, אשר כנראה עומד בגינה ומדבר עם עגבנייה. תנו לו את הקרדיט על הסבלנות.",
+  "העצמה של היום: תזכרי שיש לך גיס שיודע גם לתקן קצר חשמלי וגם לתקן מסך טעינה תקוע. שני סוגי גאונות נדירים.",
+  "אשר בנה את זה מאפס, בלי לקחת הפסקת קפה אחת. גם זה סוג של כוח־על.",
+  "אם מישהי שואלת מי בנה את זה – זו לא קסם, זו וולוו S90 מומנטום ותשומת לב לפרטים.",
+  "תנו לאשר טפיחה על השכם. הוא בנה לכן אפליקציה שלמה וכמעט אף פעם לא שכח פסיק.",
+  "כשריקי אמרה \"אולי תכתוב לנו אפליקציה\", אשר לא ידע שזה יגמר בבדיחות קרש. עכשיו הוא יודע, ומתגאה בזה.",
+  "העצמה נשית מיוחדת להיום: את חכמה, את חזקה, ויש לך גיס שגם מתפעל מתקן התפלה וגם מדבב קוד בלי לאבד את הסבלנות.",
+  "לשאלה הנצחית \"מי בעצם בנה את האפליקציה\" – התשובה תמיד אותו בחור עם הגינה והוולוו.",
+  "אשר מבטיח: הבאג הבא ייפתר מהר יותר מאשר העגבניות שלו מבשילות."
+];
+
+function isoWeekKey(d) {
+  const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const dayNum = date.getUTCDay() || 7;
+  date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+  const week = Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
+  return `${date.getUTCFullYear()}-W${week}`;
+}
+
+function simpleHash(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) { h = (h * 31 + str.charCodeAt(i)) >>> 0; }
+  return h;
+}
+
+// Once a week, exactly one quote "slot" in the pool is swapped for a rotating Asher joke —
+// same swapped slot and same joke for everyone all week (deterministic by ISO week), not random per view.
+function quotePoolWithWeeklyAsherJoke() {
+  const pool = EMPOWERMENT_QUOTES.concat(data.empowermentQuotes.map(q => q.text));
+  if (!pool.length || !ASHER_JOKES.length) return pool;
+  const h = simpleHash(isoWeekKey(new Date()));
+  const slotIndex = h % pool.length;
+  const jokeIndex = h % ASHER_JOKES.length;
+  const result = pool.slice();
+  result[slotIndex] = ASHER_JOKES[jokeIndex];
+  return result;
+}
+
 const EMPOWER_TEMPLATES = [
   '{name} היקרה, {quote}',
   '{name}, תזכרי לרגע: {quote}',
@@ -579,7 +622,7 @@ const EMPOWER_TEMPLATES = [
 ];
 
 function personalizedEmpowerText(name) {
-  const pool = EMPOWERMENT_QUOTES.concat(data.empowermentQuotes.map(q => q.text));
+  const pool = quotePoolWithWeeklyAsherJoke();
   if (!pool.length) return '';
   const quote = pool[Math.floor(Math.random() * pool.length)];
   const template = EMPOWER_TEMPLATES[Math.floor(Math.random() * EMPOWER_TEMPLATES.length)];
@@ -587,7 +630,7 @@ function personalizedEmpowerText(name) {
 }
 
 const NAMES = ['ריקי', 'ברוריה', 'דורית'];
-const APP_VERSION = '2.2.0';
+const APP_VERSION = '2.3.0';
 const APP_UPDATED = '14.08.2026';
 const AVATAR_CLASS = { 'ריקי': 'ricky', 'ברוריה': 'bruria', 'דורית': 'dorit' };
 const PET_NAMES = ['כפרוש', 'נשמה', 'חיים שלי', 'עיניים שלי'];
@@ -622,7 +665,7 @@ function pickPetName() {
 }
 
 function pickRandomQuote() {
-  const all = EMPOWERMENT_QUOTES.concat(data.empowermentQuotes.map(q => q.text));
+  const all = quotePoolWithWeeklyAsherJoke();
   if (!all.length) return '';
   return all[Math.floor(Math.random() * all.length)];
 }
