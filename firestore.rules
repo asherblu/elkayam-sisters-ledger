@@ -72,5 +72,18 @@ service cloud.firestore {
       allow read, create: if isSister();
       allow update, delete: if false;
     }
+
+    match /recipeFavorites/{id} {
+      allow read: if isSister();
+      allow create: if isSister() && request.resource.data.sister == myName();
+      allow delete: if isSister() && resource.data.sister == myName();
+      allow update: if false;
+    }
+
+    match /recipeViews/{id} {
+      allow read: if isSister();
+      allow create, update: if isSister() && request.resource.data.viewer == myName();
+      allow delete: if false;
+    }
   }
 }

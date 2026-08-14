@@ -225,9 +225,24 @@
   .fab-circle.joke-fab:active { transform: translateY(4px); box-shadow: 0 1px 0 #b87700, 0 2px 6px rgba(184,119,0,0.3); }
   .fab-circle.empower-fab { background: linear-gradient(145deg, #e07bb0, #c94f8f); box-shadow: 0 5px 0 #a03a70, 0 8px 14px rgba(160,58,112,0.35); }
   .fab-circle.empower-fab:active { transform: translateY(4px); box-shadow: 0 1px 0 #a03a70, 0 2px 6px rgba(160,58,112,0.3); }
+  .fab-circle.weather-fab { background: linear-gradient(145deg, #6ec3f0, #2f8fcf); box-shadow: 0 5px 0 #1f6d9f, 0 8px 14px rgba(31,109,159,0.35); }
+  .fab-circle.weather-fab:active { transform: translateY(4px); box-shadow: 0 1px 0 #1f6d9f, 0 2px 6px rgba(31,109,159,0.3); }
+  .fab-circle.relax-fab {
+    background: linear-gradient(145deg, #b39ddb, #7e57c2); box-shadow: 0 5px 0 #5e35b1, 0 8px 14px rgba(94,53,177,0.35);
+    flex-direction: column; gap: 1px; font-size: 11px; font-weight: 800;
+  }
+  .fab-circle.relax-fab:active { transform: translateY(4px); box-shadow: 0 1px 0 #5e35b1, 0 2px 6px rgba(94,53,177,0.3); }
+  .fab-circle.relax-fab.playing { background: linear-gradient(145deg, #9575cd, #5e35b1); }
+  .relax-fab-icon { font-size: 19px; line-height: 1; }
+  .relax-fab-label { font-size: 10.5px; line-height: 1; }
 
+  .shopping-tab-wrap { position: fixed; left: 0; top: 50%; transform: translateY(-50%); z-index: 40; display: flex; flex-direction: column; align-items: center; }
+  .shopping-count-badge {
+    background: var(--i-owe); color: #fff; font-weight: 800; font-size: 12.5px; border-radius: 999px;
+    min-width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+    padding: 0 6px; margin-bottom: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.25); border: 2px solid #fff;
+  }
   .sticky-note-tab {
-    position: fixed; left: 0; top: 50%; transform: translateY(-50%); z-index: 40;
     background: #fff4a3; border: 1px solid #e6d366; border-inline-start: none;
     border-radius: 0 12px 12px 0; padding: 14px 8px; box-shadow: 2px 3px 8px rgba(0,0,0,0.18);
     cursor: pointer; writing-mode: vertical-rl; text-orientation: mixed; font-size: 13px; font-weight: 700; color: #6b5a10;
@@ -259,14 +274,6 @@
   .shopping-item.purchased .buy-check { background: var(--owed-to-me); border-color: var(--owed-to-me); color: #fff; }
   .del-item-btn { background: none; border: none; color: var(--text-muted); font-size: 17px; cursor: pointer; flex-shrink: 0; padding: 2px 4px; }
 
-  .weather-login-fab {
-    position: fixed; top: 14px; left: 14px; z-index: 45;
-    width: 54px; height: 54px; border-radius: 50%; border: none; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; font-size: 24px; color: #fff;
-    background: linear-gradient(145deg, #6ec3f0, #2f8fcf); box-shadow: 0 5px 0 #1f6d9f, 0 8px 14px rgba(31,109,159,0.35);
-    transition: transform 0.08s ease, box-shadow 0.08s ease;
-  }
-  .weather-login-fab:active { transform: translateY(4px); box-shadow: 0 1px 0 #1f6d9f, 0 2px 6px rgba(31,109,159,0.3); }
   .weather-modal { max-width: 380px; }
   .weather-scene { position: relative; height: 190px; border-radius: 14px; overflow: hidden; margin-bottom: 14px; }
   .scene-day-clear { background: linear-gradient(180deg, #7ec8f2 0%, #bfe6a8 70%, #8fce6a 100%); }
@@ -319,10 +326,18 @@
   .recipe-comment-text { font-size: 13.5px; }
   .recipe-comment-add-row { display: flex; gap: 8px; }
   .recipe-comment-add-row input { flex: 1; }
+
+  .recipe-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .recipe-fav-btn { background: none; border: none; font-size: 19px; cursor: pointer; padding: 0 2px; flex-shrink: 0; line-height: 1.3; }
+  .recipe-views-line { font-size: 11px; color: var(--text-muted); margin: 8px 0; }
+  .recipe-pdf-embed { margin-bottom: 10px; }
+  .recipe-pdf-frame { width: 100%; height: 320px; border: 1px solid var(--border); border-radius: 8px; }
+  .recipe-pdf-note { background: var(--bg); border-radius: 8px; padding: 8px 10px; font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
 </style>
 </head>
 <body>
 <div class="wrap" id="app"></div>
+<audio id="relax-audio" src="relax-music.mp3" loop preload="none"></audio>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
@@ -708,7 +723,7 @@ function personalizedEmpowerText(name) {
 }
 
 const NAMES = ['ריקי', 'ברוריה', 'דורית'];
-const APP_VERSION = '2.5.0';
+const APP_VERSION = '2.6.0';
 const APP_UPDATED = '14.08.2026';
 const AVATAR_CLASS = { 'ריקי': 'ricky', 'ברוריה': 'bruria', 'דורית': 'dorit' };
 const PET_NAMES = ['כפרוש', 'נשמה', 'חיים שלי', 'עיניים שלי'];
@@ -817,6 +832,15 @@ function compressImageFile(file) {
   });
 }
 
+function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('read failed'));
+    reader.onload = () => resolve(reader.result);
+    reader.readAsDataURL(file);
+  });
+}
+
 function buildRecipePrintHtml(r) {
   return `<!DOCTYPE html><html lang="he" dir="rtl"><head><meta charset="UTF-8"><title>${escapeHtml(r.title)}</title>
 <style>
@@ -830,7 +854,8 @@ function buildRecipePrintHtml(r) {
 </head><body>
 <h1>${escapeHtml(r.title)}</h1>
 <div class="meta">${r.category ? escapeHtml(r.category) + ' · ' : ''}${r.servings ? escapeHtml(r.servings) + ' מנות · ' : ''}${r.prepTime ? escapeHtml(r.prepTime) : ''}</div>
-${r.photoDataUrl ? `<img src="${r.photoDataUrl}">` : ''}
+${r.photoDataUrl && r.photoMimeType !== 'application/pdf' ? `<img src="${r.photoDataUrl}">` : ''}
+${r.photoDataUrl && r.photoMimeType === 'application/pdf' ? `<p style="color:#8a8578;font-size:13px;">(למתכון הזה מצורף קובץ PDF - פתחי אותו בנפרד מתוך האפליקציה)</p>` : ''}
 ${(r.ingredients || []).length ? `<h2>מרכיבים</h2><ul>${(r.ingredients || []).map(i => `<li>${escapeHtml(i)}</li>`).join('')}</ul>` : ''}
 ${(r.instructions || []).length ? `<h2>אופן ההכנה</h2><ol>${(r.instructions || []).map(i => `<li>${escapeHtml(i)}</li>`).join('')}</ol>` : ''}
 ${r.notes ? `<h2>הערות</h2><div>${escapeHtml(r.notes)}</div>` : ''}
@@ -862,6 +887,8 @@ let data = {
   empowermentQuotes: [],
   quoteFavorites: [],
   recipeComments: [],
+  recipeFavorites: [],
+  recipeViews: [],
   recipes: [],
   recipeCategories: [],
   jokeRatings: [],
@@ -963,8 +990,6 @@ function renderLoading() {
 
 function renderLogin() {
   return `
-    <button class="weather-login-fab" id="weather-fab-btn" title="מזג האוויר" aria-label="מזג האוויר">🌤️</button>
-    ${view.weatherPopup ? renderWeatherModal() : ''}
     <div class="banner">מחוברת לענן - הנתונים מסונכרנים אוטומטית בין כל המכשירים</div>
     <div class="bills-wrap" aria-hidden="true">
       <div class="bill b200"><span class="sign">₪</span><span class="denom">200</span></div>
@@ -1348,15 +1373,23 @@ function renderRecipes() {
   const allCatNames = new Set(cats);
   Object.keys(grouped).forEach(c => allCatNames.add(c));
   const orderedCats = Array.from(allCatNames).sort((a, b) => a.localeCompare(b, 'he'));
+  const showFavOnly = !!view.showRecipeFavoritesOnly;
+  const myFavRecipeIds = new Set(data.recipeFavorites.filter(f => f.sister === session.name).map(f => f.recipeId));
+  const favRecipes = data.recipes.filter(r => myFavRecipeIds.has(r.id));
 
   return `
     <div class="back-row">
       <button class="btn btn-secondary btn-small" id="back-to-dash-from-recipes">→ חזרה</button>
       <h1 style="margin:0; font-size:17px;">מתכונים משותפים</h1>
     </div>
-    <button class="btn btn-primary toggle-add" id="toggle-add-recipe-btn">${view.showAddRecipe ? 'סגירת טופס' : '+ הוספת מתכון'}</button>
+    <div class="row" style="margin-bottom:12px;">
+      <button class="btn btn-primary toggle-add" id="toggle-add-recipe-btn">${view.showAddRecipe ? 'סגירת טופס' : '+ הוספת מתכון'}</button>
+      <button class="btn btn-secondary" id="toggle-recipe-favorites-btn">${showFavOnly ? '📋 כל המתכונים' : `❤️ מועדפים (${favRecipes.length})`}</button>
+    </div>
     ${view.showAddRecipe ? renderAddRecipeForm(cats) : ''}
-    ${orderedCats.length === 0 ? `<div class="empty">אין עדיין מתכונים - תהיי הראשונה להוסיף!</div>` : orderedCats.map(cat => renderCategoryGroup(cat, grouped[cat] || [])).join('')}
+    ${showFavOnly ? `
+      ${favRecipes.length === 0 ? `<div class="empty">עדיין לא סימנת מתכונים כמועדפים - לחצי על הלב ליד מתכון שאהבת</div>` : favRecipes.map(r => renderRecipeCard(r)).join('')}
+    ` : (orderedCats.length === 0 ? `<div class="empty">אין עדיין מתכונים - תהיי הראשונה להוסיף!</div>` : orderedCats.map(cat => renderCategoryGroup(cat, grouped[cat] || [])).join(''))}
   `;
 }
 
@@ -1381,14 +1414,23 @@ function renderCategoryGroup(cat, recipes) {
 function renderRecipeCard(r) {
   const isOpen = !!(view.openRecipes && view.openRecipes[r.id]);
   const comments = data.recipeComments.filter(cm => cm.recipeId === r.id).sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || ''));
+  const favs = data.recipeFavorites.filter(f => f.recipeId === r.id);
+  const iFavorited = favs.some(f => f.sister === session.name);
+  const views = data.recipeViews.filter(v => v.recipeId === r.id).sort((a, b) => (b.viewedAt || '').localeCompare(a.viewedAt || ''));
+  const hasAttachment = !!r.photoDataUrl;
+  const isPdfAttachment = r.photoMimeType === 'application/pdf';
   return `
     <div class="recipe-card" data-toggle-recipe="${r.id}">
-      ${r.photoDataUrl && !isOpen ? `<img src="${r.photoDataUrl}" class="recipe-thumb">` : ''}
-      <div class="recipe-title">${escapeHtml(r.title)}</div>
-      <div class="recipe-meta">${r.servings ? `${escapeHtml(r.servings)} מנות · ` : ''}${r.prepTime ? `${escapeHtml(r.prepTime)} · ` : ''}נוסף ע"י ${escapeHtml(r.addedBy || '')}</div>
+      <div class="recipe-card-top">
+        <div class="recipe-title">${escapeHtml(r.title)}${hasAttachment ? (isPdfAttachment ? ' 📄' : ' 📷') : ''}</div>
+        <button class="recipe-fav-btn" data-toggle-fav-recipe="${r.id}" title="הוספה למועדפים">${iFavorited ? '❤️' : '🤍'}</button>
+      </div>
+      <div class="recipe-meta">${r.servings ? `${escapeHtml(r.servings)} מנות · ` : ''}${r.prepTime ? `${escapeHtml(r.prepTime)} · ` : ''}נוסף ע"י ${escapeHtml(r.addedBy || '')}${favs.length ? ` · ❤️ ${favs.length}` : ''}</div>
       ${isOpen ? `
         <div class="recipe-detail">
-          ${r.photoDataUrl ? `<img src="${r.photoDataUrl}" class="recipe-photo-full">` : ''}
+          ${hasAttachment ? (isPdfAttachment
+            ? `<div class="recipe-pdf-embed"><embed src="${r.photoDataUrl}" type="application/pdf" class="recipe-pdf-frame"><a href="${r.photoDataUrl}" target="_blank" class="btn btn-secondary btn-small" style="margin-top:6px;">📄 פתיחת ה-PDF בחלון נפרד</a></div>`
+            : `<img src="${r.photoDataUrl}" class="recipe-photo-full">`) : ''}
           ${(r.ingredients || []).length ? `<h4>מרכיבים</h4><ul>${(r.ingredients || []).map(i => `<li>${escapeHtml(i)}</li>`).join('')}</ul>` : ''}
           ${(r.instructions || []).length ? `<h4>אופן ההכנה</h4><ol>${(r.instructions || []).map(i => `<li>${escapeHtml(i)}</li>`).join('')}</ol>` : ''}
           ${r.notes ? `<h4>הערות</h4><div>${escapeHtml(r.notes)}</div>` : ''}
@@ -1397,6 +1439,7 @@ function renderRecipeCard(r) {
             <button class="btn btn-secondary btn-small" data-print-recipe="${r.id}">🖨️ הדפסה</button>
             <button class="btn btn-secondary btn-small" data-pdf-recipe="${r.id}">📄 יצוא PDF</button>
           </div>
+          ${views.length ? `<div class="recipe-views-line">👁️ נצפה ע"י: ${views.map(v => escapeHtml(v.viewer)).join(', ')}</div>` : ''}
           <h4>הערות ושאלות</h4>
           <div class="recipe-comments">
             ${comments.length === 0 ? `<div class="tx-meta">אין עדיין תגובות</div>` : comments.map(cm => `
@@ -1421,7 +1464,8 @@ function renderRecipeCard(r) {
 }
 
 function renderAddRecipeForm(cats) {
-  const draft = view.recipeDraft || { ingredients: [''], instructions: [''] };
+  if (!view.recipeDraft) view.recipeDraft = { ingredients: [''], instructions: [''] };
+  const draft = view.recipeDraft;
   const editing = !!view.editingRecipeId;
   return `
     <div class="add-form">
@@ -1442,14 +1486,19 @@ function renderAddRecipeForm(cats) {
         <div class="field"><label>זמן הכנה</label><input type="text" id="recipe-preptime-input" value="${escapeHtml(draft.prepTime || '')}" placeholder="לדוגמה: 45 דקות"></div>
       </div>
       <div class="field">
-        <label>תמונה (אופציונלי - של המנה המוכנה, או צילום של מתכון שלם)</label>
-        <input type="file" accept="image/*" id="recipe-photo-input">
-        ${draft.photoDataUrl ? `
+        <label>תמונה או PDF (אופציונלי - של המנה המוכנה, צילום/סריקה של מתכון שלם, או קובץ PDF)</label>
+        <input type="file" accept="image/*,application/pdf" id="recipe-photo-input">
+        ${draft.photoDataUrl ? (draft.photoMimeType === 'application/pdf' ? `
+          <div class="recipe-photo-preview-wrap">
+            <div class="recipe-pdf-note">📄 קובץ PDF מצורף</div>
+            <button type="button" class="row-remove-btn" id="remove-recipe-photo-btn">✕ הסרת קובץ</button>
+          </div>
+        ` : `
           <div class="recipe-photo-preview-wrap">
             <img src="${draft.photoDataUrl}" class="recipe-photo-preview">
             <button type="button" class="row-remove-btn" id="remove-recipe-photo-btn">✕ הסרת תמונה</button>
           </div>
-        ` : ''}
+        `) : ''}
         ${view.recipePhotoError ? `<div class="error">${escapeHtml(view.recipePhotoError)}</div>` : ''}
       </div>
       <div class="field checkbox-field">
@@ -1490,12 +1539,23 @@ function renderAddRecipeForm(cats) {
 }
 
 function renderFabButtons() {
+  const shoppingCount = data.shoppingList.length;
+  const relaxPlaying = !!view.relaxPlaying;
   return `
     <div class="fab-col right">
+      <button class="fab-circle weather-fab" id="weather-fab-btn" title="מזג האוויר" aria-label="מזג האוויר">🌤️</button>
       <button class="fab-circle joke-fab" id="joke-fab-btn" title="בדיחה" aria-label="בדיחה">😂</button>
       <button class="fab-circle empower-fab" id="empower-fab-btn" title="תעצים אותי" aria-label="תעצים אותי">✨</button>
+      <button class="fab-circle relax-fab ${relaxPlaying ? 'playing' : ''}" id="relax-fab-btn" title="מוזיקה מרגיעה" aria-label="תירגעי">
+        <span class="relax-fab-icon">${relaxPlaying ? '⏸️' : '🎵'}</span>
+        <span class="relax-fab-label">תירגעי</span>
+      </button>
     </div>
-    <div class="sticky-note-tab" id="shopping-tab-btn">🛒 רשימת קניות</div>
+    <div class="shopping-tab-wrap">
+      ${shoppingCount ? `<div class="shopping-count-badge">${shoppingCount}</div>` : ''}
+      <div class="sticky-note-tab" id="shopping-tab-btn">🛒 רשימת קניות</div>
+    </div>
+    ${view.weatherPopup ? renderWeatherModal() : ''}
   `;
 }
 
@@ -2203,13 +2263,25 @@ function attachHandlers() {
   };
 
   const backFromRecipes = document.getElementById('back-to-dash-from-recipes');
-  if (backFromRecipes) backFromRecipes.onclick = () => { view.screen = 'dashboard'; render(); };
+  if (backFromRecipes) backFromRecipes.onclick = () => {
+    view.screen = 'dashboard';
+    view.showAddRecipe = false;
+    view.editingRecipeId = null;
+    view.recipeDraft = null;
+    view.addRecipeError = '';
+    view.recipePhotoError = '';
+    render();
+  };
 
   document.querySelectorAll('[data-toggle-category]').forEach(el => {
     el.onclick = () => {
       const cat = el.getAttribute('data-toggle-category');
       view.openRecipeCategories = view.openRecipeCategories || {};
-      view.openRecipeCategories[cat] = !view.openRecipeCategories[cat];
+      const opening = !view.openRecipeCategories[cat];
+      view.openRecipeCategories[cat] = opening;
+      // Entering a category always starts with every recipe collapsed (uniform, compact rows) -
+      // clicking a recipe is what opens it, not entering the category.
+      if (opening) view.openRecipes = {};
       render();
     };
   });
@@ -2219,10 +2291,49 @@ function attachHandlers() {
       if (e.target.closest('[data-delete-recipe]')) return;
       const id = el.getAttribute('data-toggle-recipe');
       view.openRecipes = view.openRecipes || {};
-      view.openRecipes[id] = !view.openRecipes[id];
+      const opening = !view.openRecipes[id];
+      view.openRecipes[id] = opening;
+      if (opening) {
+        const r = data.recipes.find(x => x.id === id);
+        const me = session.name;
+        if (r && r.addedBy && r.addedBy !== me) {
+          setDoc(doc(db, 'recipeViews', `${id}__${me}`), {
+            recipeId: id, viewer: me, viewedAt: new Date().toISOString()
+          }, { merge: true }).catch(() => {});
+        }
+      }
       render();
     };
   });
+
+  document.querySelectorAll('[data-toggle-fav-recipe]').forEach(el => {
+    el.onclick = async (e) => {
+      e.stopPropagation();
+      const id = el.getAttribute('data-toggle-fav-recipe');
+      const me = session.name;
+      const docId = `${id}__${me}`;
+      const already = data.recipeFavorites.some(f => f.recipeId === id && f.sister === me);
+      el.disabled = true;
+      try {
+        if (already) {
+          await deleteDoc(doc(db, 'recipeFavorites', docId));
+        } else {
+          await setDoc(doc(db, 'recipeFavorites', docId), {
+            recipeId: id, sister: me, createdAt: new Date().toISOString()
+          });
+        }
+      } catch (e2) {
+        alert('שגיאה בעדכון המועדפים, נסי שוב');
+      }
+      el.disabled = false;
+    };
+  });
+
+  const toggleRecipeFavoritesBtn = document.getElementById('toggle-recipe-favorites-btn');
+  if (toggleRecipeFavoritesBtn) toggleRecipeFavoritesBtn.onclick = () => {
+    view.showRecipeFavoritesOnly = !view.showRecipeFavoritesOnly;
+    render();
+  };
 
   function syncRecipeDraftFromDom() {
     if (!view.recipeDraft) return;
@@ -2249,10 +2360,8 @@ function attachHandlers() {
   const toggleAddRecipeBtn = document.getElementById('toggle-add-recipe-btn');
   if (toggleAddRecipeBtn) toggleAddRecipeBtn.onclick = () => {
     view.showAddRecipe = !view.showAddRecipe;
-    if (view.showAddRecipe) {
-      view.recipeDraft = { ingredients: [''], instructions: [''] };
-      view.editingRecipeId = null;
-    }
+    view.editingRecipeId = null;
+    view.recipeDraft = view.showAddRecipe ? { ingredients: [''], instructions: [''] } : null;
     view.addRecipeError = '';
     view.recipePhotoError = '';
     render();
@@ -2266,10 +2375,22 @@ function attachHandlers() {
       syncRecipeDraftFromDom();
       view.recipePhotoError = '';
       try {
-        const dataUrl = await compressImageFile(file);
-        view.recipeDraft.photoDataUrl = dataUrl;
+        if (file.type === 'application/pdf') {
+          if (file.size > 650000) {
+            view.recipePhotoError = 'קובץ ה-PDF גדול מדי (עד כ-650KB), נסי קובץ קטן יותר';
+            render();
+            return;
+          }
+          const dataUrl = await readFileAsDataUrl(file);
+          view.recipeDraft.photoDataUrl = dataUrl;
+          view.recipeDraft.photoMimeType = 'application/pdf';
+        } else {
+          const dataUrl = await compressImageFile(file);
+          view.recipeDraft.photoDataUrl = dataUrl;
+          view.recipeDraft.photoMimeType = 'image/jpeg';
+        }
       } catch (e) {
-        view.recipePhotoError = 'שגיאה בטעינת התמונה, נסי תמונה אחרת';
+        view.recipePhotoError = 'שגיאה בטעינת הקובץ, נסי קובץ אחר';
       }
       render();
     };
@@ -2279,6 +2400,7 @@ function attachHandlers() {
   if (removeRecipePhotoBtn) removeRecipePhotoBtn.onclick = () => {
     syncRecipeDraftFromDom();
     view.recipeDraft.photoDataUrl = null;
+    view.recipeDraft.photoMimeType = null;
     render();
   };
 
@@ -2359,9 +2481,10 @@ function attachHandlers() {
 
       saveRecipeBtn.disabled = true;
       try {
+        const photoMimeType = draft.photoMimeType || null;
         const payload = {
           title, category, servings, prepTime, notes,
-          ingredients, instructions, isPhotoRecipe, photoDataUrl
+          ingredients, instructions, isPhotoRecipe, photoDataUrl, photoMimeType
         };
         if (view.editingRecipeId) {
           await setDoc(doc(db, 'recipes', view.editingRecipeId), payload, { merge: true });
@@ -2417,6 +2540,7 @@ function attachHandlers() {
         ingredients: (r.ingredients && r.ingredients.length) ? r.ingredients.slice() : [''],
         instructions: (r.instructions && r.instructions.length) ? r.instructions.slice() : [''],
         photoDataUrl: r.photoDataUrl || null,
+        photoMimeType: r.photoMimeType || null,
         isPhotoRecipe: !!r.isPhotoRecipe
       };
       view.editingRecipeId = r.id;
@@ -2519,6 +2643,20 @@ function attachHandlers() {
   const shoppingTabBtn = document.getElementById('shopping-tab-btn');
   if (shoppingTabBtn) shoppingTabBtn.onclick = () => { view.shoppingOpen = true; render(); };
 
+  const relaxFabBtn = document.getElementById('relax-fab-btn');
+  if (relaxFabBtn) relaxFabBtn.onclick = () => {
+    const audio = document.getElementById('relax-audio');
+    if (!audio) return;
+    if (audio.paused) {
+      audio.play().catch(() => {});
+      view.relaxPlaying = true;
+    } else {
+      audio.pause();
+      view.relaxPlaying = false;
+    }
+    render();
+  };
+
   const shoppingCloseBtn = document.getElementById('shopping-close-btn');
   if (shoppingCloseBtn) shoppingCloseBtn.onclick = () => { view.shoppingOpen = false; render(); };
 
@@ -2579,7 +2717,7 @@ function subscribeAll(name, gen) {
 
   const checkLoaded = () => {
     if (gen !== authGeneration) return;
-    if (loadedKeys.size >= 12 && view.screen === 'loading') {
+    if (loadedKeys.size >= 14 && view.screen === 'loading') {
       finishInitialLoad(name);
     } else {
       render();
@@ -2669,6 +2807,26 @@ function subscribeAll(name, gen) {
     checkLoaded();
   }, () => {
     loadedKeys.add('recipeComments');
+    checkLoaded();
+  }));
+
+  unsubscribers.push(onSnapshot(collection(db, 'recipeFavorites'), snap => {
+    if (gen !== authGeneration) return;
+    data.recipeFavorites = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    loadedKeys.add('recipeFavorites');
+    checkLoaded();
+  }, () => {
+    loadedKeys.add('recipeFavorites');
+    checkLoaded();
+  }));
+
+  unsubscribers.push(onSnapshot(collection(db, 'recipeViews'), snap => {
+    if (gen !== authGeneration) return;
+    data.recipeViews = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    loadedKeys.add('recipeViews');
+    checkLoaded();
+  }, () => {
+    loadedKeys.add('recipeViews');
     checkLoaded();
   }));
 
