@@ -85,5 +85,9 @@ service cloud.firestore {
       allow create, update: if isSister() && request.resource.data.viewer == myName();
       allow delete: if false;
     }
+
+    match /gameSessions/{id} {
+      allow read, create, update, delete: if isSister();
+    }
   }
 }

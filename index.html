@@ -235,6 +235,8 @@
   .fab-circle.relax-fab.playing { background: linear-gradient(145deg, #9575cd, #5e35b1); }
   .relax-fab-icon { font-size: 19px; line-height: 1; }
   .relax-fab-label { font-size: 10.5px; line-height: 1; }
+  .fab-circle.games-fab { background: linear-gradient(145deg, #4fd1c5, #17a398); box-shadow: 0 5px 0 #0f7a6f, 0 8px 14px rgba(15,122,111,0.35); }
+  .fab-circle.games-fab:active { transform: translateY(4px); box-shadow: 0 1px 0 #0f7a6f, 0 2px 6px rgba(15,122,111,0.3); }
 
   .shopping-tab-wrap { position: fixed; left: 0; top: 50%; transform: translateY(-50%); z-index: 40; display: flex; flex-direction: column; align-items: center; }
   .shopping-count-badge {
@@ -342,6 +344,31 @@
   .recipe-pdf-embed { margin-bottom: 10px; }
   .recipe-pdf-frame { width: 100%; height: 320px; border: 1px solid var(--border); border-radius: 8px; }
   .recipe-pdf-note { background: var(--bg); border-radius: 8px; padding: 8px 10px; font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+
+  .games-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 4px; }
+  .game-tile {
+    position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 8px; padding: 20px 10px; border: none; border-radius: 18px; cursor: pointer;
+    font-family: inherit; font-size: 13px; font-weight: 700; color: #fff; text-align: center;
+    transition: transform 0.08s ease, box-shadow 0.08s ease; min-height: 108px;
+  }
+  .game-tile .game-tile-icon { font-size: 30px; line-height: 1; }
+  .game-tile:active { transform: translateY(4px); }
+  .game-tile.g-teal { background: linear-gradient(145deg, #4fd1c5, #17a398); box-shadow: 0 5px 0 #0f7a6f, 0 8px 14px rgba(15,122,111,0.3); }
+  .game-tile.g-blue { background: linear-gradient(145deg, #6ec3f0, #2f8fcf); box-shadow: 0 5px 0 #1f6d9f, 0 8px 14px rgba(31,109,159,0.3); }
+  .game-tile.g-purple { background: linear-gradient(145deg, #b39ddb, #7e57c2); box-shadow: 0 5px 0 #5e35b1, 0 8px 14px rgba(94,53,177,0.3); }
+  .game-tile.g-green { background: linear-gradient(145deg, #4fa377, #2f7a55); box-shadow: 0 5px 0 #1f5a3d, 0 8px 14px rgba(31,90,61,0.3); }
+  .game-tile.g-orange { background: linear-gradient(145deg, #ffa451, #e07b1f); box-shadow: 0 5px 0 #a85c14, 0 8px 14px rgba(168,92,20,0.3); }
+  .game-tile.g-red { background: linear-gradient(145deg, #f0716e, #d84440); box-shadow: 0 5px 0 #a12e2b, 0 8px 14px rgba(161,46,43,0.3); }
+  .game-tile.g-brown { background: linear-gradient(145deg, #c8946a, #a06a3f); box-shadow: 0 5px 0 #764c2b, 0 8px 14px rgba(118,76,43,0.3); }
+  .game-tile.g-cyan { background: linear-gradient(145deg, #5ec8e0, #2a9fbf); box-shadow: 0 5px 0 #1c7189, 0 8px 14px rgba(28,113,137,0.3); }
+  .game-tile.g-pink { background: linear-gradient(145deg, #e07bb0, #c94f8f); box-shadow: 0 5px 0 #a03a70, 0 8px 14px rgba(160,58,112,0.3); }
+  .game-tile.locked { cursor: default; filter: grayscale(0.85); opacity: 0.6; box-shadow: none; }
+  .game-tile-lock { font-size: 11px; font-weight: 700; background: rgba(0,0,0,0.28); border-radius: 999px; padding: 2px 10px; }
+  .game-instructions-body { font-size: 13.5px; line-height: 1.6; color: var(--text); margin-bottom: 12px; }
+  .game-instructions-body p { margin: 0 0 8px; }
+  .game-instructions-checkbox { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); cursor: pointer; }
+  .game-instructions-checkbox input { width: auto; }
 </style>
 </head>
 <body>
@@ -732,9 +759,38 @@ function personalizedEmpowerText(name) {
 }
 
 const NAMES = ['ריקי', 'ברוריה', 'דורית'];
-const APP_VERSION = '2.7.0';
+const APP_VERSION = '2.8.0';
 const APP_UPDATED = '14.08.2026';
 const AVATAR_CLASS = { 'ריקי': 'ricky', 'ברוריה': 'bruria', 'דורית': 'dorit' };
+
+// Games hub catalog. Each game starts locked (coming soon) until it's actually built and deployed -
+// flip `locked` to false and add `instructionsHtml` only once that specific game's screen/logic exists.
+const GAMES_CATALOG = [
+  { id: 'tictactoe', title: 'איקס עיגול', icon: '⭕', color: 'g-teal', locked: true, instructionsHtml: '' },
+  { id: 'connect4', title: '4 בשורה', icon: '🔴', color: 'g-blue', locked: true, instructionsHtml: '' },
+  { id: 'sudoku', title: 'סודוקו', icon: '🔢', color: 'g-purple', locked: true, instructionsHtml: '' },
+  { id: 'wordle', title: 'וורדל עברי', icon: '🔤', color: 'g-green', locked: true, instructionsHtml: '' },
+  { id: 'crossword', title: 'תשחץ', icon: '📝', color: 'g-orange', locked: true, instructionsHtml: '' },
+  { id: 'trivia', title: 'שאלון אמריקאי', icon: '❓', color: 'g-red', locked: true, instructionsHtml: '' },
+  { id: 'cookiewords', title: 'עוגות מילים', icon: '🍪', color: 'g-brown', locked: true, instructionsHtml: '' },
+  { id: 'wordsearch', title: 'תפזורת', icon: '🔍', color: 'g-cyan', locked: true, instructionsHtml: '' },
+  { id: 'relaxriddles', title: 'חידות מילים מרגיעות', icon: '🧘', color: 'g-pink', locked: true, instructionsHtml: '' }
+];
+
+// --- Generic game-session persistence (shared by every game once built) ---
+function gameSessionKeySolo(me) { return `solo__${me}`; }
+function gameSessionKeyPair(a, b) { return [a, b].sort().join('_vs_'); }
+function findGameSession(gameId, sessionKey) {
+  return data.gameSessions.find(s => s.id === `${gameId}__${sessionKey}`);
+}
+async function saveGameSession(gameId, sessionKey, state) {
+  return setDoc(doc(db, 'gameSessions', `${gameId}__${sessionKey}`), {
+    gameId, sessionKey, state, updatedAt: new Date().toISOString()
+  }, { merge: true });
+}
+async function clearGameSession(gameId, sessionKey) {
+  return deleteDoc(doc(db, 'gameSessions', `${gameId}__${sessionKey}`));
+}
 const PET_NAMES = ['כפרוש', 'נשמה', 'חיים שלי', 'עיניים שלי'];
 const EMAIL_MAP = {
   'ריקי': 'ricky@elkayam-sisters-ledger.app',
@@ -902,7 +958,8 @@ let data = {
   recipeCategories: [],
   jokeRatings: [],
   shoppingList: [],
-  userState: { notesReadStatus: {}, txSeenStatus: {} }
+  gameSessions: [],
+  userState: { notesReadStatus: {}, txSeenStatus: {}, gamesInstructionsSeen: {} }
 };
 
 let session = null;
@@ -990,6 +1047,7 @@ function render() {
   else if (view.screen === 'personalNotes') app.innerHTML = renderPersonalNotes();
   else if (view.screen === 'empowerment') app.innerHTML = renderEmpowerment();
   else if (view.screen === 'recipes') app.innerHTML = renderRecipes();
+  else if (view.screen === 'games') app.innerHTML = renderGamesHub();
   attachHandlers();
 }
 
@@ -1559,6 +1617,7 @@ function renderFabButtons() {
         <span class="relax-fab-icon">${relaxPlaying ? '⏸️' : '🎵'}</span>
         <span class="relax-fab-label">תירגעי</span>
       </button>
+      <button class="fab-circle games-fab" id="games-fab-btn" title="משחקים" aria-label="משחקים">🎮</button>
     </div>
     <div class="shopping-tab-wrap">
       ${shoppingCount ? `<div class="shopping-count-badge">${shoppingCount}</div>` : ''}
@@ -1606,6 +1665,42 @@ function renderEmpowerModal() {
       <div class="modal-box empower-modal">
         <div class="empower-text">✨ ${escapeHtml(view.empowerPopup.text)}</div>
         <button class="btn btn-primary" id="empower-close-btn">סגירה</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderGamesHub() {
+  return `
+    <div class="back-row">
+      <button class="btn btn-secondary btn-small" id="back-to-dash-from-games">→ חזרה</button>
+      <h1 style="margin:0; font-size:17px;">🎮 עמוד המשחקים</h1>
+    </div>
+    <div class="games-grid">
+      ${GAMES_CATALOG.map(g => `
+        <button class="game-tile ${g.color} ${g.locked ? 'locked' : ''}" ${g.locked ? 'disabled' : `data-open-game="${g.id}"`}>
+          <span class="game-tile-icon">${g.icon}</span>
+          <span>${g.title}</span>
+          ${g.locked ? '<span class="game-tile-lock">🔒 בקרוב</span>' : ''}
+        </button>
+      `).join('')}
+    </div>
+    ${view.gameInstructionsFor ? renderGameInstructionsModal() : ''}
+  `;
+}
+
+function renderGameInstructionsModal() {
+  const g = GAMES_CATALOG.find(x => x.id === view.gameInstructionsFor);
+  if (!g) return '';
+  return `
+    <div class="modal-overlay" id="game-instructions-overlay">
+      <div class="modal-box">
+        <h3 style="margin:0 0 10px; font-size:16px;">${g.icon} ${escapeHtml(g.title)} - איך משחקים</h3>
+        <div class="game-instructions-body">${g.instructionsHtml || '<p>ההוראות למשחק הזה עדיין בבנייה.</p>'}</div>
+        <label class="game-instructions-checkbox">
+          <input type="checkbox" id="game-instructions-dontshow"> הבנתי, אל תראה שוב
+        </label>
+        <button class="btn btn-primary" style="margin-top:10px; width:100%;" id="game-instructions-start-btn">בואי נשחק!</button>
       </div>
     </div>
   `;
@@ -2844,6 +2939,46 @@ function attachHandlers() {
     view.shoppingNotePhotoError = '';
     render();
   };
+
+  const gamesFabBtn = document.getElementById('games-fab-btn');
+  if (gamesFabBtn) gamesFabBtn.onclick = () => { view.screen = 'games'; view.gameInstructionsFor = null; render(); };
+
+  const backFromGames = document.getElementById('back-to-dash-from-games');
+  if (backFromGames) backFromGames.onclick = () => { view.screen = 'dashboard'; view.gameInstructionsFor = null; render(); };
+
+  document.querySelectorAll('[data-open-game]').forEach(el => {
+    el.onclick = () => {
+      const gameId = el.getAttribute('data-open-game');
+      const alreadySeen = !!(data.userState.gamesInstructionsSeen || {})[gameId];
+      if (alreadySeen) {
+        // Instructions already acknowledged in a previous session - go straight into the game screen
+        // (added per-game once that game is actually built; for now this is a no-op placeholder).
+        view.screen = `game-${gameId}`;
+      } else {
+        view.gameInstructionsFor = gameId;
+      }
+      render();
+    };
+  });
+
+  const gameInstructionsStartBtn = document.getElementById('game-instructions-start-btn');
+  if (gameInstructionsStartBtn) {
+    gameInstructionsStartBtn.onclick = async () => {
+      const gameId = view.gameInstructionsFor;
+      const dontShowEl = document.getElementById('game-instructions-dontshow');
+      const dontShow = !!(dontShowEl && dontShowEl.checked);
+      if (dontShow && gameId) {
+        try {
+          await setDoc(doc(db, 'userState', session.name), {
+            gamesInstructionsSeen: { ...(data.userState.gamesInstructionsSeen || {}), [gameId]: true }
+          }, { merge: true });
+        } catch (e) { /* non-critical - the modal will just show again next time */ }
+      }
+      view.gameInstructionsFor = null;
+      if (gameId) view.screen = `game-${gameId}`;
+      render();
+    };
+  }
 }
 
 function subscribeAll(name, gen) {
@@ -2851,7 +2986,7 @@ function subscribeAll(name, gen) {
 
   const checkLoaded = () => {
     if (gen !== authGeneration) return;
-    if (loadedKeys.size >= 14 && view.screen === 'loading') {
+    if (loadedKeys.size >= 15 && view.screen === 'loading') {
       finishInitialLoad(name);
     } else {
       render();
@@ -2888,7 +3023,8 @@ function subscribeAll(name, gen) {
 
   unsubscribers.push(onSnapshot(doc(db, 'userState', name), snap => {
     if (gen !== authGeneration) return;
-    data.userState = snap.exists() ? { notesReadStatus: {}, txSeenStatus: {}, ...snap.data() } : { notesReadStatus: {}, txSeenStatus: {} };
+    const defaults = { notesReadStatus: {}, txSeenStatus: {}, gamesInstructionsSeen: {} };
+    data.userState = snap.exists() ? { ...defaults, ...snap.data() } : defaults;
     loadedKeys.add('userState');
     checkLoaded();
   }, () => {}));
@@ -2981,6 +3117,16 @@ function subscribeAll(name, gen) {
     checkLoaded();
   }, () => {
     loadedKeys.add('shoppingList');
+    checkLoaded();
+  }));
+
+  unsubscribers.push(onSnapshot(collection(db, 'gameSessions'), snap => {
+    if (gen !== authGeneration) return;
+    data.gameSessions = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    loadedKeys.add('gameSessions');
+    checkLoaded();
+  }, () => {
+    loadedKeys.add('gameSessions');
     checkLoaded();
   }));
 }
