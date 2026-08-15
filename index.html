@@ -374,13 +374,12 @@
   .crossword-board { display: grid; gap: 1px; width: 100%; direction: ltr; background: var(--text); }
   .crossword-cell { position: relative; aspect-ratio: 1; min-width: 0; border: 0; padding: 0; }
   .crossword-cell--blocked { background: var(--text); }
-  .crossword-cell--letter { display: grid; place-items: center; background: var(--card); color: var(--text); font-size: clamp(20px, 7vw, 31px); font-weight: 700; cursor: pointer; direction: rtl; }
+  .crossword-cell--letter { display: grid; place-items: center; background: var(--card); color: var(--text); font-size: var(--cw-font, 22px); font-weight: 700; cursor: pointer; direction: rtl; }
   .crossword-cell--letter.is-active { outline: 3px solid var(--accent); outline-offset: -3px; z-index: 1; background: #fff8e8; }
   .crossword-cell--letter.is-in-active-word:not(.is-active) { background: #f7f1e5; }
   .crossword-cell--letter.is-wrong { background: #ffe2e2; color: #a11f1f; }
-  .crossword-cell--clue { overflow: hidden; background: #e8e3d9; color: var(--text); direction: rtl; text-align: right; cursor: default; }
-  .crossword-clue-text { display: block; padding: 3px 3px 0; font-size: clamp(7px, 2vw, 9px); line-height: 1.03; overflow-wrap: anywhere; }
-  .crossword-arrows { position: absolute; left: 3px; bottom: 1px; display: flex; gap: 2px; direction: ltr; font-size: 13px; font-weight: 700; }
+  .crossword-cell--letter:disabled { cursor: default; }
+  .crossword-cell-num { position: absolute; top: 1px; left: 2px; font-size: 8px; font-weight: 600; color: var(--text-muted); line-height: 1; direction: ltr; }
   .crossword-keyboard { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 6px; margin: 14px 0 10px; direction: rtl; }
   .crossword-key { min-height: 38px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text); font: inherit; font-size: 18px; font-weight: 700; cursor: pointer; }
   .crossword-key:hover, .crossword-key:focus-visible { border-color: var(--accent); }
@@ -390,6 +389,13 @@
   .crossword-result-panel { margin-top: 14px; padding: 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--card); }
   .crossword-result-panel h3 { margin: 0 0 8px; }
   .crossword-result-list { margin: 0; padding-right: 20px; }
+  .crossword-clue-list { display: flex; gap: 10px; margin: 14px 0; }
+  .crossword-clue-col { flex: 1; min-width: 0; }
+  .crossword-clue-col h4 { margin: 0 0 6px; font-size: 12.5px; color: var(--text-muted); }
+  .crossword-clue-items { list-style: none; margin: 0; padding: 0; max-height: 170px; overflow-y: auto; border: 1px solid var(--border); border-radius: 10px; }
+  .crossword-clue-item { display: block; width: 100%; text-align: right; border: 0; border-bottom: 1px solid var(--border); background: var(--card); color: var(--text); font: inherit; font-size: 12px; padding: 6px 8px; cursor: pointer; }
+  .crossword-clue-item:last-child { border-bottom: 0; }
+  .crossword-clue-item.is-active { background: rgba(23,163,152,0.12); color: #0f7a6f; font-weight: 700; }
   .game-tile.locked { cursor: default; filter: grayscale(0.85); opacity: 0.6; box-shadow: none; }
   .game-tile-lock { font-size: 11px; font-weight: 700; background: rgba(0,0,0,0.28); border-radius: 999px; padding: 2px 10px; }
   .game-instructions-body { font-size: 13.5px; line-height: 1.6; color: var(--text); margin-bottom: 12px; }
@@ -435,9 +441,9 @@
   .sudoku-numpad { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; max-width: 360px; width: 100%; margin: 12px auto 0; direction: ltr; }
   .sudoku-num-btn { aspect-ratio: 1; border: 1px solid var(--border); background: var(--card); border-radius: 8px; font-size: 16px; font-weight: 700; color: var(--text); cursor: pointer; }
   .sudoku-clear-btn { color: var(--text-muted); font-size: 14px; }
-  .sudoku-race-progress { margin-top: 12px; font-size: 12.5px; color: var(--text-muted); }
-  .sudoku-race-progress .progress-bar-track { background: var(--bg); border-radius: 999px; height: 10px; overflow: hidden; margin-top: 4px; }
-  .sudoku-race-progress .progress-bar-fill { background: linear-gradient(90deg, #4fd1c5, #17a398); height: 100%; transition: width 0.3s; }
+  .sudoku-race-progress, .game-race-progress { margin-top: 12px; font-size: 12.5px; color: var(--text-muted); }
+  .sudoku-race-progress .progress-bar-track, .game-race-progress .progress-bar-track { background: var(--bg); border-radius: 999px; height: 10px; overflow: hidden; margin-top: 4px; }
+  .sudoku-race-progress .progress-bar-fill, .game-race-progress .progress-bar-fill { background: linear-gradient(90deg, #4fd1c5, #17a398); height: 100%; transition: width 0.3s; }
   .wordle-board { display: flex; flex-direction: column; gap: 6px; max-width: 300px; width: 100%; margin: 0 auto; }
   .wordle-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
   .wordle-row.shake { animation: wordle-shake 0.4s; }
@@ -849,7 +855,7 @@ function personalizedEmpowerText(name) {
 }
 
 const NAMES = ['ריקי', 'ברוריה', 'דורית'];
-const APP_VERSION = '2.12.0';
+const APP_VERSION = '2.13.0';
 const APP_UPDATED = '14.08.2026';
 const AVATAR_CLASS = { 'ריקי': 'ricky', 'ברוריה': 'bruria', 'דורית': 'dorit' };
 
@@ -880,9 +886,9 @@ const GAMES_CATALOG = [
     <p>מקלידים עם המקלדת שעל המסך (או עם מקלדת פיזית) ולוחצים "אישור". בסוף - בין אם פתרת ובין אם לא - אפשר לראות איך הלך היום לכל אחת מכן.</p>
   ` },
   { id: 'crossword', title: 'תשחץ', icon: '📝', color: 'g-orange', locked: false, instructionsHtml: `
-    <p>הרמזים והחיצים נמצאים בתוך הלוח עצמו - אין רשימת רמזים בצד.</p>
-    <p>בוחרות משבצת, מקלידות אותיות עם המקלדת שעל המסך, ובודקות את הפתרון בכל שלב עם כפתור "בדיקה".</p>
-    <p>בכל יום מחכה לכן תשחץ חדש ומשותף לשלושתכן - ובסוף אפשר לראות מי כבר פתרה.</p>
+    <p>בכל הפעלה נבנית חידה חדשה ואמיתית לפי הנושא ורמת הקושי שתבחרי - כל מילה מצטלבת עם מילים אחרות, בדיוק כמו בתשבץ אמיתי.</p>
+    <p>בוחרות נושא, רמת קושי, ואם לשחק לבד או במרוץ מול אחת האחיות. לוחצות על משבצת או על רמז מהרשימה כדי לבחור מילה, מקלידות אותיות עם המקלדת שעל המסך, ובודקות את הפתרון עם כפתור "בדיקה".</p>
+    <p>במצב מרוץ - שתיכן פותרות בדיוק את אותה חידה, כל אחת על הלוח שלה, ומי שמסיימת ראשונה מנצחת.</p>
   ` },
   { id: 'trivia', title: 'שאלון אמריקאי', icon: '❓', color: 'g-red', locked: true, instructionsHtml: '' },
   { id: 'cookiewords', title: 'עוגות מילים', icon: '🍪', color: 'g-brown', locked: true, instructionsHtml: '' },
@@ -1921,14 +1927,15 @@ function renderGameScreen(gameId) {
   const g = GAMES_CATALOG.find(x => x.id === gameId);
   if (!g) return '<p>המשחק הזה לא נמצא.</p>';
   if (gameId === 'wordle') return renderWordleScreen();
-  if (gameId === 'crossword') return renderCrosswordScreen();
   if (!view.activeGameSessionKey) {
     if (gameId === 'sudoku') return renderSudokuSetup();
+    if (gameId === 'crossword') return renderCrosswordSetup();
     return renderGameOpponentSetup(gameId, g.title, g.icon);
   }
   if (gameId === 'tictactoe') return renderTicTacToeBoard(gameId, view.activeGameSessionKey);
   if (gameId === 'connect4') return renderConnect4Board(gameId, view.activeGameSessionKey);
   if (gameId === 'sudoku') return renderSudokuBoard(view.activeGameSessionKey);
+  if (gameId === 'crossword') return renderCrosswordBoard(view.activeGameSessionKey);
   return '<p>המשחק הזה עדיין בבנייה.</p>';
 }
 
@@ -2370,6 +2377,11 @@ function fmtElapsed(startIso) {
   const m = Math.floor(sec / 60), s = sec % 60;
   return `${m}:${String(s).padStart(2, '0')}`;
 }
+function fmtDuration(startIso, endIso) {
+  const sec = Math.max(0, Math.floor((new Date(endIso).getTime() - new Date(startIso).getTime()) / 1000));
+  const m = Math.floor(sec / 60), s = sec % 60;
+  return `${m}:${String(s).padStart(2, '0')}`;
+}
 
 function sudokuSessionIsDone(state) {
   if (state.mode === 'race') return !!state.winner;
@@ -2750,190 +2762,599 @@ async function wordleSubmitGuess() {
 // One 5-letter "spine" across word (row 2) crossed by two real 3-letter down words that share an
 // actual letter with the spine at the intersection cell - a genuine interlocking crossword, not
 // just a picture of one. Grid: 5 rows x 6 cols; spine clue at (2,5), down clues at (0,1) and (0,3).
-function buildCrossPuzzle(id, def) {
-  const rows = 5, cols = 6;
-  const S = Array.from(def.spine), D1 = Array.from(def.down1), D2 = Array.from(def.down2);
-  const idx = (r, cIdx) => r * cols + cIdx;
-  const cells = Array.from({ length: rows * cols }, () => ({ type: 'blocked' }));
-  cells[idx(0, 1)] = { type: 'clue', arrows: ['down'], clues: { down: def.down1Clue } };
-  cells[idx(0, 3)] = { type: 'clue', arrows: ['down'], clues: { down: def.down2Clue } };
-  cells[idx(1, 1)] = { type: 'letter', solution: D1[0] };
-  cells[idx(1, 3)] = { type: 'letter', solution: D2[0] };
-  cells[idx(2, 0)] = { type: 'letter', solution: S[4] };
-  cells[idx(2, 1)] = { type: 'letter', solution: S[3] };
-  cells[idx(2, 2)] = { type: 'letter', solution: S[2] };
-  cells[idx(2, 3)] = { type: 'letter', solution: S[1] };
-  cells[idx(2, 4)] = { type: 'letter', solution: S[0] };
-  cells[idx(2, 5)] = { type: 'clue', arrows: ['across'], clues: { across: def.spineClue } };
-  cells[idx(3, 1)] = { type: 'letter', solution: D1[2] };
-  cells[idx(3, 3)] = { type: 'letter', solution: D2[2] };
-  return { id, rows, cols, cells };
-}
-const CROSSWORD_PUZZLE_DEFS = [
-  { id: 'p1', spine: 'שולחן', spineClue: 'יש עליו כלים', down1: 'לחם', down1Clue: 'נאפה בתנור', down2: 'כוס', down2Clue: 'לשתייה' },
-  { id: 'p2', spine: 'משפחה', spineClue: 'הורים וילדים', down1: 'נחל', down1Clue: 'זורם בטבע', down2: 'קשר', down2Clue: 'חיבור' },
-  { id: 'p3', spine: 'תלמיד', spineClue: 'לומד בבית ספר', down1: 'סיר', down1Clue: 'כלי בישול', down2: 'כלב', down2Clue: 'נובח' },
-  { id: 'p4', spine: 'ילדים', spineClue: 'קטנים וחמודים', down1: 'עיר', down1Clue: 'מקום מגורים', down2: 'חלב', down2Clue: 'משקה לבן' },
-  { id: 'p5', spine: 'ספרים', spineClue: 'קוראים אותם', down1: 'שיר', down1Clue: 'מנגינה ומילים', down2: 'כפר', down2Clue: 'יישוב קטן' },
-  { id: 'p6', spine: 'ורדים', spineClue: 'פרחים אדומים', down1: 'תיק', down1Clue: 'לחפצים', down2: 'כרם', down2Clue: 'יש בו גפנים' },
-  { id: 'p7', spine: 'גבינה', spineClue: 'מוצר חלב', down1: 'פנס', down1Clue: 'מאיר בחושך', down2: 'שבת', down2Clue: 'יום מנוחה' },
-  { id: 'p8', spine: 'חתולה', spineClue: 'חיית בית', down1: 'עלה', down1Clue: 'צומח על עץ', down2: 'כתם', down2Clue: 'לכלוך בבגד' },
-  { id: 'p9', spine: 'מטריה', spineClue: 'מגנה מגשם', down1: 'ריק', down1Clue: 'לא מלא', down2: 'קטן', down2Clue: 'לא גדול' },
-  { id: 'p10', spine: 'דרכון', spineClue: 'תעודה לנסיעה', down1: 'סוד', down1Clue: 'לא לגלות', down2: 'ברד', down2Clue: 'קרח מהשמיים' },
-  { id: 'p11', spine: 'חברות', spineClue: 'קשר בין אנשים', down1: 'שור', down1Clue: 'חיה בחווה', down2: 'אבן', down2Clue: 'קשה כסלע' },
-  { id: 'p12', spine: 'שכונה', spineClue: 'אזור מגורים', down1: 'בנק', down1Clue: 'שומרים בו כסף', down2: 'שכר', down2Clue: 'תשלום חודשי' }
-];
-const CROSSWORD_PUZZLES = CROSSWORD_PUZZLE_DEFS.map(def => buildCrossPuzzle(def.id, def));
-const CROSSWORD_EPOCH = '2026-08-15';
-const CROSSWORD_KEYS = ['א','ב','ג','ד','ה','ו','ז','ח','ט','י','כ','ל','מ','נ','ס','ע','פ','צ','ק','ר','ש','ת','ך','ם','ן','ף','ץ'];
+// --- תשחץ (crossword) - מחולל תשחצים אמיתי ---
+// בעקבות המסקנה מהסבב הקודם (קוד מ-ChatGPT עם תוכן ללא הצלבות אמיתיות, כי אין לו דרך להריץ
+// ולבדוק בעצמו) ובקשת אשר לחידות גדולות ואמיתיות עם בחירת נושא/רמת-קושי/יריב - נבנה כאן, בדיוק
+// כמו מחולל הסודוקו, מחולל תשחצים אמיתי: בכל הפעלה נארזת רשת חדשה מתוך בנק מילים+רמזים לפי
+// הנושא שנבחר, בגודל שנקבע לפי רמת הקושי, עם הצלבות אמיתיות שנבדקות תוך כדי בנייה (לא תבנית
+// קבועה מראש). התוכן (מילים+רמזים) נכתב ידנית - לא יובא ממאגר חיצוני - כדי להימנע מבעיית רישוי.
+//
+// שינוי מהותי מהסבב הקודם: זה כבר לא משחק "חידת יום משותפת" נעולה כמו וורדל - עכשיו בוחרים
+// נושא+רמת קושי+יריב (לבד/מרוץ מול אחות) ומשחקים מתי שרוצים, בדיוק כמו סודוקו. וגם הצגת
+// הרמזים עברה מ"חצים בתוך המשבצות" (כפי שהוגדר במקור) לבאנר רמז + רשימת רמזים לחיצה - כי
+// ברשת גדולה ואמיתית (12-16 מילים) אין מספיק מקום פיזי למשבצות-רמז נפרדות בלי לנפח את הלוח
+// פי כמה; זו הפשרה שנדרשה כדי לאפשר חידות גדולות ואמיתיות במסך מובייל.
 
-function crosswordCellAt(puzzle, row, col) {
-  return puzzle.cells[row * puzzle.cols + col];
+const CROSSWORD_TOPICS = [
+  { id: 'home', title: 'בית וחיי היומיום', icon: '🏠', words: [
+    { word: 'שולחן', clue: 'רהיט לאכילה ולעבודה' },
+    { word: 'כיסא', clue: 'יושבים עליו' },
+    { word: 'מיטה', clue: 'ישנים עליה בלילה' },
+    { word: 'מקרר', clue: 'שומר על האוכל קר' },
+    { word: 'כרית', clue: 'שמים מתחתיה את הראש בשינה' },
+    { word: 'שטיח', clue: 'מכסה את הרצפה' },
+    { word: 'מנורה', clue: 'מאירה את החדר' },
+    { word: 'דלת', clue: 'נכנסים ויוצאים דרכה' },
+    { word: 'חלון', clue: 'רואים דרכו החוצה' },
+    { word: 'מפתח', clue: 'פותחים בו את הדלת' },
+    { word: 'מברשת', clue: 'מנקים בה שיניים או שיער' },
+    { word: 'מגבת', clue: 'מתייבשים בה אחרי מקלחת' },
+    { word: 'סבון', clue: 'מנקה את הידיים' },
+    { word: 'מסדרון', clue: 'מעבר בין חדרים בבית' },
+    { word: 'ארון', clue: 'שומרים בו בגדים' },
+    { word: 'תמונה', clue: 'תלויה על הקיר' },
+    { word: 'שעון', clue: 'מראה את השעה' },
+    { word: 'ספה', clue: 'יושבים עליה בסלון' },
+    { word: 'עציץ', clue: 'צמח שגדל בכלי בבית' },
+    { word: 'מטריה', clue: 'מגנה מגשם' },
+    { word: 'כפפות', clue: 'עוטים על הידיים בקור' },
+    { word: 'מעיל', clue: 'לובשים אותו בקור' },
+    { word: 'נעליים', clue: 'נועלים אותן על הרגליים' },
+    { word: 'תיק', clue: 'נושאים בו חפצים' },
+    { word: 'ספר', clue: 'קוראים בו' },
+    { word: 'עיתון', clue: 'קוראים בו חדשות' },
+    { word: 'טלפון', clue: 'מתקשרים בו' },
+    { word: 'מחשב', clue: 'עובדים ומשחקים בו' },
+    { word: 'מטבח', clue: 'מבשלים בו' },
+    { word: 'חדר', clue: 'חלק מהבית' },
+    { word: 'גינה', clue: 'מגדלים בה צמחים' },
+    { word: 'חצר', clue: 'שטח פתוח ליד הבית' },
+    { word: 'גג', clue: 'החלק העליון של הבית' },
+    { word: 'קיר', clue: 'תוחם את החדר' },
+    { word: 'רצפה', clue: 'הולכים עליה בבית' },
+    { word: 'מדרגות', clue: 'עולים בהן קומה' },
+    { word: 'מרפסת', clue: 'שטח פתוח בדירה' },
+    { word: 'וילון', clue: 'מכסה את החלון' },
+  ]},
+  { id: 'nature', title: 'טבע ובעלי חיים', icon: '🌿', words: [
+    { word: 'כלב', clue: 'חיה נאמנה שנובחת' },
+    { word: 'חתול', clue: 'חיה שמייללת ומגרגרת' },
+    { word: 'ציפור', clue: 'חיה שיודעת לעוף' },
+    { word: 'דג', clue: 'חי במים ונושם בזימים' },
+    { word: 'נמלה', clue: 'חרק קטן וחרוץ' },
+    { word: 'דבורה', clue: 'חרק שעושה דבש' },
+    { word: 'פרפר', clue: 'חרק צבעוני עם כנפיים' },
+    { word: 'ארנב', clue: 'חיה עם אוזניים ארוכות' },
+    { word: 'סוס', clue: 'רוכבים עליו' },
+    { word: 'פרה', clue: 'נותנת חלב' },
+    { word: 'כבשה', clue: 'נותנת צמר' },
+    { word: 'תרנגול', clue: 'קורא בבוקר מוקדם' },
+    { word: 'ברווז', clue: 'עוף שיודע גם לשחות' },
+    { word: 'אריה', clue: 'מלך החיות' },
+    { word: 'נמר', clue: 'חיה עם פסים או כתמים' },
+    { word: 'פיל', clue: 'החיה היבשתית הכי גדולה' },
+    { word: 'קנגורו', clue: 'חיה שקופצת עם כיס בבטן' },
+    { word: 'קוף', clue: 'חיה שמטפסת על עצים' },
+    { word: 'נחש', clue: 'זוחל ללא רגליים' },
+    { word: 'צב', clue: 'זוחל עם שריון על הגב' },
+    { word: 'עץ', clue: 'צומח גבוה עם גזע' },
+    { word: 'פרח', clue: 'צומח צבעוני וריחני' },
+    { word: 'דשא', clue: 'צמח ירוק שמכסה את הקרקע' },
+    { word: 'יער', clue: 'שטח מלא עצים' },
+    { word: 'הר', clue: 'פסגה גבוהה' },
+    { word: 'נהר', clue: 'זורם אל הים' },
+    { word: 'ים', clue: 'מים מלוחים ורחבים' },
+    { word: 'שמש', clue: 'מאירה ומחממת את כדור הארץ' },
+    { word: 'ירח', clue: 'מאיר את השמיים בלילה' },
+    { word: 'כוכב', clue: 'נראה בשמיים בלילה' },
+    { word: 'ענן', clue: 'מרחף בשמיים' },
+    { word: 'גשם', clue: 'יורד מהעננים' },
+    { word: 'רוח', clue: 'מזיזה עלים ועננים' },
+    { word: 'שלג', clue: 'יורד קר ולבן בחורף' },
+    { word: 'אבן', clue: 'חומר קשה מהטבע' },
+    { word: 'חול', clue: 'יש הרבה ממנו בים ובמדבר' },
+    { word: 'מדבר', clue: 'שטח חם ויבש עם חול' },
+  ]},
+  { id: 'food', title: 'אוכל ומטבח', icon: '🍎', words: [
+    { word: 'לחם', clue: 'אופים אותו ואוכלים עם חמאה' },
+    { word: 'חלב', clue: 'משקה לבן ששותים' },
+    { word: 'גבינה', clue: 'עשויה מחלב' },
+    { word: 'ביצה', clue: 'מטגנים אותה בבוקר' },
+    { word: 'תפוח', clue: 'פרי אדום או ירוק' },
+    { word: 'בננה', clue: 'פרי צהוב וארוך' },
+    { word: 'תפוז', clue: 'פרי כתום ועגול' },
+    { word: 'ענבים', clue: 'פרי קטן שגדל באשכול' },
+    { word: 'אבטיח', clue: 'פרי גדול, ירוק מבחוץ ואדום מבפנים' },
+    { word: 'עגבנייה', clue: 'ירק אדום שנפוץ בסלט' },
+    { word: 'מלפפון', clue: 'ירק ירוק וארוך' },
+    { word: 'גזר', clue: 'ירק כתום שהארנב אוהב' },
+    { word: 'בצל', clue: 'ירק שגורם לדמעות בקילוף' },
+    { word: 'שום', clue: 'תבלין חריף וריחני' },
+    { word: 'בטטה', clue: 'ירק כתום מתוק שאופים בתנור' },
+    { word: 'אורז', clue: 'תוספת לבנה מגרגרים קטנים' },
+    { word: 'פסטה', clue: 'תוספת איטלקית ארוכה ודקה' },
+    { word: 'מרק', clue: 'אוכלים אותו בכפית, חם' },
+    { word: 'סלט', clue: 'תערובת ירקות קצוצים' },
+    { word: 'עוגה', clue: 'אופים אותה ליום הולדת' },
+    { word: 'עוגייה', clue: 'מתוקה וקטנה, אוכלים עם תה' },
+    { word: 'שוקולד', clue: 'מתוק וחום, אהוב על כולם' },
+    { word: 'דבש', clue: 'מתוק וצמיג, מהדבורים' },
+    { word: 'סוכר', clue: 'מתוק ולבן, מוסיפים לתה' },
+    { word: 'מלח', clue: 'מתבל, לבן וגרגרי' },
+    { word: 'קפה', clue: 'משקה חם ומעורר' },
+    { word: 'תה', clue: 'משקה חם עם עלים' },
+    { word: 'מיץ', clue: 'משקה מפירות' },
+    { word: 'מים', clue: 'השתייה הכי חשובה לגוף' },
+    { word: 'בשר', clue: 'מגיע מבעלי חיים' },
+    { word: 'עוף', clue: 'בשר לבן, גם מטיל ביצים' },
+    { word: 'דג', clue: 'גם מאכל וגם חי במים' },
+    { word: 'פיתה', clue: 'לחם עגול ושטוח' },
+    { word: 'חומוס', clue: 'ממרח מחומוס טחון' },
+    { word: 'טחינה', clue: 'ממרח משומשום' },
+    { word: 'שניצל', clue: 'מטוגן ופריך, אהוב על ילדים' },
+  ]},
+];
+const CROSSWORD_KEYS = ['א','ב','ג','ד','ה','ו','ז','ח','ט','י','כ','ל','מ','נ','ס','ע','פ','צ','ק','ר','ש','ת','ך','ם','ן','ף','ץ'];
+const CROSSWORD_DIFFICULTY_CONFIG = {
+  easy: { target: 8, floor: 6, gridSize: 11, label: 'קל' },
+  medium: { target: 12, floor: 9, gridSize: 13, label: 'בינוני' },
+  hard: { target: 16, floor: 11, gridSize: 17, label: 'קשה' },
+};
+
+// convention: ACROSS words are stored so word[0] (first letter, read first in Hebrew) sits at
+// the HIGHEST col in the word's span, and word[len-1] at the LOWEST col - so that with the
+// grid container's `direction: ltr` (the established fix for the CSS Grid RTL-mirroring bug)
+// the word reads correctly right-to-left. DOWN words are stored normally (word[0] at the top).
+function crosswordAcrossLetterAt(word, colStart, col) {
+  const len = word.length;
+  return word[(colStart + len - 1) - col];
 }
-function crosswordCoordKey(row, col) { return `${row},${col}`; }
-function extractWordSpans(puzzle) {
-  const spans = [];
-  for (let row = 0; row < puzzle.rows; row += 1) {
-    for (let col = 0; col < puzzle.cols; col += 1) {
-      const clueCell = crosswordCellAt(puzzle, row, col);
-      if (clueCell.type !== 'clue') continue;
-      clueCell.arrows.forEach(dir => {
-        const step = dir === 'across' ? [0, -1] : [1, 0];
-        const cells = [];
-        let nextRow = row + step[0];
-        let nextCol = col + step[1];
-        while (nextRow >= 0 && nextRow < puzzle.rows && nextCol >= 0 && nextCol < puzzle.cols) {
-          if (crosswordCellAt(puzzle, nextRow, nextCol).type !== 'letter') break;
-          cells.push({ row: nextRow, col: nextCol });
-          nextRow += step[0];
-          nextCol += step[1];
-        }
-        spans.push({ clueRow: row, clueCol: col, dir, clueText: clueCell.clues[dir], cells });
-      });
+function crosswordCellKey(row, col) { return `${row},${col}`; }
+
+function crosswordCanPlace(cells, word, row, col, dir, gridSize) {
+  const len = word.length;
+  if (dir === 'across') {
+    if (col < 0 || col + len - 1 >= gridSize || row < 0 || row >= gridSize) return false;
+    if (cells.has(crosswordCellKey(row, col - 1)) || cells.has(crosswordCellKey(row, col + len))) return false;
+    let crossings = 0;
+    for (let c = col; c < col + len; c++) {
+      const letter = crosswordAcrossLetterAt(word, col, c);
+      const existing = cells.get(crosswordCellKey(row, c));
+      if (existing) {
+        if (existing.letter !== letter || existing.dirs.has('across')) return false;
+        crossings++;
+      } else if (cells.has(crosswordCellKey(row - 1, c)) || cells.has(crosswordCellKey(row + 1, c))) return false;
+    }
+    return crossings > 0 || cells.size === 0;
+  }
+  if (row < 0 || row + len - 1 >= gridSize || col < 0 || col >= gridSize) return false;
+  if (cells.has(crosswordCellKey(row - 1, col)) || cells.has(crosswordCellKey(row + len, col))) return false;
+  let crossings = 0;
+  for (let r = row; r < row + len; r++) {
+    const letter = word[r - row];
+    const existing = cells.get(crosswordCellKey(r, col));
+    if (existing) {
+      if (existing.letter !== letter || existing.dirs.has('down')) return false;
+      crossings++;
+    } else if (cells.has(crosswordCellKey(r, col - 1)) || cells.has(crosswordCellKey(r, col + 1))) return false;
+  }
+  return crossings > 0 || cells.size === 0;
+}
+
+function crosswordPlace(cells, word, row, col, dir) {
+  const len = word.length;
+  for (let i = 0; i < len; i++) {
+    const r = dir === 'across' ? row : row + i;
+    const c = dir === 'across' ? col + i : col;
+    const letter = dir === 'across' ? crosswordAcrossLetterAt(word, col, c) : word[i];
+    const key = crosswordCellKey(r, c);
+    let cell = cells.get(key);
+    if (!cell) { cell = { letter, dirs: new Set() }; cells.set(key, cell); }
+    cell.dirs.add(dir);
+  }
+}
+
+function crosswordFindPlacement(cells, placedWords, candidate, gridSize) {
+  for (const p of sdkShuffled(placedWords)) {
+    const perpDir = p.dir === 'across' ? 'down' : 'across';
+    for (let ci = 0; ci < candidate.word.length; ci++) {
+      const letter = candidate.word[ci];
+      for (let pi = 0; pi < p.word.length; pi++) {
+        const pCell = p.dir === 'across'
+          ? { r: p.row, c: p.col + pi, letter: crosswordAcrossLetterAt(p.word, p.col, p.col + pi) }
+          : { r: p.row + pi, c: p.col, letter: p.word[pi] };
+        if (pCell.letter !== letter) continue;
+        let row, col;
+        if (perpDir === 'down') { row = pCell.r - ci; col = pCell.c; }
+        else { col = pCell.c - ci; row = pCell.r; }
+        if (crosswordCanPlace(cells, candidate.word, row, col, perpDir, gridSize)) return { row, col, dir: perpDir };
+      }
     }
   }
-  return spans;
+  return null;
 }
-function crosswordPuzzleForDate(dateStr) {
-  const epoch = new Date(`${CROSSWORD_EPOCH}T00:00:00`);
-  const day = new Date(`${dateStr}T00:00:00`);
-  const daysSince = Math.round((day - epoch) / 86400000);
-  const index = ((daysSince % CROSSWORD_PUZZLES.length) + CROSSWORD_PUZZLES.length) % CROSSWORD_PUZZLES.length;
-  return CROSSWORD_PUZZLES[index];
+
+function crosswordAttemptGenerate(bank, targetCount, gridSize) {
+  const pool = sdkShuffled(bank).filter((w, i, arr) => arr.findIndex(x => x.word === w.word) === i);
+  const cells = new Map();
+  const placed = [];
+  const seedIdx = pool.findIndex(w => w.word.length >= 5);
+  const seed = pool.splice(seedIdx === -1 ? 0 : seedIdx, 1)[0];
+  if (!seed) return { words: [], cells };
+  const startCol = Math.floor((gridSize - seed.word.length) / 2);
+  const startRow = Math.floor(gridSize / 2);
+  crosswordPlace(cells, seed.word, startRow, startCol, 'across');
+  placed.push({ word: seed.word, clue: seed.clue, row: startRow, col: startCol, dir: 'across' });
+  let remaining = pool, progressMade = true;
+  while (placed.length < targetCount && remaining.length > 0 && progressMade) {
+    progressMade = false;
+    for (let idx = 0; idx < remaining.length; idx++) {
+      const candidate = remaining[idx];
+      const placement = crosswordFindPlacement(cells, placed, candidate, gridSize);
+      if (placement) {
+        crosswordPlace(cells, candidate.word, placement.row, placement.col, placement.dir);
+        placed.push({ word: candidate.word, clue: candidate.clue, row: placement.row, col: placement.col, dir: placement.dir });
+        remaining = remaining.filter((_, i) => i !== idx);
+        progressMade = true;
+        if (placed.length >= targetCount) break;
+      }
+    }
+  }
+  return { words: placed, cells };
 }
-function crosswordSessionKey(name, dateStr) { return `solo__${name}__${dateStr}`; }
-function crosswordCheckSolved(puzzle, filled) {
-  return puzzle.cells.every((cell, index) => {
-    if (cell.type !== 'letter') return true;
-    const row = Math.floor(index / puzzle.cols);
-    const col = index % puzzle.cols;
-    return filled[crosswordCoordKey(row, col)] === cell.solution;
+
+function crosswordTrimAndNumber(result) {
+  const { words, cells } = result;
+  let minR = Infinity, maxR = -Infinity, minC = Infinity, maxC = -Infinity;
+  for (const key of cells.keys()) {
+    const [r, c] = key.split(',').map(Number);
+    minR = Math.min(minR, r); maxR = Math.max(maxR, r);
+    minC = Math.min(minC, c); maxC = Math.max(maxC, c);
+  }
+  const words2 = words.map(w => ({ ...w, row: w.row - minR, col: w.col - minC }));
+  const rows = maxR - minR + 1, cols = maxC - minC + 1;
+  const acrossStarts = new Map(), downStarts = new Map();
+  words2.forEach(w => {
+    if (w.dir === 'across') acrossStarts.set(crosswordCellKey(w.row, w.col + w.word.length - 1), w);
+    else downStarts.set(crosswordCellKey(w.row, w.col), w);
   });
+  let num = 1;
+  for (let r = 0; r < rows; r++) {
+    for (let c = cols - 1; c >= 0; c--) {
+      const key = crosswordCellKey(r, c);
+      const a = acrossStarts.get(key), d = downStarts.get(key);
+      if (a || d) { if (a) a.number = num; if (d) d.number = num; num++; }
+    }
+  }
+  return { rows, cols, words: words2 };
 }
-function crosswordWrongCells(puzzle, filled) {
-  const wrong = [];
-  puzzle.cells.forEach((cell, index) => {
-    if (cell.type !== 'letter') return;
-    const row = Math.floor(index / puzzle.cols);
-    const col = index % puzzle.cols;
-    const key = crosswordCoordKey(row, col);
-    if (filled[key] && filled[key] !== cell.solution) wrong.push(key);
+
+function generateCrosswordPuzzle(topicId, difficulty) {
+  const topic = CROSSWORD_TOPICS.find(t => t.id === topicId);
+  const cfg = CROSSWORD_DIFFICULTY_CONFIG[difficulty] || CROSSWORD_DIFFICULTY_CONFIG.medium;
+  if (!topic) return null;
+  let best = null;
+  for (let attempt = 0; attempt < 300; attempt++) {
+    const result = crosswordAttemptGenerate(topic.words, cfg.target, cfg.gridSize);
+    if (!best || result.words.length > best.words.length) best = result;
+    if (result.words.length >= cfg.target) break;
+  }
+  if (!best || best.words.length < cfg.floor) return null;
+  return crosswordTrimAndNumber(best);
+}
+
+function crosswordSolutionMap(puzzle) {
+  const map = {};
+  puzzle.words.forEach(w => {
+    for (let i = 0; i < w.word.length; i++) {
+      const r = w.dir === 'across' ? w.row : w.row + i;
+      const c = w.dir === 'across' ? w.col + i : w.col;
+      const letter = w.dir === 'across' ? crosswordAcrossLetterAt(w.word, w.col, c) : w.word[i];
+      map[crosswordCellKey(r, c)] = letter;
+    }
   });
-  return wrong;
+  return map;
 }
-function crosswordSpansForCell(spans, row, col) {
-  return spans.filter(span => span.cells.some(cell => cell.row === row && cell.col === col));
+
+function crosswordCellsIndex(puzzle) {
+  const index = {};
+  puzzle.words.forEach((w, wi) => {
+    for (let i = 0; i < w.word.length; i++) {
+      const r = w.dir === 'across' ? w.row : w.row + i;
+      const c = w.dir === 'across' ? w.col + i : w.col;
+      const key = crosswordCellKey(r, c);
+      if (!index[key]) index[key] = { wordIndices: [] };
+      index[key].wordIndices.push(wi);
+      if ((w.dir === 'across' && c === w.col + w.word.length - 1) || (w.dir === 'down' && r === w.row)) {
+        index[key].number = w.number;
+      }
+    }
+  });
+  return index;
 }
-async function startNewCrosswordSession(sessionKey, dateStr) {
-  const puzzle = crosswordPuzzleForDate(dateStr);
-  const state = { dateStr, puzzleId: puzzle.id, filled: {}, startedAt: new Date().toISOString(), finishedAt: null, won: null };
+
+function crosswordIsComplete(puzzle, filled) {
+  const solution = crosswordSolutionMap(puzzle);
+  return Object.keys(solution).every(key => filled[key] === solution[key]);
+}
+
+function crosswordWrongCellKeys(puzzle, filled) {
+  const solution = crosswordSolutionMap(puzzle);
+  return Object.keys(filled).filter(key => solution[key] && filled[key] !== solution[key]);
+}
+
+function crosswordSessionIsDone(state) {
+  if (state.mode === 'race') return !!state.winner;
+  const board = (state.boards && state.boards[session.name]) || {};
+  return crosswordIsComplete(state.puzzle, board);
+}
+
+function crosswordSoloSessionKey(name, topicId, difficulty) { return `${topicId}__${difficulty}__solo__${name}`; }
+function crosswordRaceSessionKey(topicId, difficulty, a, b) { return `${topicId}__${difficulty}__${gameSessionKeyPair(a, b)}`; }
+
+async function startNewCrosswordSession(sessionKey, draft) {
+  const me = session.name;
+  const puzzle = generateCrosswordPuzzle(draft.topicId, draft.difficulty);
+  if (!puzzle) throw new Error('crossword generation failed');
+  const players = draft.mode === 'race' ? [me, draft.opponentName].sort() : [me];
+  const boards = {};
+  players.forEach(p => { boards[p] = {}; });
+  const state = {
+    mode: draft.mode, topicId: draft.topicId, difficulty: draft.difficulty,
+    puzzle, players, boards, finishedAt: {}, winner: null,
+    startedAt: new Date().toISOString(), startedBy: me,
+  };
   await saveGameSession('crossword', sessionKey, state);
 }
-function crosswordTodaysSisterResults(dateStr) {
+
+function crosswordOtherSistersResults(topicId, difficulty) {
   return NAMES.map(name => {
-    const gs = findGameSession('crossword', crosswordSessionKey(name, dateStr));
-    if (!gs) return { name, status: 'עוד לא התחילה היום' };
-    if (gs.state.won === true) return { name, status: 'פתרה 🎉' };
+    const gs = findGameSession('crossword', crosswordSoloSessionKey(name, topicId, difficulty));
+    if (!gs) return { name, status: 'עוד לא שיחקה בנושא ורמה אלו' };
+    const st = gs.state;
+    const done = !!(st.finishedAt && st.finishedAt[name]);
+    if (done) return { name, status: `פתרה ב-${fmtDuration(st.startedAt, st.finishedAt[name])} 🎉` };
     return { name, status: 'באמצע הפתרון...' };
   });
 }
-function crosswordDateLabel(dateStr) {
-  return new Date(`${dateStr}T00:00:00`).toLocaleDateString('he-IL', { day: 'numeric', month: 'long' });
-}
-function crosswordPuzzleById(id) {
-  return CROSSWORD_PUZZLES.find(puzzle => puzzle.id === id);
-}
-function crosswordSelectionFor(puzzle, spans) {
+
+function crosswordSelectionFor(puzzle, cellsIndex) {
   const stored = view.crosswordSelection;
-  if (stored && stored.puzzleId === puzzle.id) {
-    const matchingSpan = spans.find(span => span.clueRow === stored.clueRow && span.clueCol === stored.clueCol && span.dir === stored.dir);
-    if (matchingSpan && matchingSpan.cells.some(cell => cell.row === stored.row && cell.col === stored.col)) return { ...stored, span: matchingSpan };
+  if (stored) {
+    const info = cellsIndex[crosswordCellKey(stored.row, stored.col)];
+    if (info && info.wordIndices.includes(stored.wordIndex)) return stored;
   }
-  const span = spans[0];
-  return { puzzleId: puzzle.id, row: span.cells[0].row, col: span.cells[0].col, clueRow: span.clueRow, clueCol: span.clueCol, dir: span.dir, span };
+  const first = puzzle.words[0];
+  const sel = { row: first.row, col: first.dir === 'across' ? first.col + first.word.length - 1 : first.col, wordIndex: 0 };
+  view.crosswordSelection = sel;
+  return sel;
 }
-function renderCrosswordScreen() {
-  const dateStr = todayLocalDateStr();
-  const sessionKey = crosswordSessionKey(session.name, dateStr);
-  const gs = findGameSession('crossword', sessionKey);
-  if (!gs) return renderCrosswordSetup(dateStr);
-  return renderCrosswordBoard(sessionKey);
-}
-function renderCrosswordSetup(dateStr) {
+
+function renderCrosswordSetup() {
+  const draft = view.gameSetupDraft || {};
+  const canStart = !!draft.topicId && !!draft.difficulty && (draft.mode === 'solo' || (draft.mode === 'race' && draft.opponentName));
   return `
     <div class="back-row">
       <button class="btn btn-secondary btn-small" data-back-to-games-hub>→ חזרה</button>
       <h1 style="margin:0; font-size:17px;">📝 תשחץ</h1>
     </div>
     <div class="game-setup-card">
-      <h3>התשחץ של היום (${escapeHtml(crosswordDateLabel(dateStr))})</h3>
-      <p>הרמזים נמצאים בתוך הלוח. בחרי משבצת, הקלידי אותיות, והשלימי את התשחץ המשותף לשלושתכן.</p>
-      <button class="btn btn-primary" style="width:100%; margin-top:8px;" data-crossword-start>בואי נתחיל!</button>
-    </div>`;
+      <h3>נושא</h3>
+      <div class="game-setup-opponents">
+        ${CROSSWORD_TOPICS.map(t => `
+          <button class="game-setup-opt ${draft.topicId === t.id ? 'selected' : ''}" data-crossword-topic="${t.id}">${t.icon} ${escapeHtml(t.title)}</button>
+        `).join('')}
+      </div>
+      <h3>רמת קושי</h3>
+      <div class="game-setup-difficulty">
+        ${['easy', 'medium', 'hard'].map(d => `
+          <button class="game-setup-opt ${draft.difficulty === d ? 'selected' : ''}" data-crossword-difficulty="${d}">${CROSSWORD_DIFFICULTY_CONFIG[d].label}</button>
+        `).join('')}
+      </div>
+      <h3>איך משחקים?</h3>
+      <div class="game-setup-opponents">
+        <button class="game-setup-opt ${draft.mode === 'solo' ? 'selected' : ''}" data-crossword-mode="solo">📝 לבד</button>
+        ${otherSisters(session.name).map(n => `
+          <button class="game-setup-opt ${draft.mode === 'race' && draft.opponentName === n ? 'selected' : ''}" data-crossword-mode="race" data-crossword-opponent="${n}">
+            <span class="avatar ${AVATAR_CLASS[n] || ''}">${n[0]}</span> מרוץ מול ${escapeHtml(n)}
+          </button>
+        `).join('')}
+      </div>
+      <button class="btn btn-primary" style="width:100%; margin-top:8px;" data-crossword-start ${canStart ? '' : 'disabled'}>בואי נתחיל!</button>
+    </div>
+    ${view.gameResumePrompt ? renderGameResumePrompt() : ''}
+  `;
 }
-function renderCrosswordClueBanner(selection, spans) {
-  const cellSpans = crosswordSpansForCell(spans, selection.row, selection.col);
-  const active = selection.span;
-  const choices = cellSpans.length > 1 ? `<div class="crossword-clue-choices">${cellSpans.map(span => `
-    <button class="crossword-clue-choice ${span.dir === active.dir ? 'is-active' : ''}" data-crossword-direction="${span.dir}">${span.dir === 'across' ? '← אופקי' : '↓ אנכי'}: ${escapeHtml(span.clueText)}</button>`).join('')}</div>` : '';
-  return `<div class="crossword-clue-banner"><p><strong>${active.dir === 'across' ? '← אופקי' : '↓ אנכי'}:</strong> ${escapeHtml(active.clueText)}</p>${choices}</div>`;
-}
+
 function renderCrosswordBoard(sessionKey) {
   const gs = findGameSession('crossword', sessionKey);
-  if (!gs) return renderCrosswordSetup(todayLocalDateStr());
-  const state = gs.state;
-  const puzzle = crosswordPuzzleById(state.puzzleId);
-  if (!puzzle) return '<p>חידת התשחץ לא נמצאה.</p>';
-  const spans = extractWordSpans(puzzle);
-  const selection = crosswordSelectionFor(puzzle, spans);
-  view.crosswordSelection = { ...selection };
-  const wrong = new Set((view.crosswordWrongCells || []).filter(key => state.filled[key]));
-  const activeWord = new Set(selection.span.cells.map(cell => crosswordCoordKey(cell.row, cell.col)));
-  const board = puzzle.cells.map((cell, index) => {
-    const row = Math.floor(index / puzzle.cols);
-    const col = index % puzzle.cols;
-    const key = crosswordCoordKey(row, col);
-    if (cell.type === 'blocked') return '<div class="crossword-cell crossword-cell--blocked" aria-hidden="true"></div>';
-    if (cell.type === 'clue') {
-      const arrows = cell.arrows.map(dir => dir === 'across' ? '←' : '↓').join('');
-      const clueText = cell.arrows.map(dir => cell.clues[dir]).join(' / ');
-      return `<div class="crossword-cell crossword-cell--clue" title="${escapeHtml(clueText)}"><span class="crossword-clue-text">${escapeHtml(clueText)}</span><span class="crossword-arrows">${arrows}</span></div>`;
+  if (!gs) return '<p>שגיאה בטעינת המשחק.</p>';
+  const st = gs.state;
+  const puzzle = st.puzzle;
+  const me = session.name;
+  const myFilled = (st.boards && st.boards[me]) || {};
+  const cellsIndex = crosswordCellsIndex(puzzle);
+  const meDone = !!(st.finishedAt && st.finishedAt[me]);
+  const opponentName = st.mode === 'race' ? st.players.find(p => p !== me) : null;
+
+  let statusText;
+  if (st.mode === 'race') {
+    if (st.winner === me) statusText = `ניצחת במרוץ! 🏆 (${fmtDuration(st.startedAt, st.finishedAt[me])})`;
+    else if (st.winner) statusText = `${escapeHtml(opponentName)} ניצחה במרוץ הפעם 😅`;
+    else statusText = `⏱️ ${fmtElapsed(st.startedAt)}`;
+  } else {
+    statusText = meDone ? `🎉 פתרת בהצלחה! (${fmtDuration(st.startedAt, st.finishedAt[me])})` : `⏱️ ${fmtElapsed(st.startedAt)}`;
+  }
+
+  const solutionMap = crosswordSolutionMap(puzzle);
+  const totalLetterCells = Object.keys(solutionMap).length;
+  const raceProgress = (st.mode === 'race' && !st.winner) ? (() => {
+    const oppFilled = (st.boards && st.boards[opponentName]) || {};
+    const oppCorrect = Object.keys(solutionMap).filter(k => oppFilled[k] === solutionMap[k]).length;
+    const pct = Math.round((oppCorrect / totalLetterCells) * 100);
+    return `<div class="game-race-progress">ההתקדמות של ${escapeHtml(opponentName)}: ${pct}%
+      <div class="progress-bar-track"><div class="progress-bar-fill" style="width:${pct}%"></div></div></div>`;
+  })() : '';
+
+  const selection = crosswordSelectionFor(puzzle, cellsIndex);
+  const activeWord = puzzle.words[selection.wordIndex];
+  const activeWordCells = new Set();
+  if (activeWord) {
+    for (let i = 0; i < activeWord.word.length; i++) {
+      const r = activeWord.dir === 'across' ? activeWord.row : activeWord.row + i;
+      const c = activeWord.dir === 'across' ? activeWord.col + i : activeWord.col;
+      activeWordCells.add(crosswordCellKey(r, c));
     }
-    const isActive = selection.row === row && selection.col === col;
-    return `<button class="crossword-cell crossword-cell--letter ${isActive ? 'is-active' : ''} ${activeWord.has(key) ? 'is-in-active-word' : ''} ${wrong.has(key) ? 'is-wrong' : ''}" data-crossword-cell="${row},${col}" aria-label="משבצת ${row + 1}, ${col + 1}">${escapeHtml(state.filled[key] || '')}</button>`;
-  }).join('');
-  const keyboard = state.won ? '' : `<div class="crossword-keyboard">${CROSSWORD_KEYS.map(letter => `<button class="crossword-key" data-crossword-key="${letter}">${letter}</button>`).join('')}<button class="crossword-key crossword-key--delete" data-crossword-delete>⌫ מחיקה</button></div>`;
-  const result = state.won ? `<div class="crossword-result-panel"><h3>🎉 כל הכבוד, פתרת את התשחץ!</h3><ul class="crossword-result-list">${crosswordTodaysSisterResults(state.dateStr).map(r => `<li>${escapeHtml(r.name)} - ${escapeHtml(r.status)}</li>`).join('')}</ul></div>` : '';
+  }
+  const wrong = new Set(view.crosswordWrongCells || []);
+  const disabled = meDone || (st.mode === 'race' && !!st.winner);
+
+  let boardCells = '';
+  for (let r = 0; r < puzzle.rows; r++) {
+    for (let c = 0; c < puzzle.cols; c++) {
+      const key = crosswordCellKey(r, c);
+      const info = cellsIndex[key];
+      if (!info) { boardCells += '<div class="crossword-cell crossword-cell--blocked" aria-hidden="true"></div>'; continue; }
+      const isActive = selection.row === r && selection.col === c;
+      const inActiveWord = activeWordCells.has(key);
+      const isWrong = wrong.has(key) && myFilled[key];
+      const numLabel = info.number ? `<span class="crossword-cell-num">${info.number}</span>` : '';
+      boardCells += `<button class="crossword-cell crossword-cell--letter ${isActive ? 'is-active' : ''} ${inActiveWord ? 'is-in-active-word' : ''} ${isWrong ? 'is-wrong' : ''}" data-crossword-cell="${r},${c}" aria-label="משבצת ${r + 1}, ${c + 1}" ${disabled ? 'disabled' : ''}>${numLabel}${escapeHtml(myFilled[key] || '')}</button>`;
+    }
+  }
+
+  const fontPx = Math.max(11, Math.min(30, Math.round((350 / puzzle.cols) * 0.55)));
+
+  const selKey = crosswordCellKey(selection.row, selection.col);
+  const cellWordIndices = (cellsIndex[selKey] && cellsIndex[selKey].wordIndices) || [];
+  const toggleChoices = cellWordIndices.length > 1 ? `<div class="crossword-clue-choices">${cellWordIndices.map(wi => {
+    const w = puzzle.words[wi];
+    return `<button class="crossword-clue-choice ${wi === selection.wordIndex ? 'is-active' : ''}" data-crossword-word="${wi}">${w.dir === 'across' ? '← אופקי' : '↓ אנכי'}: ${escapeHtml(w.clue)}</button>`;
+  }).join('')}</div>` : '';
+  const clueBanner = activeWord ? `<div class="crossword-clue-banner"><p><strong>${activeWord.number}. ${activeWord.dir === 'across' ? '← אופקי' : '↓ אנכי'}:</strong> ${escapeHtml(activeWord.clue)}</p>${toggleChoices}</div>` : '';
+
+  const acrossClues = puzzle.words.map((w, wi) => ({ ...w, wi })).filter(w => w.dir === 'across').sort((a, b) => a.number - b.number);
+  const downClues = puzzle.words.map((w, wi) => ({ ...w, wi })).filter(w => w.dir === 'down').sort((a, b) => a.number - b.number);
+  const clueColHtml = (list, label) => `<div class="crossword-clue-col"><h4>${label}</h4><ul class="crossword-clue-items">${list.map(w => `
+    <li><button class="crossword-clue-item ${w.wi === selection.wordIndex ? 'is-active' : ''}" data-crossword-word="${w.wi}">${w.number}. ${escapeHtml(w.clue)}</button></li>
+  `).join('')}</ul></div>`;
+  const clueList = `<div class="crossword-clue-list">${clueColHtml(acrossClues, '← מאוזן')}${clueColHtml(downClues, '↓ מאונך')}</div>`;
+
+  const keyboard = disabled ? '' : `<div class="crossword-keyboard">${CROSSWORD_KEYS.map(letter => `<button class="crossword-key" data-crossword-key="${letter}">${letter}</button>`).join('')}<button class="crossword-key crossword-key--delete" data-crossword-delete>⌫ מחיקה</button></div>`;
+
+  let resultPanel = '';
+  if (st.mode === 'solo' && meDone) {
+    const others = crosswordOtherSistersResults(st.topicId, st.difficulty).filter(r => r.name !== me);
+    resultPanel = `<div class="crossword-result-panel"><h3>🎉 כל הכבוד, פתרת את התשחץ!</h3><ul class="crossword-result-list">
+      <li>${escapeHtml(me)} - פתרה ב-${fmtDuration(st.startedAt, st.finishedAt[me])} 🎉</li>
+      ${others.map(r => `<li>${escapeHtml(r.name)} - ${escapeHtml(r.status)}</li>`).join('')}
+    </ul></div>`;
+  } else if (st.mode === 'race' && meDone) {
+    const rows = st.players.map(p => {
+      const pDone = !!(st.finishedAt && st.finishedAt[p]);
+      const label = pDone ? fmtDuration(st.startedAt, st.finishedAt[p]) : 'עדיין משחקת...';
+      const crownIcon = st.winner === p ? ' 🏆' : '';
+      return `<li>${escapeHtml(p)} - ${label}${crownIcon}</li>`;
+    });
+    const title = st.winner === me ? '🏆 ניצחת במרוץ!' : (st.winner ? 'סיימת! 🎉' : 'סיימת! ממתינים שהיא תסיים...');
+    resultPanel = `<div class="crossword-result-panel"><h3>${title}</h3><ul class="crossword-result-list">${rows.join('')}</ul></div>`;
+  }
+
+  const topicTitle = (CROSSWORD_TOPICS.find(t => t.id === st.topicId) || {}).title || '';
+
   return `
     <div class="crossword-shell">
       <div class="back-row"><button class="btn btn-secondary btn-small" data-back-to-games-hub>→ חזרה</button><h1 style="margin:0; font-size:17px;">📝 תשחץ</h1></div>
-      <p class="muted" style="margin:10px 0 0;">${escapeHtml(crosswordDateLabel(state.dateStr))}</p>
-      ${renderCrosswordClueBanner(selection, spans)}
-      <div class="crossword-board-wrap"><div class="crossword-board" style="grid-template-columns:repeat(${puzzle.cols}, minmax(0, 1fr));">${board}</div></div>
+      <div class="game-board-header">
+        <div class="game-status ${meDone || st.winner ? 'game-status-over' : ''}">${statusText}</div>
+        ${raceProgress}
+      </div>
+      <p class="muted" style="margin:0 0 6px;">${escapeHtml(topicTitle)} · ${escapeHtml(CROSSWORD_DIFFICULTY_CONFIG[st.difficulty].label)}</p>
+      ${clueBanner}
+      <div class="crossword-board-wrap"><div class="crossword-board" style="grid-template-columns:repeat(${puzzle.cols}, minmax(0, 1fr)); --cw-font:${fontPx}px;">${boardCells}</div></div>
       ${keyboard}
-      ${state.won ? '' : '<div class="crossword-actions"><button class="btn btn-primary" data-crossword-check>בדיקה</button></div>'}
-      ${result}
+      ${disabled ? '' : '<div class="crossword-actions"><button class="btn btn-primary" data-crossword-check>בדיקה</button></div>'}
+      ${resultPanel}
+      ${clueList}
+      <button class="btn btn-secondary" style="width:100%; margin-top:14px;" data-game-new-game>🔄 תשחץ חדש</button>
+      ${view.gameConfirmNewGame ? renderGameConfirmNewGame() : ''}
     </div>`;
+}
+
+async function playCrosswordKey(letter) {
+  const sessionKey = view.activeGameSessionKey;
+  const gs = findGameSession('crossword', sessionKey);
+  if (!gs) return;
+  const st = gs.state;
+  const me = session.name;
+  if (st.mode === 'race' && st.winner) return;
+  const selection = view.crosswordSelection;
+  if (!selection) return;
+  const myFilled = { ...((st.boards && st.boards[me]) || {}) };
+  myFilled[crosswordCellKey(selection.row, selection.col)] = letter;
+  const boards = { ...st.boards, [me]: myFilled };
+  const finishedAt = { ...(st.finishedAt || {}) };
+  let winner = st.winner || null;
+  if (crosswordIsComplete(st.puzzle, myFilled) && !finishedAt[me]) {
+    finishedAt[me] = new Date().toISOString();
+    if (st.mode === 'race' && !winner) winner = me;
+  }
+  const activeWord = st.puzzle.words[selection.wordIndex];
+  if (activeWord) {
+    const cells = [];
+    for (let i = 0; i < activeWord.word.length; i++) {
+      const r = activeWord.dir === 'across' ? activeWord.row : activeWord.row + i;
+      const c = activeWord.dir === 'across' ? activeWord.col + i : activeWord.col;
+      cells.push({ r, c });
+    }
+    cells.sort((a, b) => activeWord.dir === 'across' ? b.c - a.c : a.r - b.r);
+    const curIdx = cells.findIndex(cell => cell.r === selection.row && cell.c === selection.col);
+    const next = cells[curIdx + 1];
+    if (next) view.crosswordSelection = { row: next.r, col: next.c, wordIndex: selection.wordIndex };
+  }
+  view.crosswordWrongCells = [];
+  try {
+    await saveGameSession('crossword', sessionKey, { ...st, boards, finishedAt, winner });
+  } catch (e) {
+    alert('שגיאה בשמירה, נסי שוב');
+    return;
+  }
+  render();
+}
+
+async function playCrosswordDelete() {
+  const sessionKey = view.activeGameSessionKey;
+  const gs = findGameSession('crossword', sessionKey);
+  if (!gs) return;
+  const st = gs.state;
+  const me = session.name;
+  if (st.mode === 'race' && st.winner) return;
+  const selection = view.crosswordSelection;
+  if (!selection) return;
+  const myFilled = { ...((st.boards && st.boards[me]) || {}) };
+  delete myFilled[crosswordCellKey(selection.row, selection.col)];
+  const boards = { ...st.boards, [me]: myFilled };
+  const activeWord = st.puzzle.words[selection.wordIndex];
+  if (activeWord) {
+    const cells = [];
+    for (let i = 0; i < activeWord.word.length; i++) {
+      const r = activeWord.dir === 'across' ? activeWord.row : activeWord.row + i;
+      const c = activeWord.dir === 'across' ? activeWord.col + i : activeWord.col;
+      cells.push({ r, c });
+    }
+    cells.sort((a, b) => activeWord.dir === 'across' ? b.c - a.c : a.r - b.r);
+    const curIdx = cells.findIndex(cell => cell.r === selection.row && cell.c === selection.col);
+    const prev = cells[curIdx - 1];
+    if (prev) view.crosswordSelection = { row: prev.r, col: prev.c, wordIndex: selection.wordIndex };
+  }
+  view.crosswordWrongCells = [];
+  try {
+    await saveGameSession('crossword', sessionKey, { ...st, boards });
+  } catch (e) {
+    alert('שגיאה בשמירה, נסי שוב');
+    return;
+  }
+  render();
 }
 
 function shoppingActiveList() {
@@ -4293,6 +4714,7 @@ function attachHandlers() {
       const { sessionKey, gameId, freshDraft } = view.gameResumePrompt;
       try {
         if (gameId === 'sudoku') await startNewSudokuSession(sessionKey, freshDraft);
+        else if (gameId === 'crossword') await startNewCrosswordSession(sessionKey, freshDraft);
         else await startNewGameSession(gameId, sessionKey, freshDraft);
       } catch (e) {
         alert('שגיאה בפתיחת המשחק, נסי שוב');
@@ -4438,16 +4860,58 @@ function attachHandlers() {
   const wordleBackspaceBtn = document.querySelector('[data-wordle-backspace]');
   if (wordleBackspaceBtn) wordleBackspaceBtn.onclick = () => wordleBackspace();
 
+  document.querySelectorAll('[data-crossword-topic]').forEach(el => {
+    el.onclick = () => {
+      view.gameSetupDraft = view.gameSetupDraft || {};
+      view.gameSetupDraft.topicId = el.getAttribute('data-crossword-topic');
+      render();
+    };
+  });
+
+  document.querySelectorAll('[data-crossword-difficulty]').forEach(el => {
+    el.onclick = () => {
+      view.gameSetupDraft = view.gameSetupDraft || {};
+      view.gameSetupDraft.difficulty = el.getAttribute('data-crossword-difficulty');
+      render();
+    };
+  });
+
+  document.querySelectorAll('[data-crossword-mode]').forEach(el => {
+    el.onclick = () => {
+      view.gameSetupDraft = view.gameSetupDraft || {};
+      const mode = el.getAttribute('data-crossword-mode');
+      view.gameSetupDraft.mode = mode;
+      view.gameSetupDraft.opponentName = mode === 'race' ? el.getAttribute('data-crossword-opponent') : null;
+      render();
+    };
+  });
+
   const crosswordStartBtn = document.querySelector('[data-crossword-start]');
   if (crosswordStartBtn) {
     crosswordStartBtn.onclick = async () => {
-      const dateStr = todayLocalDateStr();
+      const draft = view.gameSetupDraft || {};
+      if (!draft.topicId || !draft.difficulty || !draft.mode) return;
+      if (draft.mode === 'race' && !draft.opponentName) return;
+      const sessionKey = draft.mode === 'solo'
+        ? crosswordSoloSessionKey(session.name, draft.topicId, draft.difficulty)
+        : crosswordRaceSessionKey(draft.topicId, draft.difficulty, session.name, draft.opponentName);
+      const existing = findGameSession('crossword', sessionKey);
+      if (existing && existing.state && !crosswordSessionIsDone(existing.state)) {
+        view.gameResumePrompt = {
+          sessionKey, gameId: 'crossword', freshDraft: draft,
+          opponentLabel: draft.mode === 'race' ? draft.opponentName : 'לבד'
+        };
+        render();
+        return;
+      }
       try {
-        await startNewCrosswordSession(crosswordSessionKey(session.name, dateStr), dateStr);
+        await startNewCrosswordSession(sessionKey, draft);
       } catch (e) {
         alert('שגיאה בפתיחת המשחק, נסי שוב');
         return;
       }
+      view.activeGameSessionKey = sessionKey;
+      view.gameSetupDraft = null;
       view.crosswordSelection = null;
       view.crosswordWrongCells = [];
       render();
@@ -4457,109 +4921,51 @@ function attachHandlers() {
   document.querySelectorAll('[data-crossword-cell]').forEach(button => {
     button.onclick = () => {
       const [row, col] = button.getAttribute('data-crossword-cell').split(',').map(Number);
-      const dateStr = todayLocalDateStr();
-      const gs = findGameSession('crossword', crosswordSessionKey(session.name, dateStr));
+      const gs = findGameSession('crossword', view.activeGameSessionKey);
       if (!gs) return;
-      const puzzle = crosswordPuzzleById(gs.state.puzzleId);
-      const spans = extractWordSpans(puzzle);
+      const cellsIndex = crosswordCellsIndex(gs.state.puzzle);
+      const info = cellsIndex[crosswordCellKey(row, col)];
+      if (!info) return;
       const previous = view.crosswordSelection;
-      const options = crosswordSpansForCell(spans, row, col);
-      const selected = options.find(span => previous && span.dir === previous.dir && span.cells.some(cell => cell.row === row && cell.col === col)) || options[0];
-      view.crosswordSelection = { puzzleId: puzzle.id, row, col, clueRow: selected.clueRow, clueCol: selected.clueCol, dir: selected.dir };
+      const wordIndex = (previous && info.wordIndices.includes(previous.wordIndex)) ? previous.wordIndex : info.wordIndices[0];
+      view.crosswordSelection = { row, col, wordIndex };
       view.crosswordWrongCells = [];
       render();
     };
   });
 
-  document.querySelectorAll('[data-crossword-direction]').forEach(button => {
+  document.querySelectorAll('[data-crossword-word]').forEach(button => {
     button.onclick = () => {
-      const selection = view.crosswordSelection;
-      if (!selection) return;
-      const dateStr = todayLocalDateStr();
-      const gs = findGameSession('crossword', crosswordSessionKey(session.name, dateStr));
+      const wordIndex = parseInt(button.getAttribute('data-crossword-word'), 10);
+      const gs = findGameSession('crossword', view.activeGameSessionKey);
       if (!gs) return;
-      const puzzle = crosswordPuzzleById(gs.state.puzzleId);
-      const spans = extractWordSpans(puzzle);
-      const wantedDir = button.getAttribute('data-crossword-direction');
-      const cellSpans = crosswordSpansForCell(spans, selection.row, selection.col);
-      const target = cellSpans.find(span => span.dir === wantedDir);
-      if (!target) return;
-      selection.dir = target.dir;
-      selection.clueRow = target.clueRow;
-      selection.clueCol = target.clueCol;
+      const word = gs.state.puzzle.words[wordIndex];
+      if (!word) return;
+      const row = word.row;
+      const col = word.dir === 'across' ? word.col + word.word.length - 1 : word.col;
+      view.crosswordSelection = { row, col, wordIndex };
       render();
     };
   });
 
   document.querySelectorAll('[data-crossword-key]').forEach(button => {
-    button.onclick = async () => {
-      const dateStr = todayLocalDateStr();
-      const sessionKey = crosswordSessionKey(session.name, dateStr);
-      const gs = findGameSession('crossword', sessionKey);
-      const selection = view.crosswordSelection;
-      if (!gs || !selection || gs.state.won) return;
-      const puzzle = crosswordPuzzleById(gs.state.puzzleId);
-      const spans = extractWordSpans(puzzle);
-      const activeSpan = spans.find(span => span.clueRow === selection.clueRow && span.clueCol === selection.clueCol && span.dir === selection.dir);
-      if (!activeSpan) return;
-      const filled = { ...gs.state.filled, [crosswordCoordKey(selection.row, selection.col)]: button.getAttribute('data-crossword-key') };
-      const currentIndex = activeSpan.cells.findIndex(cell => cell.row === selection.row && cell.col === selection.col);
-      const next = activeSpan.cells[currentIndex + 1];
-      if (next) Object.assign(selection, { row: next.row, col: next.col });
-      const won = crosswordCheckSolved(puzzle, filled);
-      const newState = { ...gs.state, filled, won: won ? true : null, finishedAt: won ? new Date().toISOString() : null };
-      try {
-        await saveGameSession('crossword', sessionKey, newState);
-      } catch (e) {
-        alert('שגיאה בשמירה, נסי שוב');
-        return;
-      }
-      view.crosswordWrongCells = [];
-      render();
-    };
+    button.onclick = () => playCrosswordKey(button.getAttribute('data-crossword-key'));
   });
 
   const crosswordDeleteBtn = document.querySelector('[data-crossword-delete]');
-  if (crosswordDeleteBtn) {
-    crosswordDeleteBtn.onclick = async () => {
-      const dateStr = todayLocalDateStr();
-      const sessionKey = crosswordSessionKey(session.name, dateStr);
-      const gs = findGameSession('crossword', sessionKey);
-      const selection = view.crosswordSelection;
-      if (!gs || !selection || gs.state.won) return;
-      const puzzle = crosswordPuzzleById(gs.state.puzzleId);
-      const spans = extractWordSpans(puzzle);
-      const activeSpan = spans.find(span => span.clueRow === selection.clueRow && span.clueCol === selection.clueCol && span.dir === selection.dir);
-      const filled = { ...gs.state.filled };
-      delete filled[crosswordCoordKey(selection.row, selection.col)];
-      if (activeSpan) {
-        const currentIndex = activeSpan.cells.findIndex(cell => cell.row === selection.row && cell.col === selection.col);
-        const previous = activeSpan.cells[currentIndex - 1];
-        if (previous) Object.assign(selection, { row: previous.row, col: previous.col });
-      }
-      try {
-        await saveGameSession('crossword', sessionKey, { ...gs.state, filled });
-      } catch (e) {
-        alert('שגיאה בשמירה, נסי שוב');
-        return;
-      }
-      view.crosswordWrongCells = [];
-      render();
-    };
-  }
+  if (crosswordDeleteBtn) crosswordDeleteBtn.onclick = () => playCrosswordDelete();
 
   const crosswordCheckBtn = document.querySelector('[data-crossword-check]');
   if (crosswordCheckBtn) {
     crosswordCheckBtn.onclick = () => {
-      const dateStr = todayLocalDateStr();
-      const gs = findGameSession('crossword', crosswordSessionKey(session.name, dateStr));
+      const gs = findGameSession('crossword', view.activeGameSessionKey);
       if (!gs) return;
-      view.crosswordWrongCells = crosswordWrongCells(crosswordPuzzleById(gs.state.puzzleId), gs.state.filled);
+      const myFilled = (gs.state.boards && gs.state.boards[session.name]) || {};
+      view.crosswordWrongCells = crosswordWrongCellKeys(gs.state.puzzle, myFilled);
       render();
     };
   }
 }
-
 function subscribeAll(name, gen) {
   const loadedKeys = new Set();
 
