@@ -412,6 +412,27 @@
   .sudoku-race-progress { margin-top: 12px; font-size: 12.5px; color: var(--text-muted); }
   .sudoku-race-progress .progress-bar-track { background: var(--bg); border-radius: 999px; height: 10px; overflow: hidden; margin-top: 4px; }
   .sudoku-race-progress .progress-bar-fill { background: linear-gradient(90deg, #4fd1c5, #17a398); height: 100%; transition: width 0.3s; }
+  .wordle-board { display: flex; flex-direction: column; gap: 6px; max-width: 300px; width: 100%; margin: 0 auto; }
+  .wordle-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+  .wordle-row.shake { animation: wordle-shake 0.4s; }
+  @keyframes wordle-shake { 10%, 90% { transform: translateX(-2px); } 20%, 80% { transform: translateX(4px); } 30%, 50%, 70% { transform: translateX(-8px); } 40%, 60% { transform: translateX(8px); } }
+  .wordle-cell { aspect-ratio: 1; border: 2px solid var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; color: var(--text); background: var(--card); }
+  .wordle-cell.filled { border-color: var(--text-muted); }
+  .wordle-cell.correct { background: #4fa377; border-color: #4fa377; color: #fff; }
+  .wordle-cell.present { background: #d9a441; border-color: #d9a441; color: #fff; }
+  .wordle-cell.absent { background: #8a8578; border-color: #8a8578; color: #fff; }
+  .wordle-message { text-align: center; font-size: 13.5px; color: var(--text-muted); min-height: 18px; margin-top: 6px; }
+  .wordle-keyboard { display: flex; flex-direction: column; gap: 6px; margin-top: 16px; }
+  .wordle-kb-row { display: flex; gap: 4px; justify-content: center; }
+  .wordle-key { min-width: 24px; flex: 1; max-width: 32px; padding: 12px 0; border: none; border-radius: 6px; background: var(--border); color: var(--text); font-size: 14px; font-weight: 700; cursor: pointer; }
+  .wordle-key.key-correct { background: #4fa377; color: #fff; }
+  .wordle-key.key-present { background: #d9a441; color: #fff; }
+  .wordle-key.key-absent { background: #b8b3a6; color: #fff; }
+  .wordle-key-wide { flex: 1.6; max-width: 52px; font-size: 12px; }
+  .wordle-result-summary { margin-top: 16px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 4px 12px; }
+  .wordle-result-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13.5px; }
+  .wordle-result-row:last-child { border-bottom: none; }
+  .wordle-result-row span:nth-child(2) { flex: 1; font-weight: 600; }
 </style>
 </head>
 <body>
@@ -802,7 +823,7 @@ function personalizedEmpowerText(name) {
 }
 
 const NAMES = ['ריקי', 'ברוריה', 'דורית'];
-const APP_VERSION = '2.10.4';
+const APP_VERSION = '2.11.0';
 const APP_UPDATED = '14.08.2026';
 const AVATAR_CLASS = { 'ריקי': 'ricky', 'ברוריה': 'bruria', 'דורית': 'dorit' };
 
@@ -827,7 +848,11 @@ const GAMES_CATALOG = [
     <p>לוחצות על משבצת ריקה ואז על ספרה מהלוח שמופיע למטה. משבצת עם התנגשות (אותה ספרה כבר קיימת באותה שורה/עמודה/ריבוע) תסומן באדום.</p>
     <p>המשחק נשמר אוטומטית, ואפשר להתחיל לוח חדש בכל שלב.</p>
   ` },
-  { id: 'wordle', title: 'וורדל עברי', icon: '🔤', color: 'g-green', locked: true, instructionsHtml: '' },
+  { id: 'wordle', title: 'וורדל עברי', icon: '🔤', color: 'g-green', locked: false, instructionsHtml: `
+    <p>מילה עברית אחת בת 5 אותיות, משותפת לשלושתכן - מתחלפת כל יום. יש לך 6 ניחושים לפענח אותה.</p>
+    <p>אחרי כל ניחוש כל אות תיצבע: ירוק = במקום הנכון, צהוב = קיימת במילה אבל במקום אחר, אפור = לא קיימת במילה בכלל.</p>
+    <p>מקלידים עם המקלדת שעל המסך (או עם מקלדת פיזית) ולוחצים "אישור". בסוף - בין אם פתרת ובין אם לא - אפשר לראות איך הלך היום לכל אחת מכן.</p>
+  ` },
   { id: 'crossword', title: 'תשחץ', icon: '📝', color: 'g-orange', locked: true, instructionsHtml: '' },
   { id: 'trivia', title: 'שאלון אמריקאי', icon: '❓', color: 'g-red', locked: true, instructionsHtml: '' },
   { id: 'cookiewords', title: 'עוגות מילים', icon: '🍪', color: 'g-brown', locked: true, instructionsHtml: '' },
@@ -1118,6 +1143,7 @@ function render() {
   else if (view.screen === 'game-tictactoe') app.innerHTML = renderGameScreen('tictactoe');
   else if (view.screen === 'game-connect4') app.innerHTML = renderGameScreen('connect4');
   else if (view.screen === 'game-sudoku') app.innerHTML = renderGameScreen('sudoku');
+  else if (view.screen === 'game-wordle') app.innerHTML = renderGameScreen('wordle');
   attachHandlers();
 }
 
@@ -1863,6 +1889,7 @@ async function startNewGameSession(gameId, sessionKey, draft) {
 function renderGameScreen(gameId) {
   const g = GAMES_CATALOG.find(x => x.id === gameId);
   if (!g) return '<p>המשחק הזה לא נמצא.</p>';
+  if (gameId === 'wordle') return renderWordleScreen();
   if (!view.activeGameSessionKey) {
     if (gameId === 'sudoku') return renderSudokuSetup();
     return renderGameOpponentSetup(gameId, g.title, g.icon);
@@ -2457,6 +2484,233 @@ async function playSudokuMove(num) {
   } catch (e) {
     alert('שגיאה בשמירת המהלך, נסי שוב');
   }
+}
+
+// --- וורדל עברי (Hebrew Wordle) ---
+// One shared word per calendar day (like the original Wordle) - all three sisters get the same word,
+// each with her own 6 guesses, and can see each other's result once done (not the word itself if
+// still in progress, so nobody spoils it). Valid guesses are limited to this same curated list (no
+// separate, much larger "accepted but never an answer" dictionary) - a deliberate scope decision for
+// a small family app, see DECISIONS.md.
+const WORDLE_WORDS = [
+  'שולחן', 'מרפסת', 'כרטיס', 'עיתון', 'גלידה', 'אבטיח', 'תמונה', 'מטריה', 'גינון', 'דרכון',
+  'תשובה', 'שאלון', 'מספרה', 'תלמיד', 'ספרים', 'גבינה', 'ארנבת', 'חתולה', 'כלבלב', 'ציפור',
+  'דבורה', 'קיפוד', 'תמנון', 'ברווז', 'משפחה', 'חברות', 'מנוחה', 'תקווה', 'חופשה', 'נסיעה',
+  'מסיבה', 'חולצה', 'טלפון', 'מקלדת', 'תוכנה', 'מונית', 'מדרכה', 'שכונה', 'עיירה', 'ורדים',
+  'גינות', 'פירות', 'ירקות', 'תבלין', 'קישוא', 'אגסים', 'תותים', 'ענבים', 'רימון', 'קוקוס',
+  'ריקוד', 'שירים', 'צבעים', 'אמונה', 'שמחות', 'חיבוק', 'נשיקה', 'חברים', 'שכנים', 'הצלחה',
+  'עבודה', 'פגישה', 'שלווה', 'הפתעה', 'חגיגה', 'חתונה', 'מילון', 'תרגיל', 'חידון', 'קלפים',
+  'קוביה', 'פרחים', 'שמיים'
+];
+const WORDLE_FINAL_MAP = { 'כ': 'ך', 'מ': 'ם', 'נ': 'ן', 'פ': 'ף', 'צ': 'ץ' };
+const WORDLE_FINAL_REVERSE = { 'ך': 'כ', 'ם': 'מ', 'ן': 'נ', 'ף': 'פ', 'ץ': 'צ' };
+const WORDLE_BASE_LETTERS = ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 'כ', 'ל', 'מ', 'נ', 'ס', 'ע', 'פ', 'צ', 'ק', 'ר', 'ש', 'ת'];
+const WORDLE_EPOCH = '2026-08-15'; // day 0 - the day this game launched; the word rotates predictably from here on
+
+function wordleApplyFinal(word) {
+  // Auto-convert only the LAST letter to its sofit (final) form if it has one - lets the on-screen
+  // keyboard show just the 22 base letters instead of also needing 5 separate final-form keys.
+  if (!word) return word;
+  const last = word[word.length - 1];
+  const finalForm = WORDLE_FINAL_MAP[last];
+  return finalForm ? word.slice(0, -1) + finalForm : word;
+}
+function todayLocalDateStr() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+function wordleWordForDate(dateStr) {
+  const epoch = new Date(WORDLE_EPOCH + 'T00:00:00');
+  const today = new Date(dateStr + 'T00:00:00');
+  const daysSince = Math.round((today - epoch) / 86400000);
+  const idx = ((daysSince % WORDLE_WORDS.length) + WORDLE_WORDS.length) % WORDLE_WORDS.length;
+  return WORDLE_WORDS[idx];
+}
+function wordleSessionKey(name, dateStr) {
+  return `solo__${name}__${dateStr}`;
+}
+function wordleComputeFeedback(guess, answer) {
+  // Standard two-pass Wordle scoring, handling repeated letters correctly: pass 1 marks exact
+  // position matches (green) and removes them from the "remaining letters" pool; pass 2 marks
+  // yellow only while that letter still has an unmatched copy left in the answer.
+  const result = new Array(guess.length).fill('absent');
+  const remaining = {};
+  for (let i = 0; i < answer.length; i++) {
+    if (guess[i] !== answer[i]) remaining[answer[i]] = (remaining[answer[i]] || 0) + 1;
+  }
+  for (let i = 0; i < guess.length; i++) {
+    if (guess[i] === answer[i]) result[i] = 'correct';
+  }
+  for (let i = 0; i < guess.length; i++) {
+    if (result[i] === 'correct') continue;
+    const ch = guess[i];
+    if (remaining[ch] > 0) {
+      result[i] = 'present';
+      remaining[ch]--;
+    }
+  }
+  return result;
+}
+function wordleKeyStatuses(guesses, answer) {
+  // Best-known status per (base) letter across all guesses so far - correct beats present beats absent.
+  const rank = { correct: 3, present: 2, absent: 1 };
+  const statuses = {};
+  guesses.forEach(g => {
+    const fb = wordleComputeFeedback(g, answer);
+    for (let i = 0; i < g.length; i++) {
+      const baseCh = WORDLE_FINAL_REVERSE[g[i]] || g[i];
+      const cur = statuses[baseCh];
+      if (!cur || rank[fb[i]] > rank[cur]) statuses[baseCh] = fb[i];
+    }
+  });
+  return statuses;
+}
+function wordleTodaysSisterResults(dateStr) {
+  return NAMES.map(name => {
+    const gs = findGameSession('wordle', wordleSessionKey(name, dateStr));
+    if (!gs) return { name, status: 'לא שיחקה עדיין היום' };
+    const st = gs.state;
+    if (st.won === true) return { name, status: `פתרה ב-${st.guesses.length} ניחושים 🎉` };
+    if (st.won === false) return { name, status: 'לא הצליחה הפעם 😅' };
+    return { name, status: `באמצע... (${st.guesses.length}/6)` };
+  });
+}
+async function startNewWordleSession(sessionKey, dateStr) {
+  const answer = wordleWordForDate(dateStr);
+  const state = { dateStr, answer, guesses: [], startedAt: new Date().toISOString(), finishedAt: null, won: null };
+  await saveGameSession('wordle', sessionKey, state);
+}
+function renderWordleScreen() {
+  const dateStr = todayLocalDateStr();
+  const sessionKey = wordleSessionKey(session.name, dateStr);
+  const gs = findGameSession('wordle', sessionKey);
+  if (!gs) return renderWordleSetup(dateStr);
+  return renderWordleBoard(sessionKey);
+}
+function renderWordleSetup(dateStr) {
+  const dateLabel = new Date(dateStr + 'T00:00:00').toLocaleDateString('he-IL', { day: 'numeric', month: 'long' });
+  return `
+    <div class="back-row">
+      <button class="btn btn-secondary btn-small" data-back-to-games-hub>→ חזרה</button>
+      <h1 style="margin:0; font-size:17px;">🔤 וורדל עברי</h1>
+    </div>
+    <div class="game-setup-card">
+      <h3>המילה של היום (${escapeHtml(dateLabel)})</h3>
+      <p>מילה עברית אחת בת 5 אותיות, משותפת לשלושתכן היום. 6 ניחושים לפענח אותה - ובסוף אפשר לראות איך הלך לכל אחת.</p>
+      <button class="btn btn-primary" style="width:100%; margin-top:8px;" data-wordle-start>בואי נתחיל!</button>
+    </div>
+  `;
+}
+function renderWordleBoard(sessionKey) {
+  const gs = findGameSession('wordle', sessionKey);
+  if (!gs) return '<p>שגיאה בטעינת המשחק.</p>';
+  const st = gs.state;
+  const isDone = !!st.finishedAt;
+  const current = isDone ? '' : (view.wordleCurrentGuess || '');
+  const rows = [];
+  for (let r = 0; r < 6; r++) {
+    if (r < st.guesses.length) {
+      const fb = wordleComputeFeedback(st.guesses[r], st.answer);
+      rows.push({ letters: st.guesses[r].split(''), states: fb });
+    } else if (r === st.guesses.length && !isDone) {
+      const displayCurrent = current.length === 5 ? wordleApplyFinal(current) : current;
+      const letters = displayCurrent.split('');
+      while (letters.length < 5) letters.push('');
+      rows.push({ letters, states: letters.map(() => 'empty'), active: true });
+    } else {
+      rows.push({ letters: ['', '', '', '', ''], states: ['empty', 'empty', 'empty', 'empty', 'empty'] });
+    }
+  }
+  const keyStatuses = wordleKeyStatuses(st.guesses, st.answer);
+  const kbRows = [
+    ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח'],
+    ['ט', 'י', 'כ', 'ל', 'מ', 'נ', 'ס'],
+    ['ע', 'פ', 'צ', 'ק', 'ר', 'ש', 'ת']
+  ];
+  const dateLabel = new Date(st.dateStr + 'T00:00:00').toLocaleDateString('he-IL', { day: 'numeric', month: 'long' });
+  const statusText = isDone
+    ? (st.won ? `פתרת ב-${st.guesses.length} ניחושים! 🎉` : `הפעם לא הצליחה - המילה הייתה "${escapeHtml(st.answer)}"`)
+    : `ניחוש ${st.guesses.length + 1} מתוך 6`;
+  return `
+    <div class="back-row">
+      <button class="btn btn-secondary btn-small" data-back-to-games-hub>→ חזרה</button>
+      <h1 style="margin:0; font-size:17px;">🔤 וורדל עברי</h1>
+    </div>
+    <div class="game-board-header">
+      <div class="game-status ${isDone ? 'game-status-over' : ''}">${escapeHtml(dateLabel)} · ${statusText}</div>
+    </div>
+    <div class="wordle-board">
+      ${rows.map(row => `
+        <div class="wordle-row ${row.active && view.wordleShake ? 'shake' : ''}">
+          ${row.letters.map((ch, ci) => `<div class="wordle-cell ${row.states[ci] !== 'empty' ? row.states[ci] : ''} ${ch ? 'filled' : ''}">${escapeHtml(ch)}</div>`).join('')}
+        </div>
+      `).join('')}
+    </div>
+    <div class="wordle-message">${escapeHtml(view.wordleMessage || '')}</div>
+    ${!isDone ? `
+      <div class="wordle-keyboard">
+        ${kbRows.map(row => `
+          <div class="wordle-kb-row">
+            ${row.map(k => `<button class="wordle-key ${keyStatuses[k] ? 'key-' + keyStatuses[k] : ''}" data-wordle-key="${k}">${k}</button>`).join('')}
+          </div>
+        `).join('')}
+        <div class="wordle-kb-row">
+          <button class="wordle-key wordle-key-wide" data-wordle-enter>אישור</button>
+          <button class="wordle-key wordle-key-wide" data-wordle-backspace>⌫</button>
+        </div>
+      </div>
+    ` : `
+      <div class="wordle-result-summary">
+        ${wordleTodaysSisterResults(st.dateStr).map(r => `
+          <div class="wordle-result-row"><span class="avatar ${AVATAR_CLASS[r.name] || ''}">${r.name[0]}</span><span>${escapeHtml(r.name)}</span><span>${escapeHtml(r.status)}</span></div>
+        `).join('')}
+      </div>
+    `}
+  `;
+}
+function wordleTypeLetter(letter) {
+  const cur = view.wordleCurrentGuess || '';
+  if (cur.length >= 5) return;
+  view.wordleCurrentGuess = cur + letter;
+  view.wordleMessage = '';
+  render();
+}
+function wordleBackspace() {
+  const cur = view.wordleCurrentGuess || '';
+  view.wordleCurrentGuess = cur.slice(0, -1);
+  render();
+}
+function wordleFlashMessage(msg) {
+  view.wordleMessage = msg;
+  view.wordleShake = true;
+  render();
+  setTimeout(() => { view.wordleShake = false; render(); }, 400);
+}
+async function wordleSubmitGuess() {
+  const dateStr = todayLocalDateStr();
+  const sessionKey = wordleSessionKey(session.name, dateStr);
+  const gs = findGameSession('wordle', sessionKey);
+  if (!gs || gs.state.finishedAt) return;
+  const st = gs.state;
+  const raw = view.wordleCurrentGuess || '';
+  if (raw.length < 5) { wordleFlashMessage('חסרות אותיות'); return; }
+  const guess = wordleApplyFinal(raw);
+  if (!WORDLE_WORDS.includes(guess)) { wordleFlashMessage('המילה לא ברשימה שלנו'); return; }
+  const guesses = [...st.guesses, guess];
+  const won = guess === st.answer;
+  const done = won || guesses.length >= 6;
+  const newState = { ...st, guesses, won: done ? won : null, finishedAt: done ? new Date().toISOString() : null };
+  view.wordleCurrentGuess = '';
+  view.wordleMessage = '';
+  try {
+    await saveGameSession('wordle', sessionKey, newState);
+  } catch (e) {
+    alert('שגיאה בשמירת הניחוש, נסי שוב');
+  }
+  render();
 }
 
 function shoppingActiveList() {
@@ -3933,6 +4187,31 @@ function attachHandlers() {
       await playSudokuMove(num);
     };
   });
+
+  const wordleStartBtn = document.querySelector('[data-wordle-start]');
+  if (wordleStartBtn) {
+    wordleStartBtn.onclick = async () => {
+      const dateStr = todayLocalDateStr();
+      const sessionKey = wordleSessionKey(session.name, dateStr);
+      try {
+        await startNewWordleSession(sessionKey, dateStr);
+      } catch (e) {
+        alert('שגיאה בפתיחת המשחק, נסי שוב');
+        return;
+      }
+      render();
+    };
+  }
+
+  document.querySelectorAll('[data-wordle-key]').forEach(el => {
+    el.onclick = () => wordleTypeLetter(el.getAttribute('data-wordle-key'));
+  });
+
+  const wordleEnterBtn = document.querySelector('[data-wordle-enter]');
+  if (wordleEnterBtn) wordleEnterBtn.onclick = () => wordleSubmitGuess();
+
+  const wordleBackspaceBtn = document.querySelector('[data-wordle-backspace]');
+  if (wordleBackspaceBtn) wordleBackspaceBtn.onclick = () => wordleBackspace();
 }
 
 function subscribeAll(name, gen) {
@@ -4141,6 +4420,17 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 render();
+
+document.addEventListener('keydown', (e) => {
+  if (!session || view.screen !== 'game-wordle') return;
+  const dateStr = todayLocalDateStr();
+  const gs = findGameSession('wordle', wordleSessionKey(session.name, dateStr));
+  if (!gs || gs.state.finishedAt) return;
+  if (e.key === 'Enter') { wordleSubmitGuess(); return; }
+  if (e.key === 'Backspace') { wordleBackspace(); return; }
+  const baseKey = WORDLE_FINAL_REVERSE[e.key] || e.key;
+  if (WORDLE_BASE_LETTERS.includes(baseKey)) wordleTypeLetter(baseKey);
+});
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
