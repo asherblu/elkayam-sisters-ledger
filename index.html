@@ -453,6 +453,21 @@
   .wordsearch-result { padding:16px; border:1px solid var(--border); border-radius:14px; background:var(--card); text-align:center; }
   .wordsearch-result h2 { margin-top:0; }
   .wordsearch-result ul { padding-right:20px; text-align:right; }
+  .relaxriddles-shell { max-width: 480px; margin:0 auto; }
+  .relaxriddles-status { display:flex; justify-content:space-between; gap:8px; margin:10px 0; color:var(--text-muted); font-size:13px; }
+  .relaxriddles-clue { padding:16px; border:1px solid var(--border); border-radius:14px; background:var(--card); color:var(--text); text-align:center; font-size:15.5px; line-height:1.6; margin-bottom:12px; }
+  .relaxriddles-clue--anagram { color:var(--text-muted); font-style:italic; }
+  .relaxriddles-candidate { display:flex; justify-content:center; gap:6px; margin:10px 0; direction:rtl; }
+  .relaxriddles-slot { display:inline-flex; align-items:center; justify-content:center; min-width:30px; height:38px; border-bottom:2px solid var(--border); font:700 20px inherit; color:var(--text); }
+  .relaxriddles-message { min-height:22px; margin:6px 0; color:var(--text-muted); text-align:center; font-size:13.5px; }
+  .relaxriddles-message.is-error { color:#a11f1f; animation:wordsearch-shake .28s linear; }
+  .relaxriddles-tiles { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:14px 0; direction:rtl; }
+  .relaxriddles-tile { min-width:42px; height:42px; padding:0 8px; border:1px solid var(--border); border-radius:10px; background:var(--card); color:var(--text); font:700 18px inherit; cursor:pointer; }
+  .relaxriddles-tile.is-used { opacity:.35; cursor:default; }
+  .relaxriddles-actions { display:flex; gap:8px; justify-content:center; margin-top:8px; }
+  .relaxriddles-result { padding:16px; border:1px solid var(--border); border-radius:14px; background:var(--card); text-align:center; }
+  .relaxriddles-result h2 { margin-top:0; }
+  .relaxriddles-result ul { padding-right:20px; text-align:right; }
   .game-tile.locked { cursor: default; filter: grayscale(0.85); opacity: 0.6; box-shadow: none; }
   .game-tile-lock { font-size: 11px; font-weight: 700; background: rgba(0,0,0,0.28); border-radius: 999px; padding: 2px 10px; }
   .game-instructions-body { font-size: 13.5px; line-height: 1.6; color: var(--text); margin-bottom: 12px; }
@@ -919,7 +934,7 @@ function personalizedEmpowerText(name) {
 }
 
 const NAMES = ['ריקי', 'ברוריה', 'דורית'];
-const APP_VERSION = '2.17.1';
+const APP_VERSION = '2.18.0';
 const APP_UPDATED = '15.08.2026';
 const AVATAR_CLASS = { 'ריקי': 'ricky', 'ברוריה': 'bruria', 'דורית': 'dorit' };
 
@@ -968,7 +983,11 @@ const GAMES_CATALOG = [
     <p>בוחרת נושא (מתוך נושאי התשחץ שכבר מכירה) ורמת קושי (קל / בינוני / קשה, קובעת את גודל הרשת), ואם לשחק לבד או במרוץ בזמן אמת מול אחת האחיות - שתיכן פותרות בדיוק את אותה תפזורת, ומי שמוצאת ראשונה את כל המילים מנצחת.</p>
     <p>אם טעית בבחירה, לוחצת שוב על אותה אות כדי לבטל ולהתחיל בחירה חדשה. המשחק נשמר אוטומטית, ואם התחלת ולא סיימת - תמיד אפשר לחזור בדיוק לאיפה שעצרת.</p>
   ` },
-  { id: 'relaxriddles', title: 'חידות מילים מרגיעות', icon: '🧘', color: 'g-pink', locked: true, instructionsHtml: '' },
+  { id: 'relaxriddles', title: 'חידות מילים מרגיעות', icon: '🧘', color: 'g-pink', locked: false, instructionsHtml: `
+    <p>{name}, בכל סיבוב מחכות לך 12 חידות בקצב נעים ורגוע. חלקן חידות קלאסיות - קוראת רמז מילולי ומנחשת את המילה - וחלקן פזלים של אותיות מעורבבות שצריך לסדר מחדש. בשני הסוגים מקבלים בדיוק את אותיות המילה, אז אין צורך לנחש אילו אותיות קיימות - רק לסדר אותן נכון.</p>
+    <p>בוחרת רמת קושי (קל / בינוני / קשה) ואיך לשחק: לבד בקצב שלך, או במרוץ בזמן אמת מול אחת האחיות על אותה סדרת חידות בדיוק - מי שמסיימת ראשונה את כל ה-12 מנצחת. נתקעת? יש כפתור "רמז" בכל חידה שנותן קצת עזרה.</p>
+    <p>אין הפסד על ניסיון שגוי - פשוט מוחקים אות ומנסות שוב, בלי לחץ. המשחק נשמר אוטומטית, ואם התחלת ולא סיימת - תמיד אפשר לחזור בדיוק לאיפה שעצרת.</p>
+  ` },
   { id: 'shanghai', title: 'שנחאי', icon: '🀄', color: 'g-gold', locked: true, instructionsHtml: '' }
 ];
 
@@ -1277,6 +1296,7 @@ function render() {
   else if (view.screen === 'game-trivia') app.innerHTML = renderGameScreen('trivia');
   else if (view.screen === 'game-cookiewords') app.innerHTML = renderGameScreen('cookiewords');
   else if (view.screen === 'game-wordsearch') app.innerHTML = renderGameScreen('wordsearch');
+  else if (view.screen === 'game-relaxriddles') app.innerHTML = renderGameScreen('relaxriddles');
   attachHandlers();
 }
 
@@ -2065,6 +2085,7 @@ function renderGameScreen(gameId) {
     if (gameId === 'crossword') return renderCrosswordSetup();
     if (gameId === 'cookiewords') return renderCookieWordsSetup();
     if (gameId === 'wordsearch') return renderWordsearchSetup();
+    if (gameId === 'relaxriddles') return renderRelaxRiddlesSetup();
     return renderGameOpponentSetup(gameId, g.title, g.icon);
   }
   if (gameId === 'tictactoe') return renderTicTacToeBoard(gameId, view.activeGameSessionKey);
@@ -2073,6 +2094,7 @@ function renderGameScreen(gameId) {
   if (gameId === 'crossword') return renderCrosswordBoard(view.activeGameSessionKey);
   if (gameId === 'cookiewords') return renderCookieWordsBoard(view.activeGameSessionKey);
   if (gameId === 'wordsearch') return renderWordsearchBoard(view.activeGameSessionKey);
+  if (gameId === 'relaxriddles') return renderRelaxRiddlesBoard(view.activeGameSessionKey);
   return '<p>המשחק הזה עדיין בבנייה.</p>';
 }
 
@@ -4019,6 +4041,161 @@ function renderWordsearchBoard(sessionKey) {
   return `<div class="wordsearch-shell"><div class="back-row"><button class="btn btn-secondary btn-small" data-back-to-games-hub>→ חזרה</button><h1 style="margin:0;font-size:17px;">🔍 תפזורת</h1></div><div class="wordsearch-status"><span>${progress.foundWords.length}/${state.words.length} מילים</span>${other ? `<span>${escapeHtml(wordsearchOpponentName(state))}: ${other.foundWords.length}/${state.words.length}</span>` : ''}</div><div class="wordsearch-board-wrap"><div class="wordsearch-board" style="grid-template-columns:repeat(${state.grid.length}, minmax(0, 1fr));">${cells}</div></div><div class="wordsearch-message ${temp.error ? 'is-error' : ''}">${escapeHtml(temp.message)}</div><div class="wordsearch-words">${state.words.map(item => `<div class="wordsearch-word ${progress.foundWords.includes(item.word) ? 'is-found' : ''}">${escapeHtml(item.word)}</div>`).join('')}</div></div>`;
 }
 
+// --- חידות מילים מרגיעות (relaxing word riddles) ---
+// Content written directly (not delegated to ChatGPT, per explicit instruction: this game's content
+// requires literary/logical judgment better handled directly than "guessed" by an external model that
+// can't run code to self-verify). 90 items across 3 difficulty tiers, mixing two riddle flavors:
+// 'riddle' (a poetic clue -> guess the word) and 'anagram' (unscramble the given letters, no clue).
+// In both cases the player is handed exactly the target word's own letters (scrambled) rather than a
+// free-text/keyboard input - this guarantees every answer is keyboard-safe by construction (no need to
+// separately validate against CROSSWORD_KEYS at play time) and keeps the game genuinely "relaxing":
+// there is no way to submit a letter that isn't part of the answer, so mistakes are only ever
+// ordering mistakes, never dead ends.
+const RELAXRIDDLES_BANK = {
+  easy: [
+    { type:'riddle', clue:'יש לי דפים רבים ואינני עץ, מספר סיפור בכל פעם מחדש', answer:'ספר', hint:'קוראים אותי לפני השינה' },
+    { type:'riddle', clue:'עגול אני ומתגלגל בקלות, ילדים בועטים בי בשמחה', answer:'כדור', hint:'משחקים בי בחוץ' },
+    { type:'riddle', clue:'יש לי מחוגים אך אין לי ידיים, ותמיד יודע להגיד כמה השעה', answer:'שעון', hint:'תלוי על הקיר או על היד' },
+    { type:'riddle', clue:'אדום או ירוק אני, גדל על עץ וטעים לנשנוש', answer:'תפוח', hint:'אחד ליום מרחיק מרופאים' },
+    { type:'riddle', clue:'יושב לי על הראש בימים קרים, שומר עליך מפני הרוח', answer:'כובע', hint:'לובשים אותי בחורף' },
+    { type:'riddle', clue:'לבן אני ויורד מהשמיים בשקט, קר למגע ונמס בשמש החמה', answer:'שלג', hint:'אפשר לבנות ממני איש' },
+    { type:'riddle', clue:'יש לי גב רחב אך לא כואב לי, בלילה כולם באים לנוח עליי', answer:'מיטה', hint:'ישנים עליי כל לילה' },
+    { type:'riddle', clue:'קטן אני וזריז, אוהב גבינה ומפחד מחתולים', answer:'עכבר', hint:'חי גם ליד המחשב' },
+    { type:'riddle', clue:'שקוף אני לפעמים, ממלאים אותי במים ושותים ממני', answer:'כוס', hint:'עומד על השולחן בארוחה' },
+    { type:'riddle', clue:'גבוה אני וירוק, ציפורים בונות בי קן ועלים לי בכל עונה', answer:'עץ', hint:'יש לי גזע וענפים' },
+    { type:'riddle', clue:'מיילל אני ומגרגר, ואוהב לישון כל היום בשמש', answer:'חתול', hint:'חיית מחמד עם זנב' },
+    { type:'riddle', clue:'מתוק וצמיג אני, מגיע מדבורים חרוצות', answer:'דבש', hint:'טוב עם תה חם' },
+    { type:'riddle', clue:'מאיר אני את הלילה בלי חום, ומשנה צורה כל כמה ימים', answer:'ירח', hint:'רואים אותי בשמיים בלילה' },
+    { type:'riddle', clue:'יורד אני מהעננים ומרטיב את הרחוב, ואחריי לפעמים יוצאת קשת', answer:'גשם', hint:'צריך מטרייה כשאני יורד' },
+    { type:'riddle', clue:'חי אני במים ונושם דרך זימים, שוחה כל היום בלי לעצור', answer:'דג', hint:'יש כאלה בים ובאקווריום' },
+    { type:'anagram', answer:'דלת', hint:'נכנסים ויוצאים דרכה' },
+    { type:'anagram', answer:'חלון', hint:'רואים דרכו החוצה' },
+    { type:'anagram', answer:'מפתח', hint:'פותחים בו דלת' },
+    { type:'anagram', answer:'ארון', hint:'שומרים בו בגדים' },
+    { type:'anagram', answer:'ספה', hint:'יושבים עליה בסלון' },
+    { type:'anagram', answer:'עציץ', hint:'צמח בכלי בבית' },
+    { type:'anagram', answer:'מעיל', hint:'לובשים בקור' },
+    { type:'anagram', answer:'תיק', hint:'נושאים בו חפצים' },
+    { type:'anagram', answer:'חדר', hint:'חלק מהבית' },
+    { type:'anagram', answer:'גינה', hint:'מגדלים בה פרחים' },
+    { type:'anagram', answer:'חצר', hint:'שטח פתוח ליד הבית' },
+    { type:'anagram', answer:'כיסא', hint:'יושבים עליו ליד השולחן' },
+    { type:'anagram', answer:'קיר', hint:'תוחם את החדר' },
+    { type:'anagram', answer:'כלב', hint:'חיה נאמנה שנובחת' },
+    { type:'anagram', answer:'סוס', hint:'רוכבים עליו' }
+  ],
+  medium: [
+    { type:'riddle', clue:'עומד במטבח או בפינת האוכל, עליי מניחים צלחות בכל ארוחה', answer:'שולחן', hint:'רהיט לאכילה' },
+    { type:'riddle', clue:'מאירה את החדר כשחושך בחוץ, לוחצים עליי ומיד נהיה אור', answer:'מנורה', hint:'תלויה או עומדת בפינה' },
+    { type:'riddle', clue:'תלויה על הקיר ומספרת רגע, לפעמים משפחה ולפעמים נוף', answer:'תמונה', hint:'מציירים או מצלמים אותה' },
+    { type:'riddle', clue:'פותחים אותי כשהעננים בוכים, וסוגרים כשהשמש שוב מחייכת', answer:'מטריה', hint:'מגנה מגשם' },
+    { type:'riddle', clue:'מלא באותיות וסיפורים מהיום, קוראים אותי בבוקר עם קפה', answer:'עיתון', hint:'יוצא כל בוקר' },
+    { type:'riddle', clue:'מתקשרים דרכי לחברים רחוקים, בכיס או ביד תמיד נמצא', answer:'טלפון', hint:'מצלצל כשמתקשרים' },
+    { type:'riddle', clue:'עובדים ומשחקים עליי כל היום, מסך ומקלדת יש לי תמיד', answer:'מחשב', hint:'יש בו אינטרנט' },
+    { type:'riddle', clue:'שם מבשלים ואופים דברים טובים, ריחות נעימים תמיד נודפים משם', answer:'מטבח', hint:'חלק חשוב בבית' },
+    { type:'riddle', clue:'פעם הייתי זחל קטן וזוחל, היום יש לי כנפיים צבעוניות', answer:'פרפר', hint:'עף מפרח לפרח' },
+    { type:'riddle', clue:'אוזניים ארוכות יש לי מעל הראש, וקפיצות גדולות אני קופץ בשדה', answer:'ארנב', hint:'אוהב גזר' },
+    { type:'riddle', clue:'צמר רך יש לי על הגוף, ומשם סורגים לך סוודר בחורף', answer:'כבשה', hint:'אומרת מעה' },
+    { type:'riddle', clue:'שוחה במים ומהלך גם ביבשה, מקרקר בקול ומחפש אוכל בבוקה', answer:'ברווז', hint:'עוף שיודע לשחות' },
+    { type:'riddle', clue:'מלך החיות קוראים לי בזכות, רעמה גאה יש לי סביב הצוואר', answer:'אריה', hint:'שואג בעוצמה' },
+    { type:'riddle', clue:'כלי נשיפה דק ומאורך אני, נושפים בי ומוציאים ניגון עדין', answer:'חליל', hint:'כלי נגינה' },
+    { type:'riddle', clue:'ארבעה מיתרים יש לי במתיחה, קשת עוברת עליי ויוצרת מנגינה', answer:'כינור', hint:'מנגנים בי עם קשת' },
+    { type:'anagram', answer:'מברשת', hint:'מנקים בה שיניים או שיער' },
+    { type:'anagram', answer:'מגבת', hint:'מתייבשים בה אחרי מקלחת' },
+    { type:'anagram', answer:'סבון', hint:'מנקה את הידיים' },
+    { type:'anagram', answer:'עוגה', hint:'אופים אותה ליום הולדת' },
+    { type:'anagram', answer:'תפוז', hint:'פרי כתום ועגול' },
+    { type:'anagram', answer:'בננה', hint:'פרי צהוב וארוך' },
+    { type:'anagram', answer:'ענבים', hint:'פרי קטן שגדל באשכול' },
+    { type:'anagram', answer:'אבטיח', hint:'פרי גדול, ירוק מבחוץ ואדום מבפנים' },
+    { type:'anagram', answer:'גזר', hint:'ירק כתום שהארנב אוהב' },
+    { type:'anagram', answer:'בצל', hint:'ירק שגורם לדמעות בקילוף' },
+    { type:'anagram', answer:'בטטה', hint:'ירק כתום מתוק שאופים בתנור' },
+    { type:'anagram', answer:'אורז', hint:'תוספת לבנה מגרגרים קטנים' },
+    { type:'anagram', answer:'מרק', hint:'אוכלים אותו בכפית, חם' },
+    { type:'anagram', answer:'סלט', hint:'תערובת ירקות קצוצים' },
+    { type:'anagram', answer:'שוקולד', hint:'מתוק וחום, אהוב על כולם' }
+  ],
+  hard: [
+    { type:'riddle', clue:'עיר עתיקה ומקודשת, בירתה של מדינת ישראל', answer:'ירושלים', hint:'עיר הקודש' },
+    { type:'riddle', clue:'מבנה ענק ומשולש במצרים העתיקה, שם קברו פרעונים לפני אלפי שנים', answer:'פרמידה', hint:'מבנה קבורה עתיק' },
+    { type:'riddle', clue:'חלקיק זעיר וטעון שלילי, סובב סביב מרכז האטום ללא הרף', answer:'אלקטרון', hint:'חלקיק באטום' },
+    { type:'riddle', clue:'מגביר את קולך לכל האולם, מחזיקים אותו זמרים ונואמים', answer:'מיקרופון', hint:'מגביר קול' },
+    { type:'riddle', clue:'כלי נגינה עם מפוח שנפתח וסוגר, מקלדת יש לו משני צדדים', answer:'אקורדיון', hint:'כלי עם מפוח' },
+    { type:'riddle', clue:'קבוצה גדולה של נגנים המנגנת יחד, מנצח עומד מולה עם שרביט', answer:'תזמורת', hint:'קבוצת נגנים' },
+    { type:'riddle', clue:'שטח נרחב הנשלט בידי מעצמה אחת, כמו רומא הגדולה בעבר', answer:'אימפריה', hint:'שטח שלטון גדול' },
+    { type:'riddle', clue:'חוקר שרידים מהעבר הרחוק, חופר באדמה כדי לגלות סודות', answer:'ארכיאולוג', hint:'חוקר עתיקות' },
+    { type:'riddle', clue:'מכשיר קטן שמקליק בקצב קבוע, עוזר לנגנים לשמור על הזמן', answer:'מטרונום', hint:'שומר על קצב' },
+    { type:'riddle', clue:'כלי נשיפה עקום ומבריק, אהוב מאוד בסגנון הג׳אז', answer:'סקסופון', hint:'כלי נשיפה בג׳אז' },
+    { type:'riddle', clue:'מדד לחום או לקור של גוף כלשהו, מודדים אותה במעלות', answer:'טמפרטורה', hint:'מדד לחום' },
+    { type:'riddle', clue:'מעבר ארוך בתוך הבית, מחבר בין החדרים השונים', answer:'מסדרון', hint:'מעבר בין חדרים' },
+    { type:'riddle', clue:'נועלים אותן על הרגליים, יוצאים איתן מהבית בכל בוקר', answer:'נעליים', hint:'נועלים על הרגליים' },
+    { type:'riddle', clue:'עולים ויורדים עליהן בין קומות הבית, אחת אחרי השנייה', answer:'מדרגות', hint:'עולים בהן קומה' },
+    { type:'riddle', clue:'ירק אדום ועגול, נפוץ מאוד בסלט ישראלי', answer:'עגבנייה', hint:'אדומה ועגולה, בסלט' },
+    { type:'anagram', answer:'קנגורו', hint:'חיה שקופצת עם כיס בבטן' },
+    { type:'anagram', answer:'תרנגול', hint:'קורא בבוקר מוקדם' },
+    { type:'anagram', answer:'מלפפון', hint:'ירק ירוק וארוך' },
+    { type:'anagram', answer:'עוגייה', hint:'מתוקה וקטנה, אוכלים עם תה' },
+    { type:'anagram', answer:'נויטרון', hint:'חלקיק ניטרלי בגרעין האטום' },
+    { type:'anagram', answer:'פרוטון', hint:'חלקיק חיובי בגרעין האטום' },
+    { type:'anagram', answer:'הרמוניה', hint:'שילוב נעים בין צלילים' },
+    { type:'anagram', answer:'תקליטן', hint:'מנגן מוזיקה מוקלטת באירועים' },
+    { type:'anagram', answer:'קלרינט', hint:'כלי נשיפה מעץ עם פייה' },
+    { type:'anagram', answer:'עתיקות', hint:'שרידים מהעבר הרחוק' },
+    { type:'anagram', answer:'ניצחון', hint:'הצלחה במלחמה או בתחרות' },
+    { type:'anagram', answer:'עצמאות', hint:'חופש וריבונות של מדינה' },
+    { type:'anagram', answer:'ציונות', hint:'התנועה שקידמה הקמת מדינה יהודית' },
+    { type:'anagram', answer:'מהפכה', hint:'שינוי פתאומי וגדול בשלטון או בחברה' },
+    { type:'anagram', answer:'ממלכה', hint:'שטח הנשלט בידי מלך' }
+  ]
+};
+const RELAXRIDDLES_SESSION_SIZE = 12;
+function relaxRiddlesSoloSessionKey(name, difficulty) { return `${difficulty}__solo__${name}`; }
+function relaxRiddlesRaceSessionKey(difficulty, a, b) { return `${difficulty}__${gameSessionKeyPair(a, b)}`; }
+function relaxRiddlesPlayerProgress(state) { return state.mode === 'race' ? state.progress[session.name] : state; }
+function relaxRiddlesOpponentName(state) { return state.mode === 'race' ? state.players.find(name => name !== session.name) : null; }
+function relaxRiddlesDrawIndices(difficulty) { return sdkShuffled(RELAXRIDDLES_BANK[difficulty].map((_, index) => index)).slice(0, RELAXRIDDLES_SESSION_SIZE); }
+function relaxRiddlesCurrentItem(difficulty, riddleIndices, index) { return RELAXRIDDLES_BANK[difficulty][riddleIndices[index]]; }
+// Tile order (and which tiles have been tapped so far) is generated once per riddle and cached in
+// view state, NOT recomputed on every render() - unlike the cookiewords letter-wheel, which reshuffles
+// on every render. Reshuffling here would mean the untapped tiles jump to new positions after every
+// single tap, which directly undercuts the point of a game whose entire premise is being calm.
+function relaxRiddlesTempFor(sessionKey, index, answer) {
+  const temp = view.relaxRiddlesTemp;
+  if (temp && temp.sessionKey === sessionKey && temp.index === index) return temp;
+  const fresh = { sessionKey, index, usedTiles: [], message: '', error: false, hintRevealed: false, tileOrder: sdkShuffled(Array.from(answer).map((_, i) => i)) };
+  view.relaxRiddlesTemp = fresh;
+  return fresh;
+}
+function relaxRiddlesSetTemp(temp) { view.relaxRiddlesTemp = temp; }
+async function startNewRelaxRiddlesSoloSession(difficulty) {
+  await saveGameSession('relaxriddles', relaxRiddlesSoloSessionKey(session.name, difficulty), { mode:'solo', difficulty, riddleIndices:relaxRiddlesDrawIndices(difficulty), currentIndex:0, startedAt:new Date().toISOString(), finishedAt:null });
+}
+async function startOrJoinRelaxRiddlesRace(difficulty, opponentName) {
+  const key = relaxRiddlesRaceSessionKey(difficulty, session.name, opponentName); const existing = findGameSession('relaxriddles', key);
+  if (existing && !existing.state.winner) { if (!existing.state.progress[session.name]) { const state = { ...existing.state, progress:{ ...existing.state.progress, [session.name]:{ currentIndex:0, finishedAt:null } } }; await saveGameSession('relaxriddles', key, state); } return key; }
+  const state = { mode:'race', difficulty, riddleIndices:relaxRiddlesDrawIndices(difficulty), players:[session.name, opponentName].sort(), progress:{ [session.name]:{ currentIndex:0, finishedAt:null } }, winner:null, startedAt:new Date().toISOString() };
+  await saveGameSession('relaxriddles', key, state); return key;
+}
+function renderRelaxRiddlesSetup() {
+  const draft = view.gameSetupDraft || {}; const canStart = !!draft.difficulty && (draft.mode === 'solo' || (draft.mode === 'race' && draft.opponentName));
+  return `<div class="back-row"><button class="btn btn-secondary btn-small" data-back-to-games-hub>→ חזרה</button><h1 style="margin:0;font-size:17px;">🧘 חידות מילים מרגיעות</h1></div><div class="game-setup-card"><h3>רמת קושי</h3><div class="game-setup-difficulty">${['easy','medium','hard'].map(difficulty => `<button class="game-setup-opt ${draft.difficulty === difficulty ? 'selected' : ''}" data-relaxriddles-difficulty="${difficulty}">${difficulty === 'easy' ? 'קל' : difficulty === 'medium' ? 'בינוני' : 'קשה'}</button>`).join('')}</div><h3>איך משחקים?</h3><div class="game-setup-opponents"><button class="game-setup-opt ${draft.mode === 'solo' ? 'selected' : ''}" data-relaxriddles-mode="solo">🧘 לבד</button>${otherSisters(session.name).map(name => `<button class="game-setup-opt ${draft.mode === 'race' && draft.opponentName === name ? 'selected' : ''}" data-relaxriddles-mode="race" data-relaxriddles-opponent="${escapeHtml(name)}"><span class="avatar ${AVATAR_CLASS[name] || ''}">${name[0]}</span> מרוץ מול ${escapeHtml(name)}</button>`).join('')}</div><button class="btn btn-primary" style="width:100%;margin-top:8px;" data-relaxriddles-start ${canStart ? '' : 'disabled'}>בואי נתחיל!</button></div>${view.gameResumePrompt ? renderGameResumePrompt() : ''}`;
+}
+function renderRelaxRiddlesResult(sessionKey, state) {
+  const progress = relaxRiddlesPlayerProgress(state);
+  if (state.mode === 'solo') return `<div class="relaxriddles-shell"><div class="relaxriddles-result"><h2>🧘 סיימת את כל ${RELAXRIDDLES_SESSION_SIZE} החידות!</h2><p>רגע נעים של פתרון וניחוש. כל הכבוד.</p><button class="btn btn-primary" style="width:100%;" data-relaxriddles-back-setup>סיבוב נוסף</button></div></div>`;
+  const opponent = relaxRiddlesOpponentName(state); const other = state.progress[opponent]; const waiting = !other || !other.finishedAt; const rows = state.players.filter(name => state.progress[name]).map(name => `<li>${escapeHtml(name)} ${state.winner === name ? '— 🏆 ניצחה' : state.progress[name].finishedAt ? '— סיימה' : ''}</li>`).join('');
+  return `<div class="relaxriddles-shell"><div class="relaxriddles-result"><h2>${waiting ? `סיימת! ממתינים ל${escapeHtml(opponent)} שתסיים` : 'המרוץ הסתיים!'}</h2><ul>${rows}</ul><button class="btn btn-secondary" style="width:100%;" data-relaxriddles-back-setup>לבחירת רמה</button></div></div>`;
+}
+function renderRelaxRiddlesBoard(sessionKey) {
+  const gs = findGameSession('relaxriddles', sessionKey); if (!gs) return renderRelaxRiddlesSetup(); const state = gs.state; const progress = relaxRiddlesPlayerProgress(state); if (progress.finishedAt) return renderRelaxRiddlesResult(sessionKey, state);
+  const item = relaxRiddlesCurrentItem(state.difficulty, state.riddleIndices, progress.currentIndex); const temp = relaxRiddlesTempFor(sessionKey, progress.currentIndex, item.answer); const other = state.mode === 'race' ? state.progress[relaxRiddlesOpponentName(state)] : null;
+  const letters = Array.from(item.answer);
+  const candidateDisplay = letters.map((_, slot) => { const tileIndex = temp.usedTiles[slot]; return `<span class="relaxriddles-slot">${tileIndex !== undefined ? escapeHtml(letters[tileIndex]) : '·'}</span>`; }).join('');
+  const tiles = temp.tileOrder.map(tileIndex => `<button class="relaxriddles-tile ${temp.usedTiles.includes(tileIndex) ? 'is-used' : ''}" data-relaxriddles-tile="${tileIndex}" ${temp.usedTiles.includes(tileIndex) ? 'disabled' : ''}>${escapeHtml(letters[tileIndex])}</button>`).join('');
+  return `<div class="relaxriddles-shell"><div class="back-row"><button class="btn btn-secondary btn-small" data-back-to-games-hub>→ חזרה</button><h1 style="margin:0;font-size:17px;">🧘 חידות מילים מרגיעות</h1></div><div class="relaxriddles-status"><span>חידה ${progress.currentIndex + 1}/${RELAXRIDDLES_SESSION_SIZE}</span>${other ? `<span>${escapeHtml(relaxRiddlesOpponentName(state))}: חידה ${other.currentIndex + 1}/${RELAXRIDDLES_SESSION_SIZE}</span>` : ''}</div>${item.clue ? `<div class="relaxriddles-clue">${escapeHtml(item.clue)}</div>` : `<div class="relaxriddles-clue relaxriddles-clue--anagram">הרכיבו את המילה מהאותיות המעורבבות</div>`}<div class="relaxriddles-candidate">${candidateDisplay}</div><div class="relaxriddles-message ${temp.error ? 'is-error' : ''}">${escapeHtml(temp.message)}</div><div class="relaxriddles-tiles">${tiles}</div><div class="relaxriddles-actions"><button class="btn btn-secondary btn-small" data-relaxriddles-delete-tile>⌫ מחיקה</button><button class="btn btn-secondary btn-small" data-relaxriddles-hint>${temp.hintRevealed ? `💡 ${escapeHtml(item.hint)}` : '💡 רמז'}</button></div></div>`;
+}
+
 function shoppingActiveList() {
   return data.shoppingList.filter(i => !i.purchased).sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || ''));
 }
@@ -5420,6 +5597,7 @@ function attachHandlers() {
         else if (gameId === 'crossword') await startNewCrosswordSession(sessionKey, freshDraft);
         else if (gameId === 'cookiewords') await startNewCookieWordsSoloSession(freshDraft.difficulty);
         else if (gameId === 'wordsearch') await startNewWordsearchSession(sessionKey, freshDraft);
+        else if (gameId === 'relaxriddles') await startNewRelaxRiddlesSoloSession(freshDraft.difficulty);
         else await startNewGameSession(gameId, sessionKey, freshDraft);
       } catch (e) {
         alert('שגיאה בפתיחת המשחק, נסי שוב');
@@ -5908,6 +6086,96 @@ function attachHandlers() {
   }));
   const wordsearchBackSetupBtn = document.querySelector('[data-wordsearch-back-setup]');
   if (wordsearchBackSetupBtn) wordsearchBackSetupBtn.onclick = () => { view.activeGameSessionKey = null; view.gameSetupDraft = {}; view.wordsearchSelection = null; view.wordsearchTemp = null; render(); };
+
+  document.querySelectorAll('[data-relaxriddles-difficulty]').forEach(button => button.addEventListener('click', () => { view.gameSetupDraft = { ...(view.gameSetupDraft || {}), difficulty:button.dataset.relaxriddlesDifficulty }; render(); }));
+  document.querySelectorAll('[data-relaxriddles-mode]').forEach(button => button.addEventListener('click', () => { const mode = button.dataset.relaxriddlesMode; view.gameSetupDraft = { ...(view.gameSetupDraft || {}), mode, opponentName:mode === 'race' ? button.dataset.relaxriddlesOpponent : null }; render(); }));
+  const relaxRiddlesStartBtn = document.querySelector('[data-relaxriddles-start]');
+  if (relaxRiddlesStartBtn) {
+    relaxRiddlesStartBtn.onclick = async () => {
+      const draft = view.gameSetupDraft || {};
+      if (!draft.difficulty || !draft.mode) return;
+      if (draft.mode === 'race' && !draft.opponentName) return;
+      if (draft.mode === 'solo') {
+        // Same resume-prompt guard already established for sudoku/crossword/cookiewords/wordsearch -
+        // don't silently overwrite an unfinished solo round when the same difficulty is re-selected.
+        const soloKey = relaxRiddlesSoloSessionKey(session.name, draft.difficulty);
+        const existing = findGameSession('relaxriddles', soloKey);
+        if (existing && existing.state && !existing.state.finishedAt) {
+          view.gameResumePrompt = { sessionKey:soloKey, gameId:'relaxriddles', freshDraft:draft, opponentLabel:'לבד' };
+          render();
+          return;
+        }
+        try {
+          await startNewRelaxRiddlesSoloSession(draft.difficulty);
+        } catch (e) {
+          alert('שגיאה בפתיחת המשחק, נסי שוב');
+          return;
+        }
+        view.activeGameSessionKey = soloKey;
+      } else {
+        try {
+          view.activeGameSessionKey = await startOrJoinRelaxRiddlesRace(draft.difficulty, draft.opponentName);
+        } catch (e) {
+          alert('שגיאה בפתיחת המשחק, נסי שוב');
+          return;
+        }
+      }
+      view.gameSetupDraft = null;
+      view.relaxRiddlesTemp = null;
+      render();
+    };
+  }
+  document.querySelectorAll('[data-relaxriddles-tile]').forEach(button => button.addEventListener('click', async () => {
+    const key = view.activeGameSessionKey;
+    const gs = findGameSession('relaxriddles', key);
+    if (!gs) return;
+    const state = gs.state;
+    const progress = relaxRiddlesPlayerProgress(state);
+    const item = relaxRiddlesCurrentItem(state.difficulty, state.riddleIndices, progress.currentIndex);
+    const temp = relaxRiddlesTempFor(key, progress.currentIndex, item.answer);
+    const tileIndex = Number(button.dataset.relaxriddlesTile);
+    if (temp.usedTiles.includes(tileIndex)) return;
+    const usedTiles = [...temp.usedTiles, tileIndex];
+    const letters = Array.from(item.answer);
+    if (usedTiles.length === letters.length) {
+      const candidate = usedTiles.map(i => letters[i]).join('');
+      if (candidate === item.answer) {
+        const nextIndex = progress.currentIndex + 1;
+        const complete = nextIndex === state.riddleIndices.length;
+        const nextProgress = { currentIndex:nextIndex, finishedAt:complete ? new Date().toISOString() : null };
+        if (state.mode === 'solo') await saveGameSession('relaxriddles', key, { ...state, ...nextProgress });
+        else await saveGameSession('relaxriddles', key, { ...state, progress:{ ...state.progress, [session.name]:nextProgress }, winner:complete && !state.winner ? session.name : state.winner });
+        relaxRiddlesSetTemp(null);
+        render();
+        return;
+      }
+      relaxRiddlesSetTemp({ ...temp, usedTiles, message:'כמעט! אפשר למחוק ולנסות שוב.', error:true });
+      render();
+      return;
+    }
+    relaxRiddlesSetTemp({ ...temp, usedTiles, message:'', error:false });
+    render();
+  }));
+  const relaxRiddlesDeleteBtn = document.querySelector('[data-relaxriddles-delete-tile]');
+  if (relaxRiddlesDeleteBtn) relaxRiddlesDeleteBtn.onclick = () => {
+    const key = view.activeGameSessionKey; const gs = findGameSession('relaxriddles', key); if (!gs) return;
+    const progress = relaxRiddlesPlayerProgress(gs.state);
+    const item = relaxRiddlesCurrentItem(gs.state.difficulty, gs.state.riddleIndices, progress.currentIndex);
+    const temp = relaxRiddlesTempFor(key, progress.currentIndex, item.answer);
+    relaxRiddlesSetTemp({ ...temp, usedTiles:temp.usedTiles.slice(0, -1), message:'', error:false });
+    render();
+  };
+  const relaxRiddlesHintBtn = document.querySelector('[data-relaxriddles-hint]');
+  if (relaxRiddlesHintBtn) relaxRiddlesHintBtn.onclick = () => {
+    const key = view.activeGameSessionKey; const gs = findGameSession('relaxriddles', key); if (!gs) return;
+    const progress = relaxRiddlesPlayerProgress(gs.state);
+    const item = relaxRiddlesCurrentItem(gs.state.difficulty, gs.state.riddleIndices, progress.currentIndex);
+    const temp = relaxRiddlesTempFor(key, progress.currentIndex, item.answer);
+    relaxRiddlesSetTemp({ ...temp, hintRevealed:true });
+    render();
+  };
+  const relaxRiddlesBackSetupBtn = document.querySelector('[data-relaxriddles-back-setup]');
+  if (relaxRiddlesBackSetupBtn) relaxRiddlesBackSetupBtn.onclick = () => { view.activeGameSessionKey = null; view.gameSetupDraft = {}; view.relaxRiddlesTemp = null; render(); };
 }
 
 function subscribeAll(name, gen) {
