@@ -396,6 +396,29 @@
   .crossword-clue-item { display: block; width: 100%; text-align: right; border: 0; border-bottom: 1px solid var(--border); background: var(--card); color: var(--text); font: inherit; font-size: 12px; padding: 6px 8px; cursor: pointer; }
   .crossword-clue-item:last-child { border-bottom: 0; }
   .crossword-clue-item.is-active { background: rgba(23,163,152,0.12); color: #0f7a6f; font-weight: 700; }
+  .trivia-shell { max-width: 560px; margin: 0 auto; }
+  .trivia-topics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; direction: ltr; }
+  .trivia-topic { min-height: 84px; padding: 10px; border: 1px solid var(--border); border-radius: 12px; background: var(--card); color: var(--text); direction: rtl; font: inherit; text-align: right; cursor: pointer; }
+  .trivia-topic.is-selected { border: 2px solid var(--accent); background: #faf5e9; }
+  .trivia-topic-title { display: block; font-weight: 700; }
+  .trivia-topic-score { display: block; margin-top: 5px; color: var(--text-muted); font-size: 12px; }
+  .trivia-progress { display: flex; justify-content: space-between; gap: 10px; margin: 12px 0; color: var(--text-muted); font-size: 13px; }
+  .trivia-question-card, .trivia-result-card { padding: 16px; border: 1px solid var(--border); border-radius: 14px; background: var(--card); }
+  .trivia-question { margin: 0; color: var(--text); font-size: 20px; line-height: 1.45; }
+  .trivia-answers { display: grid; gap: 9px; margin-top: 18px; }
+  .trivia-answer { width: 100%; min-height: 48px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--card); color: var(--text); font: inherit; text-align: right; cursor: pointer; }
+  .trivia-answer:not(:disabled):hover, .trivia-answer:not(:disabled):focus-visible { border-color: var(--accent); }
+  .trivia-answer:disabled { cursor: default; opacity: 1; }
+  .trivia-answer.is-correct { border-color: #1f7a4d; background: #e4f5ea; color: #145331; }
+  .trivia-answer.is-wrong { border-color: #b23b3b; background: #fde7e7; color: #8d2929; }
+  .trivia-feedback { margin-top: 15px; padding: 11px; border-radius: 10px; background: #f7f1e5; color: var(--text); line-height: 1.4; }
+  .trivia-feedback p { margin: 0 0 6px; }
+  .trivia-feedback p:last-child { margin-bottom: 0; }
+  .trivia-result-card h2 { margin-top: 0; }
+  .trivia-score { font-size: 30px; font-weight: 700; color: var(--accent); }
+  .trivia-result-list { margin: 12px 0; padding-right: 20px; }
+  .trivia-result-list li { margin: 6px 0; }
+  .trivia-result-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
   .game-tile.locked { cursor: default; filter: grayscale(0.85); opacity: 0.6; box-shadow: none; }
   .game-tile-lock { font-size: 11px; font-weight: 700; background: rgba(0,0,0,0.28); border-radius: 999px; padding: 2px 10px; }
   .game-instructions-body { font-size: 13.5px; line-height: 1.6; color: var(--text); margin-bottom: 12px; }
@@ -855,7 +878,7 @@ function personalizedEmpowerText(name) {
 }
 
 const NAMES = ['ריקי', 'ברוריה', 'דורית'];
-const APP_VERSION = '2.13.0';
+const APP_VERSION = '2.14.0';
 const APP_UPDATED = '14.08.2026';
 const AVATAR_CLASS = { 'ריקי': 'ricky', 'ברוריה': 'bruria', 'דורית': 'dorit' };
 
@@ -890,7 +913,10 @@ const GAMES_CATALOG = [
     <p>בוחרות נושא, רמת קושי, ואם לשחק לבד או במרוץ מול אחת האחיות. לוחצות על משבצת או על רמז מהרשימה כדי לבחור מילה, מקלידות אותיות עם המקלדת שעל המסך, ובודקות את הפתרון עם כפתור "בדיקה".</p>
     <p>במצב מרוץ - שתיכן פותרות בדיוק את אותה חידה, כל אחת על הלוח שלה, ומי שמסיימת ראשונה מנצחת.</p>
   ` },
-  { id: 'trivia', title: 'שאלון אמריקאי', icon: '❓', color: 'g-red', locked: true, instructionsHtml: '' },
+  { id: 'trivia', title: 'שאלון אמריקאי', icon: '❓', color: 'g-red', locked: false, instructionsHtml: `
+    <p>בחרי נושא ועני על עשר שאלות אמריקאיות מאתגרות.</p>
+    <p>אפשר לשחק לבד או לצאת למרוץ מול אחות - ובמרוץ שתיכן מקבלות בדיוק אותן שאלות.</p>
+  ` },
   { id: 'cookiewords', title: 'עוגות מילים', icon: '🍪', color: 'g-brown', locked: true, instructionsHtml: '' },
   { id: 'wordsearch', title: 'תפזורת', icon: '🔍', color: 'g-cyan', locked: true, instructionsHtml: '' },
   { id: 'relaxriddles', title: 'חידות מילים מרגיעות', icon: '🧘', color: 'g-pink', locked: true, instructionsHtml: '' },
@@ -1181,6 +1207,7 @@ function render() {
   else if (view.screen === 'game-sudoku') app.innerHTML = renderGameScreen('sudoku');
   else if (view.screen === 'game-wordle') app.innerHTML = renderGameScreen('wordle');
   else if (view.screen === 'game-crossword') app.innerHTML = renderGameScreen('crossword');
+  else if (view.screen === 'game-trivia') app.innerHTML = renderGameScreen('trivia');
   attachHandlers();
 }
 
@@ -1927,6 +1954,7 @@ function renderGameScreen(gameId) {
   const g = GAMES_CATALOG.find(x => x.id === gameId);
   if (!g) return '<p>המשחק הזה לא נמצא.</p>';
   if (gameId === 'wordle') return renderWordleScreen();
+  if (gameId === 'trivia') return renderTriviaScreen();
   if (!view.activeGameSessionKey) {
     if (gameId === 'sudoku') return renderSudokuSetup();
     if (gameId === 'crossword') return renderCrosswordSetup();
@@ -3355,6 +3383,212 @@ async function playCrosswordDelete() {
     return;
   }
   render();
+}
+
+
+// ===== שאלון אמריקאי (trivia) =====
+const TRIVIA_TOPICS = [
+  { id: 'general', title: 'כללי', icon: '🧠' }, { id: 'geography', title: 'גיאוגרפיה', icon: '🌍' },
+  { id: 'history', title: 'היסטוריה', icon: '📜' }, { id: 'science', title: 'מדע וטבע', icon: '🔬' },
+  { id: 'movies', title: 'קולנוע וטלוויזיה', icon: '🎬' }
+];
+function triviaQuestion(id, topicId, question, choices, correctIndex, funFact) { return { id, topicId, question, choices, correctIndex, funFact }; }
+const TRIVIA_QUESTIONS = [
+  triviaQuestion('g1','general','כמה צלעות יש למצולע משושה?',['5','6','7','8'],1,'השם משושה נגזר מן המספר שש.'),
+  triviaQuestion('g2','general','מי כתב את המחזה „רומיאו ויוליה“?',['מולייר','ויליאם שייקספיר','הנריק איבסן','אוסקר ויילד'],1,'זהו אחד ממחזותיו המוכרים ביותר של שייקספיר.'),
+  triviaQuestion('g3','general','באיזו שפה נכתב במקור „דון קיחוטה“?',['איטלקית','פורטוגזית','ספרדית','צרפתית'],2,'מחבר הרומן הוא מיגל דה סרוואנטס.'),
+  triviaQuestion('g4','general','איזה כלי נגינה כולל בדרך כלל 88 קלידים?',['עוגב','פסנתר','אקורדיון','צ׳מבלו'],1,'בפסנתר מודרני סטנדרטי יש 52 קלידים לבנים ו־36 שחורים.'),
+  triviaQuestion('g5','general','מהו המספר הראשוני הזוגי היחיד?',['0','1','2','4'],2,'מספר ראשוני מתחלק רק ב־1 ובעצמו.'),
+  triviaQuestion('g6','general','איזה צבע מתקבל מערבוב אור אדום ואור ירוק?',['צהוב','כחול','סגול','כתום'],0,'זהו ערבוב אדיטיבי של אור, בשונה מערבוב צבעי גואש.'),
+  triviaQuestion('g7','general','מי צייר את „מונה ליזה“?',['רפאל','לאונרדו דה וינצ׳י','מיכלאנג׳לו','סנדרו בוטיצ׳לי'],1,'הציור מוצג במוזיאון הלובר בפריז.'),
+  triviaQuestion('g8','general','כמה דקות יש בשעתיים ורבע?',['125','130','135','145'],2,'שעתיים הן 120 דקות, ורבע שעה מוסיפה 15.'),
+  triviaQuestion('g9','general','איזה סוג מילה מתאר שם עצם, למשל „גבוה“?',['פועל','תואר','שם פעולה','מילת יחס'],1,'תואר מתאים לשם עצם ומתאר תכונה שלו.'),
+  triviaQuestion('g10','general','איזה מבין אלה הוא רומן מאת ג׳יין אוסטן?',['ג׳יין אייר','גאווה ודעה קדומה','אנקת גבהים','פרנקנשטיין'],1,'„גאווה ודעה קדומה“ פורסם לראשונה בשנת 1813.'),
+  triviaQuestion('g11','general','מהי התוצאה של 12 כפול 12?',['124','132','144','154'],2,'144 הוא גם ריבוע המספר 12.'),
+  triviaQuestion('g12','general','איזו יצירה חיבר לודוויג ואן בטהובן?',['ארבע העונות','הסימפוניה התשיעית','הדנובה הכחולה','כרמן'],1,'בטהובן כלל בה את „אודה לשמחה“.'),
+  triviaQuestion('geo1','geography','מהי בירת קנדה?',['טורונטו','ונקובר','אוטווה','מונטריאול'],2,'אוטווה נמצאת בפרובינציית אונטריו.'),
+  triviaQuestion('geo2','geography','מהי בירת אוסטרליה?',['סידני','מלבורן','קנברה','פרת׳'],2,'קנברה נבחרה כפשרה בין סידני למלבורן.'),
+  triviaQuestion('geo3','geography','באיזו יבשת נמצאת סורינאם?',['אפריקה','אסיה','אירופה','דרום אמריקה'],3,'סורינאם שוכנת בחוף הצפוני של דרום אמריקה.'),
+  triviaQuestion('geo4','geography','מהי בירת ברזיל?',['ריו דה ז׳ניירו','סאו פאולו','ברזיליה','סלבדור'],2,'ברזיליה תוכננה ונחנכה כבירה בשנת 1960.'),
+  triviaQuestion('geo5','geography','איזה נהר זורם דרך בודפשט?',['הדנובה','הריין','הסיין','הוולגה'],0,'הדנובה היא הנהר השני באורכו באירופה.'),
+  triviaQuestion('geo6','geography','מהי בירת ניו זילנד?',['אוקלנד','ולינגטון','כרייסטצ׳רץ׳','דנידין'],1,'ולינגטון ממוקמת בקצה הדרומי של האי הצפוני.'),
+  triviaQuestion('geo7','geography','איזו מדינה גובלת גם בספרד וגם בצרפת?',['אנדורה','בלגיה','לוקסמבורג','שווייץ'],0,'אנדורה היא נסיכות קטנה בהרי הפירנאים.'),
+  triviaQuestion('geo8','geography','מהי בירת טורקיה?',['איסטנבול','איזמיר','אנקרה','אנטליה'],2,'איסטנבול היא העיר הגדולה במדינה, אך אינה הבירה.'),
+  triviaQuestion('geo9','geography','באיזה אוקיינוס נמצאים האיים המלדיביים?',['האטלנטי','ההודי','השקט','הארקטי'],1,'המלדיביים הם ארכיפלג באוקיינוס ההודי.'),
+  triviaQuestion('geo10','geography','מהי בירת מרוקו?',['קזבלנקה','מרקש','רבאט','פאס'],2,'רבאט שוכנת על חוף האוקיינוס האטלנטי.'),
+  triviaQuestion('geo11','geography','איזו מדינה כוללת את האי סרדיניה?',['יוון','איטליה','ספרד','קרואטיה'],1,'סרדיניה היא האי השני בגודלו בים התיכון.'),
+  triviaQuestion('geo12','geography','מהי בירת נורווגיה?',['ברגן','טרונדהיים','אוסלו','סטוונגר'],2,'אוסלו שוכנת בקצה פיורד אוסלו.'),
+  triviaQuestion('h1','history','באיזו שנה הסתיימה מלחמת העולם השנייה באירופה?',['1943','1944','1945','1946'],2,'גרמניה הנאצית נכנעה במאי 1945.'),
+  triviaQuestion('h2','history','מי היה הנשיא הראשון של ארצות הברית?',['תומס ג׳פרסון','ג׳ורג׳ וושינגטון','ג׳ון אדמס','ג׳יימס מדיסון'],1,'וושינגטון כיהן בשנים 1789–1797.'),
+  triviaQuestion('h3','history','באיזו שנה נפלה חומת ברלין?',['1979','1985','1989','1991'],2,'פתיחת המעברים בחומה התרחשה ב־9 בנובמבר 1989.'),
+  triviaQuestion('h4','history','איזו תרבות עתיקה בנתה את המאצ׳ו פיצ׳ו?',['המאיה','האינקה','האצטקים','הפיניקים'],1,'האתר נמצא בהרי האנדים בפרו.'),
+  triviaQuestion('h5','history','מי הוביל את המסע האירופי שהגיע לאמריקה בשנת 1492?',['פרדיננד מגלן','כריסטופר קולומבוס','ואסקו דה גאמה','ג׳יימס קוק'],1,'המסע מומן בידי הכתר הספרדי.'),
+  triviaQuestion('h6','history','איזו מלכה מצרית מזוהה עם יוליוס קיסר ומרקוס אנטוניוס?',['נפרטיטי','חתשפסות','קלאופטרה השביעית','ארסינואה השנייה'],2,'קלאופטרה השביעית הייתה השליטה האחרונה של הממלכה התלמיית במצרים.'),
+  triviaQuestion('h7','history','באיזו שנה נחתמה המגנה כרטה באנגליה?',['1066','1215','1492','1688'],1,'המסמך הוסכם בין המלך ג׳ון לברונים באנגליה.'),
+  triviaQuestion('h8','history','מי חיבר את „הקומדיה האלוהית“?',['דנטה אליגיירי','ג׳ובאני בוקאצ׳ו','פטררקה','ניקולו מקיאוולי'],0,'היצירה כוללת את „התופת“, „הכור המצרף“ ו„גן העדן“.'),
+  triviaQuestion('h9','history','איזו עיר נקברה בהתפרצות וזוב בשנת 79 לספירה?',['ספרטה','פומפיי','קרתגו','אפסוס'],1,'פומפיי נחשפה מחדש במאה ה־18.'),
+  triviaQuestion('h10','history','מי נודע כמייסד האימפריה המונגולית?',['קובלאי חאן','ג׳ינגיס חאן','טימור לנג','אטילה ההוני'],1,'ג׳ינגיס חאן איחד שבטים מונגוליים בראשית המאה ה־13.'),
+  triviaQuestion('h11','history','איזו מהפכה החלה בצרפת בשנת 1789?',['המהפכה התעשייתית','המהפכה הצרפתית','המהפכה הרוסית','המהפכה האמריקאית'],1,'האירוע נקשר גם לנפילת הבסטיליה ב־14 ביולי 1789.'),
+  triviaQuestion('h12','history','איזה כלי תקשורת הדגים סמואל מורס בשנת 1844?',['רדיו','טלפון','טלגרף','טלוויזיה'],2,'מורס שלח את המסר הטלגרפי המפורסם בין וושינגטון לבולטימור.'),
+  triviaQuestion('s1','science','מהו היסוד הכימי שסמלו Au?',['כסף','זהב','אלומיניום','ארגון'],1,'Au מגיע מן השם הלטיני aurum.'),
+  triviaQuestion('s2','science','איזה כוכב לכת הוא הקרוב ביותר לשמש?',['נוגה','כדור הארץ','כוכב חמה','מאדים'],2,'כוכב חמה הוא גם הקטן בכוכבי הלכת במערכת השמש.'),
+  triviaQuestion('s3','science','איזה גז הוא הנפוץ ביותר באטמוספרה של כדור הארץ?',['חמצן','חנקן','פחמן דו־חמצני','ארגון'],1,'חנקן מהווה בערך 78 אחוז מן האוויר היבש.'),
+  triviaQuestion('s4','science','כמה כרומוזומים יש בדרך כלל בתא גוף אנושי?',['23','44','46','48'],2,'בתאי גוף יש בדרך כלל 23 זוגות כרומוזומים.'),
+  triviaQuestion('s5','science','איזה איבר מייצר אינסולין בגוף האדם?',['כבד','לבלב','כליה','טחול'],1,'איי לנגרהנס בלבלב כוללים תאים המפרישים אינסולין.'),
+  triviaQuestion('s6','science','מהו הכוכב הגדול ביותר במערכת השמש?',['סיריוס','השמש','אלפא קנטאורי','וגה'],1,'השמש היא הכוכב שבמרכז מערכת השמש.'),
+  triviaQuestion('s7','science','איזה כוכב לכת מפורסם בטבעותיו הבולטות?',['צדק','שבתאי','אורנוס','נפטון'],1,'לטבעות של שבתאי יש קרח וסלעים רבים.'),
+  triviaQuestion('s8','science','מהו הכוח המחזיק כוכבי לכת במסלולם סביב השמש?',['חיכוך','כבידה','מגנטיות','ציפה'],1,'הכבידה פועלת בין גופים בעלי מסה.'),
+  triviaQuestion('s9','science','איזו יחידה מודדת התנגדות חשמלית?',['וולט','אמפר','אוהם','ואט'],2,'הסימון המקובל לאוהם הוא האות היוונית אומגה.'),
+  triviaQuestion('s10','science','איזה חלק בתא מכיל בדרך כלל את החומר הגנטי?',['קרום התא','גרעין התא','ריבוזום','דופן התא'],1,'בתאים איקריוטיים רוב ה־DNA מצוי בגרעין.'),
+  triviaQuestion('s11','science','מהו מצב הצבירה של מים בטמפרטורת החדר ולחץ רגיל?',['מוצק','נוזל','גז','פלזמה'],1,'נקודת הקיפאון של מים טהורים היא 0 מעלות צלזיוס בלחץ אטמוספרי.'),
+  triviaQuestion('s12','science','איזו ויטמין מיוצר בעור בעקבות חשיפה לשמש?',['ויטמין A','ויטמין C','ויטמין D','ויטמין K'],2,'העור מייצר ויטמין D3 בעקבות קרינת UVB.'),
+  triviaQuestion('m1','movies','מי ביים את הסרט „פסיכו“?',['אלפרד היצ׳קוק','בילי ויילדר','אורסון ולס','פריץ לאנג'],0,'„פסיכו“ יצא לאקרנים בשנת 1960.'),
+  triviaQuestion('m2','movies','מי ביים את „קזבלנקה“?',['מייקל קרטיס','ג׳ון יוסטון','פרנק קפרה','האוורד הוקס'],0,'„קזבלנקה“ זכה באוסקר לסרט הטוב ביותר.'),
+  triviaQuestion('m3','movies','איזה במאי יצר את „2001: אודיסיאה בחלל“?',['סטנלי קובריק','רידלי סקוט','דייוויד לין','פרנסיס פורד קופולה'],0,'הסרט יצא בשנת 1968.'),
+  triviaQuestion('m4','movies','באיזה סרט מופיעה הדמות סימבה?',['ספר הג׳ונגל','מלך האריות','במבי','טרזן'],1,'סימבה הוא גור אריות בתחילת הסרט.'),
+  triviaQuestion('m5','movies','מי ביים את „הסנדק“?',['מרטין סקורסזה','פרנסיס פורד קופולה','בריאן דה פלמה','סידני לומט'],1,'„הסנדק“ מבוסס על רומן מאת מריו פוזו.'),
+  triviaQuestion('m6','movies','באיזה סרט מופיעה הדמות דורותי גייל?',['מרי פופינס','הקוסם מארץ עוץ','צלילי המוזיקה','סינדרלה'],1,'דורותי מגיעה לארץ עוץ לאחר סופת טורנדו.'),
+  triviaQuestion('m7','movies','מי ביים את „מלתעות“?',['ג׳ורג׳ לוקאס','סטיבן ספילברג','רוברט זמקיס','ג׳יימס קמרון'],1,'„מלתעות“ יצא בשנת 1975.'),
+  triviaQuestion('m8','movies','איזו דמות היא רובוט קטן בסרט „וול־אי“?',['רקס','וול־אי','באז שנות־אור','וודי'],1,'הסרט הופק בידי פיקסאר.'),
+  triviaQuestion('m9','movies','מי ביים את „המסע המופלא“?',['מאמורו הוסודה','הייאו מיאזאקי','איסאו טקהאטה','אקירה קורוסאווה'],1,'הסרט זכה באוסקר לסרט האנימציה הטוב ביותר.'),
+  triviaQuestion('m10','movies','באיזה סרט מופיעה הדמות פורסט גאמפ?',['אפולו 13','פורסט גאמפ','הנמלט','פילדלפיה'],1,'טום הנקס גילם את פורסט גאמפ.'),
+  triviaQuestion('m11','movies','מי ביים את „טיטניק“ משנת 1997?',['רון הווארד','ג׳יימס קמרון','פיטר ג׳קסון','מייקל ביי'],1,'הסרט זכה ב־11 פרסי אוסקר.'),
+  triviaQuestion('m12','movies','באיזה סרט מופיעה הדמות אינדיאנה ג׳ונס?',['בחזרה לעתיד','שודדי התיבה האבודה','שליחות קטלנית','הנוסע השמיני'],1,'הדמות מגולמת בסרטים הקלאסיים בידי האריסון פורד.')
+];
+const TRIVIA_WRONG_QUIPS = ['כמעט, אבל לא הפעם 😅','לא נורא, גם חידון אוהב להפתיע.','התשובה הנכונה הסתתרה ממש ליד.','ניסיון יפה — ממשיכות הלאה!','זה היה אחד המבלבלים, לגמרי.','הידע כבר מתחמם לקראת השאלה הבאה.','לא פוגע בשמחה בכלל.','גם מנחשות מצוינות מפספסות לפעמים.','הנה הזדמנות קטנה ללמוד משהו חדש.','החידון שומר על מתח, זה הכול.','קרוב במשפחה, רחוק בתשובה.','נקודה הבאה עוד מחכה לך.','הפעם השאלה ניצחה, לא את.','טעות קטנה, מצב רוח גדול.','בדיוק בשביל זה יש ארבע אפשרויות.','ממשיכות בביטחון לשאלה הבאה.'];
+
+function pickTriviaQuestions(topicId) {
+  return sdkShuffled(TRIVIA_QUESTIONS.filter(q => q.topicId === topicId)).slice(0, 10).map(q => ({ id: q.id, choiceOrder: sdkShuffled([0, 1, 2, 3]) }));
+}
+function triviaSoloSessionKey(name, topicId) { return `solo__${name}__${topicId}`; }
+function triviaRaceSessionKey(topicId, a, b) { return `${topicId}__${gameSessionKeyPair(a, b)}`; }
+function triviaQuestionById(id) { return TRIVIA_QUESTIONS.find(question => question.id === id); }
+function triviaOtherSistersScores(topicId) {
+  return NAMES.map(name => {
+    const gs = findGameSession('trivia', triviaSoloSessionKey(name, topicId));
+    if (!gs || gs.state.mode !== 'solo') return { name, status: 'עוד לא שיחקה בנושא הזה' };
+    return { name, status: gs.state.finishedAt ? `${gs.state.score}/10` : 'באמצע שאלון...' };
+  });
+}
+async function startNewTriviaSoloSession(topicId) {
+  const state = { mode: 'solo', topicId, questions: pickTriviaQuestions(topicId), currentIndex: 0, score: 0, answers: [], startedAt: new Date().toISOString(), finishedAt: null, won: null };
+  await saveGameSession('trivia', triviaSoloSessionKey(session.name, topicId), state);
+}
+async function startOrJoinTriviaRace(topicId, opponentName) {
+  const key = triviaRaceSessionKey(topicId, session.name, opponentName);
+  const existing = findGameSession('trivia', key);
+  if (existing && !existing.state.winner) {
+    if (!existing.state.progress[session.name]) {
+      const state = { ...existing.state, progress: { ...existing.state.progress, [session.name]: { currentIndex: 0, score: 0, answers: [], finishedAt: null } } };
+      await saveGameSession('trivia', key, state);
+    }
+    return key;
+  }
+  const state = { mode: 'race', topicId, questions: pickTriviaQuestions(topicId), players: [session.name, opponentName].sort(), progress: { [session.name]: { currentIndex: 0, score: 0, answers: [], finishedAt: null } }, winner: null, startedAt: new Date().toISOString() };
+  await saveGameSession('trivia', key, state);
+  return key;
+}
+function triviaActiveSession() {
+  const draft = view.gameSetupDraft || {};
+  if (!draft.topicId || !draft.mode) return null;
+  const key = draft.mode === 'solo' ? triviaSoloSessionKey(session.name, draft.topicId) : triviaRaceSessionKey(draft.topicId, session.name, draft.opponentName);
+  const gs = findGameSession('trivia', key);
+  if (!gs) return null;
+  // Race mode: a session can exist (the opponent already started it) before *I've* joined it -
+  // in that case treat it as "not active yet" so the setup screen (with its "start" button, which
+  // actually calls startOrJoinTriviaRace to join) renders instead of crashing on my missing progress entry.
+  if (draft.mode === 'race' && !gs.state.progress[session.name]) return null;
+  return { key, state: gs.state, opponentName: draft.opponentName };
+}
+function triviaPlayerState(state) { return state.mode === 'race' ? state.progress[session.name] : state; }
+
+function renderTriviaScreen() {
+  const active = triviaActiveSession();
+  if (!active) return renderTriviaSetup();
+  const player = triviaPlayerState(active.state);
+  return player.finishedAt ? renderTriviaResult(active.key, active.state, active.opponentName) : renderTriviaQuiz(active.key, active.state, active.opponentName);
+}
+function renderTriviaSetup() {
+  const draft = view.gameSetupDraft || {};
+  const canStart = !!draft.topicId && (draft.mode === 'solo' || (draft.mode === 'race' && draft.opponentName));
+  return `
+    <div class="back-row"><button class="btn btn-secondary btn-small" data-back-to-games-hub>→ חזרה</button><h1 style="margin:0;font-size:17px;">❓ שאלון אמריקאי</h1></div>
+    <div class="game-setup-card">
+      <h3>בחרי נושא</h3>
+      <div class="trivia-topics">${TRIVIA_TOPICS.map(topic => {
+        const own = triviaOtherSistersScores(topic.id).find(result => result.name === session.name);
+        return `<button class="trivia-topic ${draft.topicId === topic.id ? 'is-selected' : ''}" data-trivia-topic="${topic.id}"><span class="trivia-topic-title">${topic.icon} ${escapeHtml(topic.title)}</span><span class="trivia-topic-score">הציון האחרון: ${escapeHtml(own.status)}</span></button>`;
+      }).join('')}</div>
+      <h3>איך משחקים?</h3>
+      <div class="game-setup-opponents">
+        <button class="game-setup-opt ${draft.mode === 'solo' ? 'selected' : ''}" data-trivia-mode="solo">🧩 לבד</button>
+        ${otherSisters(session.name).map(name => `<button class="game-setup-opt ${draft.mode === 'race' && draft.opponentName === name ? 'selected' : ''}" data-trivia-mode="race" data-trivia-opponent="${escapeHtml(name)}"><span class="avatar ${AVATAR_CLASS[name] || ''}">${name[0]}</span> מרוץ מול ${escapeHtml(name)}</button>`).join('')}
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:8px;" data-trivia-start ${canStart ? '' : 'disabled'}>בואי נתחיל!</button>
+    </div>
+    ${view.gameResumePrompt ? renderGameResumePrompt() : ''}
+  `;
+}
+function renderTriviaQuiz(sessionKey, state, opponentName) {
+  const player = triviaPlayerState(state);
+  const item = state.questions[player.currentIndex];
+  const question = triviaQuestionById(item.id);
+  const answer = player.answers.find(a => a.questionId === question.id);
+  const competitor = state.mode === 'race' ? state.progress[opponentName] : null;
+  const choices = item.choiceOrder.map(originalIndex => {
+    const classes = answer ? (originalIndex === question.correctIndex ? 'is-correct' : originalIndex === answer.chosenOriginalIndex ? 'is-wrong' : '') : '';
+    return `<button class="trivia-answer ${classes}" data-trivia-answer="${originalIndex}" ${answer ? 'disabled' : ''}>${escapeHtml(question.choices[originalIndex])}</button>`;
+  }).join('');
+  const feedback = answer ? `
+    <div class="trivia-feedback">
+      <p><strong>${answer.correct ? 'נכון! 🎉' : escapeHtml(TRIVIA_WRONG_QUIPS[player.answers.length % TRIVIA_WRONG_QUIPS.length])}</strong></p>
+      ${question.funFact ? `<p>${escapeHtml(question.funFact)}</p>` : ''}
+      <button class="btn btn-primary" style="width:100%;margin-top:7px;" data-trivia-next>${player.currentIndex === 9 ? 'לסיום השאלון' : 'השאלה הבאה'}</button>
+    </div>` : '';
+  return `
+    <div class="trivia-shell">
+      <div class="back-row"><button class="btn btn-secondary btn-small" data-back-to-games-hub>→ חזרה</button><h1 style="margin:0;font-size:17px;">❓ שאלון אמריקאי</h1></div>
+      <div class="trivia-progress"><span>שאלה ${player.currentIndex + 1} מתוך 10</span>${competitor ? `<span>${escapeHtml(opponentName)}: ${competitor.currentIndex}/10</span>` : ''}</div>
+      <div class="trivia-question-card">
+        <h2 class="trivia-question">${escapeHtml(question.question)}</h2>
+        <div class="trivia-answers">${choices}</div>
+        ${feedback}
+      </div>
+    </div>
+  `;
+}
+function renderTriviaResult(sessionKey, state, opponentName) {
+  const player = triviaPlayerState(state);
+  if (state.mode === 'solo') {
+    const results = triviaOtherSistersScores(state.topicId);
+    return `
+      <div class="trivia-shell">
+        <div class="trivia-result-card">
+          <h2>סיימת את השאלון!</h2>
+          <div class="trivia-score">${player.score}/10</div>
+          <h3>השוואה בנושא</h3>
+          <ul class="trivia-result-list">${results.map(result => `<li>${escapeHtml(result.name)} — ${escapeHtml(result.status)}</li>`).join('')}</ul>
+          <div class="trivia-result-actions">
+            <button class="btn btn-primary" data-trivia-restart>שאלון חדש</button>
+            <button class="btn btn-secondary" data-trivia-change-topic>נושא אחר</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+  const other = state.progress[opponentName];
+  const waiting = !other || !other.finishedAt;
+  const rows = state.players.filter(name => state.progress[name]).map(name => `<li>${escapeHtml(name)} — ${state.progress[name].score}/10 ${state.winner === name ? '🏆 ניצחה' : ''}</li>`).join('');
+  return `
+    <div class="trivia-shell">
+      <div class="trivia-result-card">
+        <h2>${waiting ? `סיימת! ממתינים ל${escapeHtml(opponentName)} שתסיים` : 'המרוץ הסתיים!'}</h2>
+        <div class="trivia-score">${player.score}/10</div>
+        <ul class="trivia-result-list">${rows}</ul>
+        <button class="btn btn-secondary" style="width:100%;" data-trivia-change-topic>לבחירת נושא</button>
+      </div>
+    </div>
+  `;
 }
 
 function shoppingActiveList() {
@@ -4965,7 +5199,129 @@ function attachHandlers() {
       render();
     };
   }
+
+  document.querySelectorAll('[data-trivia-topic]').forEach(el => {
+    el.onclick = () => {
+      view.gameSetupDraft = { ...(view.gameSetupDraft || {}), topicId: el.getAttribute('data-trivia-topic') };
+      render();
+    };
+  });
+
+  document.querySelectorAll('[data-trivia-mode]').forEach(el => {
+    el.onclick = () => {
+      const mode = el.getAttribute('data-trivia-mode');
+      view.gameSetupDraft = { ...(view.gameSetupDraft || {}), mode, opponentName: mode === 'race' ? el.getAttribute('data-trivia-opponent') : null };
+      render();
+    };
+  });
+
+  const triviaStartBtn = document.querySelector('[data-trivia-start]');
+  if (triviaStartBtn) {
+    triviaStartBtn.onclick = async () => {
+      const draft = view.gameSetupDraft || {};
+      if (!draft.topicId || !draft.mode) return;
+      if (draft.mode === 'race' && !draft.opponentName) return;
+      if (draft.mode === 'solo') {
+        // This button is only ever reachable when NO session (finished or not) exists yet for this
+        // topic - the moment one does, triviaActiveSession() matches it as soon as topicId+mode are
+        // both set and renderTriviaScreen() shows the quiz/result screen directly, before this setup
+        // screen (and this button) would even render. So a plain "start new" here can never clobber
+        // in-progress work - no resume-confirmation needed, unlike sudoku/crossword's "new game" action.
+        try {
+          await startNewTriviaSoloSession(draft.topicId);
+        } catch (e) {
+          alert('שגיאה בפתיחת המשחק, נסי שוב');
+          return;
+        }
+      } else {
+        try {
+          await startOrJoinTriviaRace(draft.topicId, draft.opponentName);
+        } catch (e) {
+          alert('שגיאה בפתיחת המשחק, נסי שוב');
+          return;
+        }
+      }
+      render();
+    };
+  }
+
+  document.querySelectorAll('[data-trivia-answer]').forEach(el => {
+    el.onclick = async () => {
+      const active = triviaActiveSession();
+      if (!active) return;
+      const state = active.state;
+      const player = triviaPlayerState(state);
+      const item = state.questions[player.currentIndex];
+      const question = triviaQuestionById(item.id);
+      const chosenOriginalIndex = parseInt(el.getAttribute('data-trivia-answer'), 10);
+      const correct = chosenOriginalIndex === question.correctIndex;
+      const answer = { questionId: question.id, chosenOriginalIndex, correct };
+      try {
+        if (state.mode === 'solo') {
+          const next = { ...state, answers: [...state.answers, answer], score: state.score + (correct ? 1 : 0) };
+          await saveGameSession('trivia', active.key, next);
+        } else {
+          const nextPlayer = { ...player, answers: [...player.answers, answer], score: player.score + (correct ? 1 : 0) };
+          await saveGameSession('trivia', active.key, { ...state, progress: { ...state.progress, [session.name]: nextPlayer } });
+        }
+      } catch (e) {
+        alert('שגיאה בשמירה, נסי שוב');
+        return;
+      }
+      render();
+    };
+  });
+
+  const triviaNextBtn = document.querySelector('[data-trivia-next]');
+  if (triviaNextBtn) {
+    triviaNextBtn.onclick = async () => {
+      const active = triviaActiveSession();
+      if (!active) return;
+      const state = active.state;
+      const player = triviaPlayerState(state);
+      const isLast = player.currentIndex === 9;
+      try {
+        if (state.mode === 'solo') {
+          const next = { ...state, currentIndex: player.currentIndex + 1, finishedAt: isLast ? new Date().toISOString() : null, won: isLast ? player.score >= 7 : null };
+          await saveGameSession('trivia', active.key, next);
+        } else {
+          const nextPlayer = { ...player, currentIndex: player.currentIndex + 1, finishedAt: isLast ? new Date().toISOString() : null };
+          const next = { ...state, progress: { ...state.progress, [session.name]: nextPlayer }, winner: isLast && !state.winner ? session.name : state.winner };
+          await saveGameSession('trivia', active.key, next);
+        }
+      } catch (e) {
+        alert('שגיאה בשמירה, נסי שוב');
+        return;
+      }
+      render();
+    };
+  }
+
+  const triviaRestartBtn = document.querySelector('[data-trivia-restart]');
+  if (triviaRestartBtn) {
+    triviaRestartBtn.onclick = async () => {
+      const draft = view.gameSetupDraft || {};
+      if (!draft.topicId) return;
+      try {
+        await startNewTriviaSoloSession(draft.topicId);
+      } catch (e) {
+        alert('שגיאה בפתיחת המשחק, נסי שוב');
+        return;
+      }
+      render();
+    };
+  }
+
+  const triviaChangeTopicBtn = document.querySelector('[data-trivia-change-topic]');
+  if (triviaChangeTopicBtn) {
+    triviaChangeTopicBtn.onclick = () => {
+      view.gameSetupDraft = {};
+      view.activeGameSessionKey = null;
+      render();
+    };
+  }
 }
+
 function subscribeAll(name, gen) {
   const loadedKeys = new Set();
 
