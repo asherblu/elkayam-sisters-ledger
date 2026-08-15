@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="400" viewBox="0 0 300 400">
+<defs></defs>
+<rect x="100" y="90" width="20" height="230" rx="8" fill="#3f8f4f"/>
+<rect x="99" y="140" width="22" height="6" rx="3" fill="#2d6b3a"/>
+<rect x="99" y="190" width="22" height="6" rx="3" fill="#2d6b3a"/>
+<rect x="99" y="240" width="22" height="6" rx="3" fill="#2d6b3a"/>
+<rect x="99" y="290" width="22" height="6" rx="3" fill="#2d6b3a"/>
+<rect x="140" y="90" width="20" height="230" rx="8" fill="#3f8f4f"/>
+<rect x="139" y="140" width="22" height="6" rx="3" fill="#2d6b3a"/>
+<rect x="139" y="190" width="22" height="6" rx="3" fill="#2d6b3a"/>
+<rect x="139" y="240" width="22" height="6" rx="3" fill="#2d6b3a"/>
+<rect x="139" y="290" width="22" height="6" rx="3" fill="#2d6b3a"/>
+<rect x="180" y="90" width="20" height="230" rx="8" fill="#3f8f4f"/>
+<rect x="179" y="140" width="22" height="6" rx="3" fill="#2d6b3a"/>
+<rect x="179" y="190" width="22" height="6" rx="3" fill="#2d6b3a"/>
+<rect x="179" y="240" width="22" height="6" rx="3" fill="#2d6b3a"/>
+<rect x="179" y="290" width="22" height="6" rx="3" fill="#2d6b3a"/>
+<path d="M95 120 q -30 -8 -46 -34 q 30 -4 46 34 z" fill="#57a862" transform="rotate(-35 95 120)"/>
+<path d="M205 130 q -30 -8 -46 -34 q 30 -4 46 34 z" fill="#57a862" transform="rotate(35 205 130)"/>
+<path d="M95 220 q -30 -8 -46 -34 q 30 -4 46 34 z" fill="#57a862" transform="rotate(-30 95 220)"/>
+<path d="M205 230 q -30 -8 -46 -34 q 30 -4 46 34 z" fill="#57a862" transform="rotate(30 205 230)"/>
+</svg>
