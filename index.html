@@ -493,6 +493,13 @@
 <body>
 <div class="wrap" id="app"></div>
 <audio id="relax-audio" src="relax-music.mp3" loop preload="none"></audio>
+<!-- Persistent (never unmounted by render()) SoundCloud embed for "יא מאמא" - src is set/cleared via JS
+     when picked/stopped, kept outside #app so it survives render() re-renders and popup close/navigation,
+     matching how the local <audio> element above keeps playing in the background. Visually hidden (not
+     display:none, which some browsers pause) since there's no need for a visible player UI - the FAB icon
+     and picker button already show play/pause state, same as the local track. -->
+<iframe id="relax-soundcloud-frame" title="יא מאמא - שמעון בוסקילה" scrolling="no" frameborder="no" allow="autoplay"
+  style="position:absolute; width:1px; height:1px; opacity:0; pointer-events:none;" src=""></iframe>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
@@ -878,7 +885,7 @@ function personalizedEmpowerText(name) {
 }
 
 const NAMES = ['ריקי', 'ברוריה', 'דורית'];
-const APP_VERSION = '2.15.0';
+const APP_VERSION = '2.15.1';
 const APP_UPDATED = '15.08.2026';
 const AVATAR_CLASS = { 'ריקי': 'ricky', 'ברוריה': 'bruria', 'דורית': 'dorit' };
 
@@ -1808,11 +1815,15 @@ function renderFabButtons() {
 
 // Song picker for the "תירגעי" (relax) button - two options: the original local relax-music.mp3 track
 // (played via the persistent <audio id="relax-audio"> element so it keeps playing in the background even
-// after this popup closes), or "יא מאמא" by שמעון בוסקילה streamed live from SoundCloud through their
-// official embedded player widget. We deliberately do NOT download/host that song's audio file locally -
-// it's a copyrighted commercial track and this repo is public (required for GitHub Pages), so redistributing
-// the full file would be a real copyright problem. The SoundCloud embed streams straight from SoundCloud's
-// own player, which is exactly what that embed is designed for - no file of ours, no rehosting.
+// after this popup closes), or "יא מאמא" by שמעון בוסקילה streamed live from SoundCloud through the
+// persistent #relax-soundcloud-frame element (declared once in <body>, outside #app - see the comment
+// there). We deliberately do NOT download/host that song's audio file locally, even though אשר sent the
+// actual mp3 - it's a copyrighted commercial track and this repo is public (required for GitHub Pages),
+// so redistributing the full file would be a real copyright problem regardless of who supplied it. The
+// SoundCloud embed streams straight from SoundCloud's own player, which is exactly what that embed is
+// designed for - no file of ours, no rehosting. This popup only toggles that persistent iframe's `src`
+// (see relax-pick-soundcloud handler) - it doesn't render its own iframe, so the song keeps playing after
+// the popup closes, same as the local track.
 function renderRelaxPopup() {
   const song = view.relaxSong;
   const relaxPlaying = !!view.relaxPlaying;
@@ -1822,13 +1833,8 @@ function renderRelaxPopup() {
         <h3 style="margin:0 0 10px; font-size:16px;">🎵 תירגעי</h3>
         <p style="font-size:13.5px; color: var(--text-muted); margin-bottom:14px;">בחרי מה לנגן:</p>
         <button class="btn ${song === 'local' && relaxPlaying ? 'btn-primary' : 'btn-secondary'}" style="width:100%; margin-bottom:8px;" id="relax-pick-local">🎵 מוזיקה מרגיעה ${song === 'local' && relaxPlaying ? '⏸️ מנגן' : '▶️'}</button>
-        <button class="btn ${song === 'soundcloud' ? 'btn-primary' : 'btn-secondary'}" style="width:100%;" id="relax-pick-soundcloud">🎶 יא מאמא - שמעון בוסקילה</button>
-        ${song === 'soundcloud' ? `
-          <div style="margin-top:10px; border-radius:10px; overflow:hidden;">
-            <iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay"
-              src="https://w.soundcloud.com/player/?url=${encodeURIComponent('https://soundcloud.com/femwtoydytfe/mp3-6')}&color=%238a6d3b&auto_play=true&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false&visual=false"></iframe>
-          </div>
-        ` : ''}
+        <button class="btn ${song === 'soundcloud' ? 'btn-primary' : 'btn-secondary'}" style="width:100%;" id="relax-pick-soundcloud">🎶 יא מאמא - שמעון בוסקילה ${song === 'soundcloud' ? '⏸️ מנגן' : '▶️'}</button>
+        ${song === 'soundcloud' ? `<p style="font-size:12px; color: var(--text-muted); margin-top:10px; text-align:center;">מתנגן ברקע - אפשר לסגור ולהמשיך להשתמש באפליקציה 🎶</p>` : ''}
         <button class="btn btn-secondary" style="width:100%; margin-top:12px;" id="relax-close-btn">סגירה</button>
       </div>
     </div>
@@ -4922,12 +4928,16 @@ function attachHandlers() {
     render();
   };
 
+  const SOUNDCLOUD_RELAX_SRC = `https://w.soundcloud.com/player/?url=${encodeURIComponent('https://soundcloud.com/femwtoydytfe/mp3-6')}&auto_play=true&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false`;
+
   const relaxPickLocalBtn = document.getElementById('relax-pick-local');
   if (relaxPickLocalBtn) relaxPickLocalBtn.onclick = () => {
     const audio = document.getElementById('relax-audio');
     if (!audio) return;
-    // Switching to the local track always stops the SoundCloud embed first (removing it from the DOM
-    // on the next render stops that playback - iframes don't keep playing once unmounted).
+    // Switching to the local track always stops the SoundCloud embed first, by clearing the persistent
+    // iframe's src (an iframe stops playing once its src is cleared/changed, same idea as pausing audio).
+    const scFrame = document.getElementById('relax-soundcloud-frame');
+    if (scFrame) scFrame.src = '';
     view.relaxSong = 'local';
     if (audio.paused) {
       audio.play().catch(() => {});
@@ -4943,16 +4953,22 @@ function attachHandlers() {
   if (relaxPickSoundcloudBtn) relaxPickSoundcloudBtn.onclick = () => {
     const audio = document.getElementById('relax-audio');
     if (audio && !audio.paused) { audio.pause(); view.relaxPlaying = false; }
-    view.relaxSong = view.relaxSong === 'soundcloud' ? null : 'soundcloud';
+    const scFrame = document.getElementById('relax-soundcloud-frame');
+    const turningOn = view.relaxSong !== 'soundcloud';
+    view.relaxSong = turningOn ? 'soundcloud' : null;
+    // Setting/clearing the persistent iframe's src (outside #app, never unmounted by render()) starts or
+    // stops the SoundCloud playback - and because it's outside #app, it keeps playing after this popup
+    // closes or after any other render(), unlike the old approach of embedding the iframe inside the
+    // popup's own HTML (which unmounted - and so stopped playing - the moment the popup closed).
+    if (scFrame) scFrame.src = turningOn ? SOUNDCLOUD_RELAX_SRC : '';
     render();
   };
 
   const relaxCloseBtn = document.getElementById('relax-close-btn');
   if (relaxCloseBtn) relaxCloseBtn.onclick = () => {
     view.relaxPopupOpen = false;
-    // Closing the popup unmounts the SoundCloud iframe (it only renders while the popup is open),
-    // which stops that playback - the local track (a persistent <audio> element outside the popup)
-    // keeps playing in the background if it was on, matching the original FAB's behavior.
+    // Both tracks live outside #app (persistent <audio>/<iframe> elements) so closing this popup never
+    // touches their playback - whichever song was playing keeps playing in the background.
     render();
   };
 
