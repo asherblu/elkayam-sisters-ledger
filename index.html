@@ -133,7 +133,7 @@
     position: fixed; inset: 0; background: rgba(0,0,0,0.4);
     display: flex; align-items: center; justify-content: center; z-index: 50; padding: 20px;
   }
-  .modal-box { background: #fff; border-radius: 14px; padding: 20px; max-width: 340px; width: 100%; }
+  .modal-box { background: #fff; border-radius: 14px; padding: 20px; max-width: 340px; width: 100%; max-height: 85vh; overflow-y: auto; }
   .modal-box p { font-size: 15px; margin: 0 0 16px; }
 
   .footer-actions { display: flex; gap: 8px; margin-top: 24px; }
@@ -491,8 +491,15 @@
   @keyframes shanghai-confetti-fall { 0%{ transform:translateY(-10px) rotate(0deg); opacity:1; } 100%{ transform:translateY(340px) rotate(360deg); opacity:0; } }
   .game-tile.locked { cursor: default; filter: grayscale(0.85); opacity: 0.6; box-shadow: none; }
   .game-tile-lock { font-size: 11px; font-weight: 700; background: rgba(0,0,0,0.28); border-radius: 999px; padding: 2px 10px; }
-  .game-instructions-body { font-size: 13.5px; line-height: 1.6; color: var(--text); margin-bottom: 12px; }
+  /* Instructions modal: title and "start" button must always stay visible even when the instructions
+     text itself is long (some games' instructions run to 5+ paragraphs) - so this modal box uses its
+     own sticky header/footer instead of just relying on .modal-box's plain whole-box scroll, with only
+     the instructions text scrolling in between. */
+  .modal-box.game-instructions-box { display: flex; flex-direction: column; padding: 0; overflow: hidden; }
+  .game-instructions-title { flex-shrink: 0; margin: 0; padding: 20px 20px 10px; font-size: 16px; }
+  .game-instructions-body { flex: 1 1 auto; overflow-y: auto; padding: 0 20px; font-size: 13.5px; line-height: 1.6; color: var(--text); margin-bottom: 0; }
   .game-instructions-body p { margin: 0 0 8px; }
+  .game-instructions-footer { flex-shrink: 0; padding: 12px 20px 20px; border-top: 1px solid var(--border); margin-top: 8px; }
   .game-instructions-checkbox { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted); cursor: pointer; }
   .game-instructions-checkbox input { width: auto; }
 
@@ -955,7 +962,7 @@ function personalizedEmpowerText(name) {
 }
 
 const NAMES = ['ריקי', 'ברוריה', 'דורית'];
-const APP_VERSION = '2.19.0';
+const APP_VERSION = '2.19.1';
 const APP_UPDATED = '15.08.2026';
 const AVATAR_CLASS = { 'ריקי': 'ricky', 'ברוריה': 'bruria', 'דורית': 'dorit' };
 
@@ -2007,13 +2014,15 @@ function renderGameInstructionsModal() {
   if (!g) return '';
   return `
     <div class="modal-overlay" id="game-instructions-overlay">
-      <div class="modal-box">
-        <h3 style="margin:0 0 10px; font-size:16px;">${g.icon} ${escapeHtml(g.title)} - איך משחקים</h3>
+      <div class="modal-box game-instructions-box">
+        <h3 class="game-instructions-title">${g.icon} ${escapeHtml(g.title)} - איך משחקים</h3>
         <div class="game-instructions-body">${g.instructionsHtml ? personalizeInstructions(g.instructionsHtml) : '<p>ההוראות למשחק הזה עדיין בבנייה.</p>'}</div>
-        <label class="game-instructions-checkbox">
-          <input type="checkbox" id="game-instructions-dontshow"> הבנתי, אל תראה שוב
-        </label>
-        <button class="btn btn-primary" style="margin-top:10px; width:100%;" id="game-instructions-start-btn">בואי נשחק!</button>
+        <div class="game-instructions-footer">
+          <label class="game-instructions-checkbox">
+            <input type="checkbox" id="game-instructions-dontshow"> הבנתי, אל תראה שוב
+          </label>
+          <button class="btn btn-primary" style="margin-top:10px; width:100%;" id="game-instructions-start-btn">בואי נשחק!</button>
+        </div>
       </div>
     </div>
   `;
@@ -4263,6 +4272,19 @@ const SHANGHAI_BOUNDS = (() => {
   const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
   return { minX, width: maxX - minX + 1, minY, height: maxY - minY + 1 };
 })();
+// The classic "turtle" shape is naturally wider than tall (15x8 units) - great on a desktop/landscape
+// screen, but on a narrow mobile portrait viewport that renders as a short, cramped strip with tiny
+// tiles (Asher reported this looking bad on mobile). This rotates the DISPLAY mapping only - the
+// underlying x/y/z used by mahjongFreeIndices/generateMahjongBoard/mahjongIsCovered etc. (already
+// verified correct) are completely untouched, only how a position is converted to on-screen percent
+// coordinates changes - so no game-logic re-verification is needed, only a visual check. Individual
+// tile artwork is NOT rotated (faces stay upright/readable), only tile positions are remapped into an
+// 8-wide x 15-tall layout that uses mobile screen space far better (bigger tiles, natural vertical
+// scroll instead of a squished landscape strip).
+function mahjongDisplayPos(pos) {
+  return { x: pos.y - SHANGHAI_BOUNDS.minY, y: (SHANGHAI_BOUNDS.minX + SHANGHAI_BOUNDS.width - 1) - pos.x, z: pos.z };
+}
+const SHANGHAI_DISPLAY_BOUNDS = { width: SHANGHAI_BOUNDS.height, height: SHANGHAI_BOUNDS.width };
 
 function mahjongOverlaps(a, b) { return Math.abs(a.x - b.x) < 1 && Math.abs(a.y - b.y) < 1; }
 // A position is covered if any REMAINING tile sits directly above it (z+1) and overlaps in x/y.
@@ -4459,17 +4481,18 @@ function renderShanghaiBoard(sessionKey) {
   const flashPair = view.shanghaiMatchFlash && view.shanghaiMatchFlash.sessionKey === sessionKey ? view.shanghaiMatchFlash.indices : [];
   const message = view.shanghaiMessage && view.shanghaiMessage.sessionKey === sessionKey ? view.shanghaiMessage : null;
   const other = state.mode === 'race' ? state.progress[shanghaiOpponentName(state)] : null;
-  const cols = SHANGHAI_BOUNDS.width, rows = SHANGHAI_BOUNDS.height;
+  const cols = SHANGHAI_DISPLAY_BOUNDS.width, rows = SHANGHAI_DISPLAY_BOUNDS.height;
   const tilesHtml = remaining.map(index => {
     const pos = MAHJONG_LAYOUT[index];
+    const dp = mahjongDisplayPos(pos);
     const type = state.tiles[index];
     const isFree = freeSet.has(index);
     const isSelected = selection === index;
     const isHint = hintPair.includes(index);
     const isFlash = flashPair.includes(index);
-    const leftPct = ((pos.x - SHANGHAI_BOUNDS.minX) / cols) * 100 - pos.z * 0.45;
-    const topPct = ((pos.y - SHANGHAI_BOUNDS.minY) / rows) * 100 - pos.z * 0.9;
-    const zIndex = pos.z * 1000 + Math.round(pos.y * 10) + Math.round(pos.x) + 10;
+    const leftPct = (dp.x / cols) * 100 - dp.z * 0.45;
+    const topPct = (dp.y / rows) * 100 - dp.z * 0.9;
+    const zIndex = dp.z * 1000 + Math.round(dp.y * 10) + Math.round(dp.x) + 10;
     const faceFile = mahjongFaceFile(type);
     const classes = ['shanghai-tile'];
     if (!isFree) classes.push('is-blocked');
