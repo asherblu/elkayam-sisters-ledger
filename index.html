@@ -919,7 +919,7 @@ function personalizedEmpowerText(name) {
 }
 
 const NAMES = ['ריקי', 'ברוריה', 'דורית'];
-const APP_VERSION = '2.17.0';
+const APP_VERSION = '2.17.1';
 const APP_UPDATED = '15.08.2026';
 const AVATAR_CLASS = { 'ריקי': 'ricky', 'ברוריה': 'bruria', 'דורית': 'dorit' };
 
@@ -3984,18 +3984,25 @@ function wordsearchRaceSessionKey(topicId, difficulty, a, b) { return `${topicId
 function wordsearchPlayerProgress(state) { return state.mode === 'race' ? state.progress[session.name] : state; }
 function wordsearchOpponentName(state) { return state.mode === 'race' ? state.players.find(name => name !== session.name) : null; }
 function wordsearchTemp(sessionKey) { return view.wordsearchTemp?.sessionKey === sessionKey ? view.wordsearchTemp : { sessionKey, message:'', error:false }; }
+// Firestore rejects arrays-of-arrays ("nested arrays are not supported") - generateWordsearchPuzzle's
+// grid is a real string[][] for the placement algorithm's sake, but it must be flattened to string[]
+// (one joined row per entry) before it ever reaches setDoc, or every write throws at the SDK level.
+// The synchronous test stub used in this project's Playwright harness does NOT enforce this Firestore
+// restriction (it just stores whatever JS object it's given), so this class of bug is invisible to the
+// stub-based test suite even when every other check passes - see LESSONS.md.
+function wordsearchGridToRows(grid) { return grid.map(row => row.join('')); }
 // Shared solo-session starter, used both by the "start" handler and by the generic gameResumeNewBtn
 // handler's "start fresh" branch - kept as one function (like startNewSudokuSession/startNewCrosswordSession)
 // so both call sites can never drift out of sync with each other.
 async function startNewWordsearchSession(sessionKey, draft) {
   const puzzle = generateWordsearchPuzzle(draft.topicId, draft.difficulty);
   if (!puzzle) throw new Error('wordsearch generation failed');
-  await saveGameSession('wordsearch', sessionKey, { mode:'solo', topicId:draft.topicId, difficulty:draft.difficulty, grid:puzzle.grid, words:puzzle.words, foundWords:[], startedAt:new Date().toISOString(), finishedAt:null });
+  await saveGameSession('wordsearch', sessionKey, { mode:'solo', topicId:draft.topicId, difficulty:draft.difficulty, grid:wordsearchGridToRows(puzzle.grid), words:puzzle.words, foundWords:[], startedAt:new Date().toISOString(), finishedAt:null });
 }
 async function startOrJoinWordsearchRace(topicId, difficulty, opponentName) {
   const key = wordsearchRaceSessionKey(topicId, difficulty, session.name, opponentName); const existing = findGameSession('wordsearch', key);
   if (existing && !existing.state.winner) { if (!existing.state.progress[session.name]) { const state = { ...existing.state, progress:{ ...existing.state.progress, [session.name]:{ foundWords:[], finishedAt:null } } }; await saveGameSession('wordsearch', key, state); } return key; }
-  const puzzle = generateWordsearchPuzzle(topicId, difficulty); if (!puzzle) return null; const state = { mode:'race', topicId, difficulty, grid:puzzle.grid, words:puzzle.words, players:[session.name, opponentName].sort(), progress:{ [session.name]:{ foundWords:[], finishedAt:null } }, winner:null, startedAt:new Date().toISOString() }; await saveGameSession('wordsearch', key, state); return key;
+  const puzzle = generateWordsearchPuzzle(topicId, difficulty); if (!puzzle) return null; const state = { mode:'race', topicId, difficulty, grid:wordsearchGridToRows(puzzle.grid), words:puzzle.words, players:[session.name, opponentName].sort(), progress:{ [session.name]:{ foundWords:[], finishedAt:null } }, winner:null, startedAt:new Date().toISOString() }; await saveGameSession('wordsearch', key, state); return key;
 }
 function renderWordsearchSetup() {
   const draft = view.gameSetupDraft || {}; const canStart = !!draft.topicId && !!draft.difficulty && (draft.mode === 'solo' || (draft.mode === 'race' && draft.opponentName));
@@ -4008,7 +4015,7 @@ function renderWordsearchResult(sessionKey, state) {
 function renderWordsearchBoard(sessionKey) {
   const gs = findGameSession('wordsearch', sessionKey); if (!gs) return renderWordsearchSetup(); const state = gs.state; const progress = wordsearchPlayerProgress(state); if (progress.finishedAt) return renderWordsearchResult(sessionKey, state);
   const temp = wordsearchTemp(sessionKey); const selection = view.wordsearchSelection?.sessionKey === sessionKey ? view.wordsearchSelection : null; const foundCells = new Set(state.words.filter(item => progress.foundWords.includes(item.word)).flatMap(item => Array.from(item.word).map((_, index) => `${item.row + item.dir[0] * index},${item.col + item.dir[1] * index}`))); const other = state.mode === 'race' ? state.progress[wordsearchOpponentName(state)] : null;
-  const cells = state.grid.map((row, rowIndex) => row.map((letter, colIndex) => `<button class="wordsearch-cell ${selection?.row === rowIndex && selection?.col === colIndex ? 'is-start' : ''} ${foundCells.has(`${rowIndex},${colIndex}`) ? 'is-found' : ''}" data-wordsearch-cell="${rowIndex},${colIndex}">${escapeHtml(letter)}</button>`).join('')).join('');
+  const cells = state.grid.map((row, rowIndex) => Array.from(row).map((letter, colIndex) => `<button class="wordsearch-cell ${selection?.row === rowIndex && selection?.col === colIndex ? 'is-start' : ''} ${foundCells.has(`${rowIndex},${colIndex}`) ? 'is-found' : ''}" data-wordsearch-cell="${rowIndex},${colIndex}">${escapeHtml(letter)}</button>`).join('')).join('');
   return `<div class="wordsearch-shell"><div class="back-row"><button class="btn btn-secondary btn-small" data-back-to-games-hub>→ חזרה</button><h1 style="margin:0;font-size:17px;">🔍 תפזורת</h1></div><div class="wordsearch-status"><span>${progress.foundWords.length}/${state.words.length} מילים</span>${other ? `<span>${escapeHtml(wordsearchOpponentName(state))}: ${other.foundWords.length}/${state.words.length}</span>` : ''}</div><div class="wordsearch-board-wrap"><div class="wordsearch-board" style="grid-template-columns:repeat(${state.grid.length}, minmax(0, 1fr));">${cells}</div></div><div class="wordsearch-message ${temp.error ? 'is-error' : ''}">${escapeHtml(temp.message)}</div><div class="wordsearch-words">${state.words.map(item => `<div class="wordsearch-word ${progress.foundWords.includes(item.word) ? 'is-found' : ''}">${escapeHtml(item.word)}</div>`).join('')}</div></div>`;
 }
 
