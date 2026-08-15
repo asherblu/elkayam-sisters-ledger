@@ -468,6 +468,27 @@
   .relaxriddles-result { padding:16px; border:1px solid var(--border); border-radius:14px; background:var(--card); text-align:center; }
   .relaxriddles-result h2 { margin-top:0; }
   .relaxriddles-result ul { padding-right:20px; text-align:right; }
+  .shanghai-shell { max-width: 720px; margin:0 auto; }
+  .shanghai-status { display:flex; justify-content:space-between; gap:8px; margin:8px 0; color:var(--text-muted); font-size:13px; }
+  .shanghai-message { min-height:20px; margin:2px 0 6px; color:var(--text-muted); text-align:center; font-size:13px; }
+  .shanghai-message.is-error { color:#a11f1f; animation:wordsearch-shake .28s linear; }
+  .shanghai-nomoves { padding:10px 12px; border:1px solid #e8b84b; background:#fff8e8; color:#7a5b12; border-radius:10px; font-size:13px; text-align:center; margin-bottom:8px; }
+  .shanghai-board-wrap { background: linear-gradient(180deg, #0f5c3f, #0a3f2c); border-radius:16px; padding:14px; box-shadow: inset 0 2px 10px rgba(0,0,0,.35); }
+  .shanghai-board { position:relative; width:100%; }
+  .shanghai-tile { position:absolute; border:none; padding:0; margin:0; background-color:transparent; background-repeat:no-repeat, no-repeat; background-position:center, center; background-size:78%, 100%; cursor:pointer; border-radius:6px; box-shadow:0 2px 3px rgba(0,0,0,.35); transition: filter .12s ease, transform .12s ease; }
+  .shanghai-tile:disabled { cursor:default; filter:brightness(.62) saturate(.7); }
+  .shanghai-tile.is-selected { outline:3px solid #ffcf3f; outline-offset:1px; transform:translateY(-3px); z-index:9999 !important; }
+  .shanghai-tile.is-hint { animation: shanghai-hint-pulse 1s ease-in-out infinite; }
+  .shanghai-tile.is-flash { animation: shanghai-flash-pop .38s ease-out forwards; z-index:9999 !important; }
+  @keyframes shanghai-hint-pulse { 0%,100%{ outline:3px solid rgba(255,207,63,.25); } 50%{ outline:3px solid rgba(255,207,63,.95); } }
+  @keyframes shanghai-flash-pop { 0%{ transform:scale(1); filter:brightness(1); } 50%{ transform:scale(1.18); filter:brightness(1.5); } 100%{ transform:scale(0.2); filter:brightness(2); opacity:0; } }
+  .shanghai-actions { display:flex; gap:8px; justify-content:center; margin-top:10px; }
+  .shanghai-result { position:relative; overflow:hidden; padding:16px; border:1px solid var(--border); border-radius:14px; background:var(--card); text-align:center; }
+  .shanghai-result h2 { margin-top:0; }
+  .shanghai-result ul { padding-right:0; text-align:center; list-style:none; }
+  .shanghai-confetti { position:absolute; inset:0; overflow:hidden; pointer-events:none; }
+  .shanghai-confetti-piece { position:absolute; top:-12px; width:8px; height:14px; opacity:.9; animation-name:shanghai-confetti-fall; animation-timing-function:ease-in; animation-fill-mode:forwards; border-radius:2px; }
+  @keyframes shanghai-confetti-fall { 0%{ transform:translateY(-10px) rotate(0deg); opacity:1; } 100%{ transform:translateY(340px) rotate(360deg); opacity:0; } }
   .game-tile.locked { cursor: default; filter: grayscale(0.85); opacity: 0.6; box-shadow: none; }
   .game-tile-lock { font-size: 11px; font-weight: 700; background: rgba(0,0,0,0.28); border-radius: 999px; padding: 2px 10px; }
   .game-instructions-body { font-size: 13.5px; line-height: 1.6; color: var(--text); margin-bottom: 12px; }
@@ -934,7 +955,7 @@ function personalizedEmpowerText(name) {
 }
 
 const NAMES = ['ריקי', 'ברוריה', 'דורית'];
-const APP_VERSION = '2.18.0';
+const APP_VERSION = '2.19.0';
 const APP_UPDATED = '15.08.2026';
 const AVATAR_CLASS = { 'ריקי': 'ricky', 'ברוריה': 'bruria', 'דורית': 'dorit' };
 
@@ -988,7 +1009,13 @@ const GAMES_CATALOG = [
     <p>בוחרת רמת קושי (קל / בינוני / קשה) ואיך לשחק: לבד בקצב שלך, או במרוץ בזמן אמת מול אחת האחיות על אותה סדרת חידות בדיוק - מי שמסיימת ראשונה את כל ה-12 מנצחת. נתקעת? יש כפתור "רמז" בכל חידה שנותן קצת עזרה.</p>
     <p>אין הפסד על ניסיון שגוי - פשוט מוחקים אות ומנסות שוב, בלי לחץ. המשחק נשמר אוטומטית, ואם התחלת ולא סיימת - תמיד אפשר לחזור בדיוק לאיפה שעצרת.</p>
   ` },
-  { id: 'shanghai', title: 'שנחאי', icon: '🀄', color: 'g-gold', locked: true, instructionsHtml: '' }
+  { id: 'shanghai', title: 'שנחאי', icon: '🀄', color: 'g-gold', locked: false, instructionsHtml: `
+    <p>{name}, שנחאי הוא סוליטר אריחים קלאסי - 144 אריחים בפירמידת "צב" בת 5 שכבות. המטרה: לפנות את כל האריחים מהלוח, זוג-זוג.</p>
+    <p>אריח "פנוי" לבחירה הוא כזה שאין שום אריח מעליו, וגם לפחות צד אחד שלו (ימין או שמאל) פתוח - לא חסום על ידי אריח שכן באותה שכבה. אריחים חסומים מוצגים דהויים ולא ניתנים ללחיצה.</p>
+    <p>לוחצת על שני אריחים פנויים זהים כדי להסיר אותם מהלוח - פרחים תמיד מתאימים לפרחים אחרים, ועונות תמיד מתאימות לעונות אחרות, גם אם הציור שונה (בדיוק כמו ב"ג'וקר").</p>
+    <p>בוחרת איך לשחק: לבד בקצב שלך, או במרוץ בזמן אמת מול אחת האחיות על אותו לוח בדיוק - מי שמפנה ראשונה את כל הלוח מנצחת. יש כפתור "רמז" שמראה זוג תואם פנוי, וכפתור "ביטול מהלך" אם טעית.</p>
+    <p>כל לוח נבנה כך שתמיד קיים לו פתרון מלא - אבל בדיוק כמו במשחק אמיתי, בחירות לא אופטימליות בדרך יכולות להיתקע בלי מהלכים אפשריים; אם זה קורה, תופיע הודעה על כך ואפשר ללחוץ "לוח חדש" כדי להתחיל מחדש.</p>
+  ` }
 ];
 
 // --- Generic game-session persistence (shared by every game once built) ---
@@ -1297,6 +1324,7 @@ function render() {
   else if (view.screen === 'game-cookiewords') app.innerHTML = renderGameScreen('cookiewords');
   else if (view.screen === 'game-wordsearch') app.innerHTML = renderGameScreen('wordsearch');
   else if (view.screen === 'game-relaxriddles') app.innerHTML = renderGameScreen('relaxriddles');
+  else if (view.screen === 'game-shanghai') app.innerHTML = renderGameScreen('shanghai');
   attachHandlers();
 }
 
@@ -2086,6 +2114,7 @@ function renderGameScreen(gameId) {
     if (gameId === 'cookiewords') return renderCookieWordsSetup();
     if (gameId === 'wordsearch') return renderWordsearchSetup();
     if (gameId === 'relaxriddles') return renderRelaxRiddlesSetup();
+    if (gameId === 'shanghai') return renderShanghaiSetup();
     return renderGameOpponentSetup(gameId, g.title, g.icon);
   }
   if (gameId === 'tictactoe') return renderTicTacToeBoard(gameId, view.activeGameSessionKey);
@@ -2095,6 +2124,7 @@ function renderGameScreen(gameId) {
   if (gameId === 'cookiewords') return renderCookieWordsBoard(view.activeGameSessionKey);
   if (gameId === 'wordsearch') return renderWordsearchBoard(view.activeGameSessionKey);
   if (gameId === 'relaxriddles') return renderRelaxRiddlesBoard(view.activeGameSessionKey);
+  if (gameId === 'shanghai') return renderShanghaiBoard(view.activeGameSessionKey);
   return '<p>המשחק הזה עדיין בבנייה.</p>';
 }
 
@@ -4196,6 +4226,262 @@ function renderRelaxRiddlesBoard(sessionKey) {
   return `<div class="relaxriddles-shell"><div class="back-row"><button class="btn btn-secondary btn-small" data-back-to-games-hub>→ חזרה</button><h1 style="margin:0;font-size:17px;">🧘 חידות מילים מרגיעות</h1></div><div class="relaxriddles-status"><span>חידה ${progress.currentIndex + 1}/${RELAXRIDDLES_SESSION_SIZE}</span>${other ? `<span>${escapeHtml(relaxRiddlesOpponentName(state))}: חידה ${other.currentIndex + 1}/${RELAXRIDDLES_SESSION_SIZE}</span>` : ''}</div>${item.clue ? `<div class="relaxriddles-clue">${escapeHtml(item.clue)}</div>` : `<div class="relaxriddles-clue relaxriddles-clue--anagram">הרכיבו את המילה מהאותיות המעורבבות</div>`}<div class="relaxriddles-candidate">${candidateDisplay}</div><div class="relaxriddles-message ${temp.error ? 'is-error' : ''}">${escapeHtml(temp.message)}</div><div class="relaxriddles-tiles">${tiles}</div><div class="relaxriddles-actions"><button class="btn btn-secondary btn-small" data-relaxriddles-delete-tile>⌫ מחיקה</button><button class="btn btn-secondary btn-small" data-relaxriddles-hint>${temp.hintRevealed ? `💡 ${escapeHtml(item.hint)}` : '💡 רמז'}</button></div></div>`;
 }
 
+// --- שנחאי (Shanghai / Mahjong Solitaire) ---
+// Classic "turtle" layout: 144 positions across 5 layers (z=0..4), independently derived from the
+// well-documented shape of the traditional board - a wide flat body tapering to two single-tile
+// "ears" at the mid-row, stepping up through 4 shrinking layers to one peak tile. Verified correct
+// via a standalone Node.js prototype (200 seeded boards, each checked structurally AND by replaying
+// its exact guaranteed-solution move order against the free-tile rule from scratch) before landing
+// here - see LESSONS.md for the construction bug that verification caught (pairing up tiles from a
+// single sequential removal order does not guarantee both tiles of a pair are free *simultaneously*,
+// which a real "remove this matched pair" move requires).
+function buildMahjongLayout() {
+  const positions = [];
+  const row = (y, xStart, xEnd, z) => { for (let x = xStart; x <= xEnd; x++) positions.push({ x, y, z }); };
+  row(0, 1, 12, 0);
+  row(1, 3, 10, 0);
+  row(2, 2, 11, 0);
+  positions.push({ x: 0, y: 3.5, z: 0 });
+  row(3, 1, 12, 0);
+  row(4, 1, 12, 0);
+  positions.push({ x: 13, y: 3.5, z: 0 });
+  positions.push({ x: 14, y: 3.5, z: 0 });
+  row(5, 2, 11, 0);
+  row(6, 3, 10, 0);
+  row(7, 1, 12, 0);
+  for (let x = 4; x <= 9; x++) for (let y = 1; y <= 6; y++) positions.push({ x, y, z: 1 });
+  for (let x = 5; x <= 8; x++) for (let y = 2; y <= 5; y++) positions.push({ x, y, z: 2 });
+  for (let x = 6; x <= 7; x++) for (let y = 3; y <= 4; y++) positions.push({ x, y, z: 3 });
+  positions.push({ x: 6.5, y: 3.5, z: 4 });
+  return positions.map((p, index) => ({ ...p, index }));
+}
+const MAHJONG_LAYOUT = buildMahjongLayout();
+const MAHJONG_TILE_COUNT = MAHJONG_LAYOUT.length;
+const MAHJONG_ALL_INDICES = MAHJONG_LAYOUT.map(p => p.index);
+const SHANGHAI_BOUNDS = (() => {
+  const xs = MAHJONG_LAYOUT.map(p => p.x), ys = MAHJONG_LAYOUT.map(p => p.y);
+  const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+  return { minX, width: maxX - minX + 1, minY, height: maxY - minY + 1 };
+})();
+
+function mahjongOverlaps(a, b) { return Math.abs(a.x - b.x) < 1 && Math.abs(a.y - b.y) < 1; }
+// A position is covered if any REMAINING tile sits directly above it (z+1) and overlaps in x/y.
+function mahjongIsCovered(pos, remainingSet) {
+  for (const idx of remainingSet) { const other = MAHJONG_LAYOUT[idx]; if (other.z === pos.z + 1 && mahjongOverlaps(other, pos)) return true; }
+  return false;
+}
+// A position has an open side if no REMAINING tile at the same layer sits immediately to its left
+// (x-1) or immediately to its right (x+1) - free if at least ONE side is open.
+function mahjongHasOpenSide(pos, remainingSet) {
+  let blockedLeft = false, blockedRight = false;
+  for (const idx of remainingSet) {
+    const other = MAHJONG_LAYOUT[idx];
+    if (other.z !== pos.z || Math.abs(other.y - pos.y) > 0.01) continue;
+    if (Math.abs(other.x - (pos.x - 1)) < 0.01) blockedLeft = true;
+    if (Math.abs(other.x - (pos.x + 1)) < 0.01) blockedRight = true;
+  }
+  return !blockedLeft || !blockedRight;
+}
+function mahjongFreeIndices(remaining) {
+  const remainingSet = new Set(remaining);
+  const free = [];
+  for (const idx of remainingSet) { const pos = MAHJONG_LAYOUT[idx]; if (!mahjongIsCovered(pos, remainingSet) && mahjongHasOpenSide(pos, remainingSet)) free.push(idx); }
+  return free;
+}
+function mahjongHasAnyMove(tiles, remaining) {
+  const free = mahjongFreeIndices(remaining);
+  for (let i = 0; i < free.length; i++) for (let j = i + 1; j < free.length; j++) if (mahjongMatches(tiles[free[i]], tiles[free[j]])) return true;
+  return false;
+}
+function mahjongFindHintPair(tiles, remaining) {
+  const free = mahjongFreeIndices(remaining);
+  for (let i = 0; i < free.length; i++) for (let j = i + 1; j < free.length; j++) if (mahjongMatches(tiles[free[i]], tiles[free[j]])) return [free[i], free[j]];
+  return null;
+}
+
+const MAHJONG_SUITS = ['man', 'pin', 'sou'];
+const MAHJONG_WINDS = ['ton', 'nan', 'shaa', 'pei'];
+const MAHJONG_DRAGONS = ['haku', 'hatsu', 'chun'];
+const MAHJONG_FLOWERS = ['flower-mei', 'flower-lan', 'flower-ju', 'flower-zhu'];
+const MAHJONG_SEASONS = ['season-spring', 'season-summer', 'season-autumn', 'season-winter'];
+const MAHJONG_REGULAR_TYPES = MAHJONG_SUITS.flatMap(s => Array.from({ length: 9 }, (_, i) => `${s}${i + 1}`)).concat(MAHJONG_WINDS).concat(MAHJONG_DRAGONS);
+
+function mahjongTypeGroup(type) { if (type.startsWith('flower-')) return 'flower'; if (type.startsWith('season-')) return 'season'; return type; }
+function mahjongMatches(typeA, typeB) {
+  const groupA = mahjongTypeGroup(typeA), groupB = mahjongTypeGroup(typeB);
+  if (groupA === 'flower' && groupB === 'flower') return true;
+  if (groupA === 'season' && groupB === 'season') return true;
+  return typeA === typeB;
+}
+const MAHJONG_TYPE_LABELS = {
+  ton: 'רוח מזרח', nan: 'רוח דרום', shaa: 'רוח מערב', pei: 'רוח צפון',
+  haku: 'דרקון לבן', hatsu: 'דרקון ירוק', chun: 'דרקון אדום',
+  'flower-mei': 'פרח שזיף', 'flower-lan': 'פרח סחלב', 'flower-ju': 'פרח חרצית', 'flower-zhu': 'פרח במבוק',
+  'season-spring': 'עונת אביב', 'season-summer': 'עונת קיץ', 'season-autumn': 'עונת סתיו', 'season-winter': 'עונת חורף'
+};
+const MAHJONG_SUIT_LABELS = { man: 'מכריכה', pin: 'עיגולים', sou: 'במבוק' };
+function mahjongTileLabel(type) {
+  if (MAHJONG_TYPE_LABELS[type]) return MAHJONG_TYPE_LABELS[type];
+  const suit = type.slice(0, 3), num = type.slice(3);
+  return `${MAHJONG_SUIT_LABELS[suit] || ''} ${num}`;
+}
+const MAHJONG_FACE_FILES = {
+  ton: 'Ton.svg', nan: 'Nan.svg', shaa: 'Shaa.svg', pei: 'Pei.svg',
+  haku: 'Haku.svg', hatsu: 'Hatsu.svg', chun: 'Chun.svg',
+  'flower-mei': 'Flower1-Mei.svg', 'flower-lan': 'Flower2-Lan.svg', 'flower-ju': 'Flower3-Ju.svg', 'flower-zhu': 'Flower4-Zhu.svg',
+  'season-spring': 'Season1-Spring.svg', 'season-summer': 'Season2-Summer.svg', 'season-autumn': 'Season3-Autumn.svg', 'season-winter': 'Season4-Winter.svg'
+};
+const MAHJONG_SUIT_FILE_PREFIX = { man: 'Man', pin: 'Pin', sou: 'Sou' };
+function mahjongFaceFile(type) {
+  if (MAHJONG_FACE_FILES[type]) return MAHJONG_FACE_FILES[type];
+  const suit = type.slice(0, 3), num = type.slice(3);
+  return `${MAHJONG_SUIT_FILE_PREFIX[suit]}${num}.svg`;
+}
+
+// A single greedy attempt at building removal PAIRS (not single tiles - see note above the layout
+// builder) can paint itself into a corner (e.g. exactly 1 free tile left with 2 remaining, which
+// can't form a pair). Retries with fresh randomness rather than failing - in practice this needs very
+// few retries.
+function buildMahjongRemovalPairs() {
+  for (let attempt = 0; attempt < 2000; attempt++) {
+    let remaining = new Set(MAHJONG_ALL_INDICES);
+    const pairs = [];
+    let stuck = false;
+    while (remaining.size) {
+      const free = mahjongFreeIndices(remaining);
+      if (free.length < 2) { stuck = true; break; }
+      const shuffledFree = sdkShuffled(free);
+      const a = shuffledFree[0], b = shuffledFree[1];
+      pairs.push([a, b]);
+      remaining.delete(a); remaining.delete(b);
+    }
+    if (!stuck) return pairs;
+  }
+  return null;
+}
+// Generates a full, guaranteed-solvable 144-tile board. pairOrder (the construction order) proves the
+// guarantee: replaying its pairs in that exact sequence is always a legal full clear, regardless of
+// which types shuffledSlots ends up assigning to which pair - but we don't need to keep pairOrder
+// around at runtime (unlike the verification prototype), since the in-game hint/no-moves-left checks
+// work off the live board state via mahjongFreeIndices + mahjongMatches, not the original solution.
+function generateMahjongBoard() {
+  const pairOrder = buildMahjongRemovalPairs();
+  if (!pairOrder) return generateMahjongBoard();
+  const shuffledSlots = sdkShuffled(pairOrder);
+  const tiles = new Array(MAHJONG_TILE_COUNT).fill(null);
+  let cursor = 0;
+  const regularPool = sdkShuffled(MAHJONG_REGULAR_TYPES);
+  for (const type of regularPool) {
+    for (let copyPair = 0; copyPair < 2; copyPair++) {
+      const [a, b] = shuffledSlots[cursor++];
+      tiles[a] = type; tiles[b] = type;
+    }
+  }
+  const flowerOrder = sdkShuffled(MAHJONG_FLOWERS);
+  for (let i = 0; i < 2; i++) { const [a, b] = shuffledSlots[cursor++]; tiles[a] = flowerOrder[i * 2]; tiles[b] = flowerOrder[i * 2 + 1]; }
+  const seasonOrder = sdkShuffled(MAHJONG_SEASONS);
+  for (let i = 0; i < 2; i++) { const [a, b] = shuffledSlots[cursor++]; tiles[a] = seasonOrder[i * 2]; tiles[b] = seasonOrder[i * 2 + 1]; }
+  return tiles;
+}
+
+function shanghaiPlayerProgress(state) { return state.mode === 'race' ? state.progress[session.name] : state; }
+function shanghaiOpponentName(state) { return state.mode === 'race' ? state.players.find(name => name !== session.name) : null; }
+
+async function startNewShanghaiSoloSession() {
+  const key = gameSessionKeySolo(session.name);
+  const tiles = generateMahjongBoard();
+  await saveGameSession('shanghai', key, { mode: 'solo', tiles, removed: [], moveLog: [], noMovesReached: false, finishedAt: null, startedAt: new Date().toISOString() });
+  return key;
+}
+async function startOrJoinShanghaiRace(opponentName) {
+  const key = gameSessionKeyPair(session.name, opponentName);
+  const existing = findGameSession('shanghai', key);
+  if (existing && !existing.state.winner) {
+    if (!existing.state.progress[session.name]) {
+      const state = { ...existing.state, progress: { ...existing.state.progress, [session.name]: { removed: [], moveLog: [], noMovesReached: false, finishedAt: null } } };
+      await saveGameSession('shanghai', key, state);
+    }
+    return key;
+  }
+  const tiles = generateMahjongBoard();
+  const state = { mode: 'race', tiles, players: [session.name, opponentName].sort(), progress: { [session.name]: { removed: [], moveLog: [], noMovesReached: false, finishedAt: null } }, winner: null, startedAt: new Date().toISOString() };
+  await saveGameSession('shanghai', key, state);
+  return key;
+}
+
+function renderShanghaiSetup() {
+  const draft = view.gameSetupDraft || {};
+  const canStart = draft.mode === 'solo' || (draft.mode === 'race' && draft.opponentName);
+  return `<div class="back-row"><button class="btn btn-secondary btn-small" data-back-to-games-hub>→ חזרה</button><h1 style="margin:0;font-size:17px;">🀄 שנחאי</h1></div><div class="game-setup-card"><h3>איך משחקים?</h3><div class="game-setup-opponents"><button class="game-setup-opt ${draft.mode === 'solo' ? 'selected' : ''}" data-shanghai-mode="solo">🀄 לבד</button>${otherSisters(session.name).map(name => `<button class="game-setup-opt ${draft.mode === 'race' && draft.opponentName === name ? 'selected' : ''}" data-shanghai-mode="race" data-shanghai-opponent="${escapeHtml(name)}"><span class="avatar ${AVATAR_CLASS[name] || ''}">${name[0]}</span> מרוץ מול ${escapeHtml(name)}</button>`).join('')}</div><button class="btn btn-primary" style="width:100%;margin-top:8px;" data-shanghai-start ${canStart ? '' : 'disabled'}>בואי נתחיל!</button></div>${view.gameResumePrompt ? renderGameResumePrompt() : ''}`;
+}
+
+function shanghaiConfettiMarkup() {
+  const colors = ['#e05a8a', '#9b6bc9', '#e8912a', '#3f8f4f', '#4a90c9', '#f5a623', '#d9622b', '#57a862'];
+  let out = '';
+  for (let i = 0; i < 40; i++) {
+    const left = Math.random() * 100;
+    const delay = (Math.random() * 0.6).toFixed(2);
+    const duration = (1.6 + Math.random() * 1.2).toFixed(2);
+    const color = colors[i % colors.length];
+    const rotate = Math.floor(Math.random() * 360);
+    out += `<span class="shanghai-confetti-piece" style="left:${left}%;background:${color};animation-delay:${delay}s;animation-duration:${duration}s;transform:rotate(${rotate}deg);"></span>`;
+  }
+  return out;
+}
+
+function renderShanghaiResult(sessionKey, state) {
+  if (state.mode === 'solo') {
+    return `<div class="shanghai-shell"><div class="shanghai-result"><div class="shanghai-confetti">${shanghaiConfettiMarkup()}</div><h2>🀄 ניצחת! פינית את כל ${MAHJONG_TILE_COUNT} האריחים</h2><p>כל הכבוד, זה לא פשוט.</p><button class="btn btn-primary" style="width:100%;" data-shanghai-back-setup>משחק נוסף</button></div></div>`;
+  }
+  const opponentName = shanghaiOpponentName(state);
+  const other = state.progress[opponentName];
+  const waiting = !other || !other.finishedAt;
+  const iWon = state.winner === session.name;
+  const rows = state.players.map(name => {
+    const p = state.progress[name];
+    const doneCount = p ? p.removed.length : 0;
+    return `<li>${escapeHtml(name)}: ${doneCount}/${MAHJONG_TILE_COUNT} אריחים${p && p.finishedAt ? ' - סיימה!' : ''}</li>`;
+  }).join('');
+  return `<div class="shanghai-shell"><div class="shanghai-result">${iWon ? `<div class="shanghai-confetti">${shanghaiConfettiMarkup()}</div>` : ''}<h2>${waiting ? `סיימת! ממתינים ל${escapeHtml(opponentName)} שתסיים` : (iWon ? '🀄 ניצחת במרוץ!' : `${escapeHtml(state.winner)} ניצחה הפעם`)}</h2><ul>${rows}</ul><button class="btn btn-secondary" style="width:100%;" data-shanghai-back-setup>לבחירת יריבה</button></div></div>`;
+}
+
+function renderShanghaiBoard(sessionKey) {
+  const gs = findGameSession('shanghai', sessionKey);
+  if (!gs) return renderShanghaiSetup();
+  const state = gs.state;
+  const progress = shanghaiPlayerProgress(state);
+  if (progress.finishedAt) return renderShanghaiResult(sessionKey, state);
+  const removedSet = new Set(progress.removed);
+  const remaining = MAHJONG_ALL_INDICES.filter(i => !removedSet.has(i));
+  const freeSet = new Set(mahjongFreeIndices(remaining));
+  const selection = view.shanghaiSelection && view.shanghaiSelection.sessionKey === sessionKey ? view.shanghaiSelection.index : null;
+  const hintPair = view.shanghaiHint && view.shanghaiHint.sessionKey === sessionKey ? view.shanghaiHint.indices : [];
+  const flashPair = view.shanghaiMatchFlash && view.shanghaiMatchFlash.sessionKey === sessionKey ? view.shanghaiMatchFlash.indices : [];
+  const message = view.shanghaiMessage && view.shanghaiMessage.sessionKey === sessionKey ? view.shanghaiMessage : null;
+  const other = state.mode === 'race' ? state.progress[shanghaiOpponentName(state)] : null;
+  const cols = SHANGHAI_BOUNDS.width, rows = SHANGHAI_BOUNDS.height;
+  const tilesHtml = remaining.map(index => {
+    const pos = MAHJONG_LAYOUT[index];
+    const type = state.tiles[index];
+    const isFree = freeSet.has(index);
+    const isSelected = selection === index;
+    const isHint = hintPair.includes(index);
+    const isFlash = flashPair.includes(index);
+    const leftPct = ((pos.x - SHANGHAI_BOUNDS.minX) / cols) * 100 - pos.z * 0.45;
+    const topPct = ((pos.y - SHANGHAI_BOUNDS.minY) / rows) * 100 - pos.z * 0.9;
+    const zIndex = pos.z * 1000 + Math.round(pos.y * 10) + Math.round(pos.x) + 10;
+    const faceFile = mahjongFaceFile(type);
+    const classes = ['shanghai-tile'];
+    if (!isFree) classes.push('is-blocked');
+    if (isSelected) classes.push('is-selected');
+    if (isHint) classes.push('is-hint');
+    if (isFlash) classes.push('is-flash');
+    return `<button class="${classes.join(' ')}" data-shanghai-tile="${index}" ${isFree && !isFlash ? '' : 'disabled'} style="left:${leftPct}%;top:${topPct}%;width:${100 / cols}%;height:${100 / rows}%;z-index:${zIndex};background-image:url('assets/mahjong/${faceFile}'),url('assets/mahjong/Front.svg');" title="${escapeHtml(mahjongTileLabel(type))}"></button>`;
+  }).join('');
+  const remainingCount = remaining.length;
+  return `<div class="shanghai-shell"><div class="back-row"><button class="btn btn-secondary btn-small" data-back-to-games-hub>→ חזרה</button><h1 style="margin:0;font-size:17px;">🀄 שנחאי</h1></div><div class="shanghai-status"><span>נשארו ${remainingCount} אריחים</span>${other ? `<span>${escapeHtml(shanghaiOpponentName(state))}: ${MAHJONG_TILE_COUNT - other.removed.length} נשארו</span>` : ''}</div>${message ? `<div class="shanghai-message ${message.error ? 'is-error' : ''}">${escapeHtml(message.message)}</div>` : '<div class="shanghai-message"></div>'}${progress.noMovesReached ? `<div class="shanghai-nomoves">אין מהלכים אפשריים יותר בלוח הזה. אפשר לבטל מהלך אחרון, או ללחוץ "לוח חדש" למטה כדי להתחיל לוח חדש.</div>` : ''}<div class="shanghai-board-wrap"><div class="shanghai-board" style="aspect-ratio:${(cols * 3) / (rows * 4)};">${tilesHtml}</div></div><div class="shanghai-actions"><button class="btn btn-secondary btn-small" data-shanghai-undo ${progress.moveLog.length >= 2 && !progress.finishedAt ? '' : 'disabled'}>↩️ ביטול מהלך</button><button class="btn btn-secondary btn-small" data-shanghai-hint>💡 רמז</button></div><button class="btn btn-secondary" style="width:100%; margin-top:14px;" data-game-new-game>🔄 לוח חדש</button>${view.gameConfirmNewGame ? renderGameConfirmNewGame() : ''}</div>`;
+}
+
 function shoppingActiveList() {
   return data.shoppingList.filter(i => !i.purchased).sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || ''));
 }
@@ -5490,6 +5776,10 @@ function attachHandlers() {
       view.sudokuSelectedCell = null;
       view.crosswordSelection = null;
       view.crosswordWrongCells = [];
+      view.shanghaiSelection = null;
+      view.shanghaiHint = null;
+      view.shanghaiMatchFlash = null;
+      view.shanghaiMessage = null;
       const alreadySeen = !!(data.userState.gamesInstructionsSeen || {})[gameId];
       if (alreadySeen) {
         // Instructions already acknowledged in a previous session - go straight into the game screen
@@ -5598,6 +5888,7 @@ function attachHandlers() {
         else if (gameId === 'cookiewords') await startNewCookieWordsSoloSession(freshDraft.difficulty);
         else if (gameId === 'wordsearch') await startNewWordsearchSession(sessionKey, freshDraft);
         else if (gameId === 'relaxriddles') await startNewRelaxRiddlesSoloSession(freshDraft.difficulty);
+        else if (gameId === 'shanghai') await startNewShanghaiSoloSession();
         else await startNewGameSession(gameId, sessionKey, freshDraft);
       } catch (e) {
         alert('שגיאה בפתיחת המשחק, נסי שוב');
@@ -6176,6 +6467,148 @@ function attachHandlers() {
   };
   const relaxRiddlesBackSetupBtn = document.querySelector('[data-relaxriddles-back-setup]');
   if (relaxRiddlesBackSetupBtn) relaxRiddlesBackSetupBtn.onclick = () => { view.activeGameSessionKey = null; view.gameSetupDraft = {}; view.relaxRiddlesTemp = null; render(); };
+
+  document.querySelectorAll('[data-shanghai-mode]').forEach(button => button.addEventListener('click', () => { const mode = button.dataset.shanghaiMode; view.gameSetupDraft = { ...(view.gameSetupDraft || {}), mode, opponentName: mode === 'race' ? button.dataset.shanghaiOpponent : null }; render(); }));
+
+  const shanghaiStartBtn = document.querySelector('[data-shanghai-start]');
+  if (shanghaiStartBtn) {
+    shanghaiStartBtn.onclick = async () => {
+      const draft = view.gameSetupDraft || {};
+      if (!draft.mode) return;
+      if (draft.mode === 'race' && !draft.opponentName) return;
+      if (draft.mode === 'solo') {
+        // Same resume-prompt guard already established for sudoku/crossword/cookiewords/wordsearch/
+        // relaxriddles - don't silently overwrite an unfinished solo board.
+        const soloKey = gameSessionKeySolo(session.name);
+        const existing = findGameSession('shanghai', soloKey);
+        if (existing && existing.state && !existing.state.finishedAt) {
+          view.gameResumePrompt = { sessionKey: soloKey, gameId: 'shanghai', freshDraft: draft, opponentLabel: 'לבד' };
+          render();
+          return;
+        }
+        try {
+          await startNewShanghaiSoloSession();
+        } catch (e) {
+          alert('שגיאה בפתיחת המשחק, נסי שוב');
+          return;
+        }
+        view.activeGameSessionKey = soloKey;
+      } else {
+        try {
+          view.activeGameSessionKey = await startOrJoinShanghaiRace(draft.opponentName);
+        } catch (e) {
+          alert('שגיאה בפתיחת המשחק, נסי שוב');
+          return;
+        }
+      }
+      view.gameSetupDraft = null;
+      view.shanghaiSelection = null;
+      view.shanghaiHint = null;
+      view.shanghaiMessage = null;
+      render();
+    };
+  }
+
+  document.querySelectorAll('[data-shanghai-tile]').forEach(button => button.addEventListener('click', async () => {
+    const key = view.activeGameSessionKey;
+    const index = parseInt(button.getAttribute('data-shanghai-tile'), 10);
+    const gs = findGameSession('shanghai', key);
+    if (!gs) return;
+    const state = gs.state;
+    const progress = shanghaiPlayerProgress(state);
+    if (progress.finishedAt) return;
+    const removedSet = new Set(progress.removed);
+    const remaining = MAHJONG_ALL_INDICES.filter(i => !removedSet.has(i));
+    const freeSet = new Set(mahjongFreeIndices(remaining));
+    if (!freeSet.has(index)) return;
+    view.shanghaiHint = null;
+    const prior = view.shanghaiSelection && view.shanghaiSelection.sessionKey === key ? view.shanghaiSelection : null;
+    if (!prior) { view.shanghaiSelection = { sessionKey: key, index }; view.shanghaiMessage = null; render(); return; }
+    if (prior.index === index) { view.shanghaiSelection = null; render(); return; }
+    if (!mahjongMatches(state.tiles[prior.index], state.tiles[index])) {
+      view.shanghaiSelection = { sessionKey: key, index };
+      view.shanghaiMessage = { sessionKey: key, message: 'האריחים לא תואמים', error: true };
+      render();
+      return;
+    }
+    // Match! Flash both tiles briefly (matching the wordleShake-style staged-UI pattern already used
+    // elsewhere in this app) before actually persisting the removal.
+    const matchedPair = [prior.index, index];
+    view.shanghaiSelection = null;
+    view.shanghaiMessage = null;
+    view.shanghaiMatchFlash = { sessionKey: key, indices: matchedPair };
+    render();
+    setTimeout(async () => {
+      const freshGs = findGameSession('shanghai', key);
+      if (freshGs) {
+        const freshState = freshGs.state;
+        const freshProgress = shanghaiPlayerProgress(freshState);
+        const newRemoved = [...freshProgress.removed, ...matchedPair];
+        const newMoveLog = [...freshProgress.moveLog, ...matchedPair];
+        const newRemovedSet = new Set(newRemoved);
+        const newRemaining = MAHJONG_ALL_INDICES.filter(i => !newRemovedSet.has(i));
+        const complete = newRemoved.length === MAHJONG_TILE_COUNT;
+        const noMovesReached = !complete && !mahjongHasAnyMove(freshState.tiles, newRemaining);
+        const nextProgress = { removed: newRemoved, moveLog: newMoveLog, noMovesReached, finishedAt: complete ? new Date().toISOString() : null };
+        try {
+          if (freshState.mode === 'solo') await saveGameSession('shanghai', key, { ...freshState, ...nextProgress });
+          else await saveGameSession('shanghai', key, { ...freshState, progress: { ...freshState.progress, [session.name]: nextProgress }, winner: complete && !freshState.winner ? session.name : freshState.winner });
+        } catch (e) { /* optimistic local state already applied by saveGameSession - a transient write failure is non-critical here */ }
+      }
+      view.shanghaiMatchFlash = null;
+      render();
+    }, 380);
+  }));
+
+  const shanghaiUndoBtn = document.querySelector('[data-shanghai-undo]');
+  if (shanghaiUndoBtn) {
+    shanghaiUndoBtn.onclick = async () => {
+      const key = view.activeGameSessionKey;
+      const gs = findGameSession('shanghai', key);
+      if (!gs) return;
+      const state = gs.state;
+      const progress = shanghaiPlayerProgress(state);
+      if (progress.finishedAt || progress.moveLog.length < 2) return;
+      const lastPair = progress.moveLog.slice(-2);
+      const newMoveLog = progress.moveLog.slice(0, -2);
+      const lastPairSet = new Set(lastPair);
+      const newRemoved = progress.removed.filter(i => !lastPairSet.has(i));
+      const nextProgress = { removed: newRemoved, moveLog: newMoveLog, noMovesReached: false, finishedAt: null };
+      view.shanghaiSelection = null;
+      view.shanghaiHint = null;
+      view.shanghaiMessage = null;
+      try {
+        if (state.mode === 'solo') await saveGameSession('shanghai', key, { ...state, ...nextProgress });
+        else await saveGameSession('shanghai', key, { ...state, progress: { ...state.progress, [session.name]: nextProgress } });
+      } catch (e) {
+        alert('שגיאה בביטול המהלך, נסי שוב');
+        return;
+      }
+      render();
+    };
+  }
+
+  const shanghaiHintBtn = document.querySelector('[data-shanghai-hint]');
+  if (shanghaiHintBtn) {
+    shanghaiHintBtn.onclick = () => {
+      const key = view.activeGameSessionKey;
+      const gs = findGameSession('shanghai', key);
+      if (!gs) return;
+      const state = gs.state;
+      const progress = shanghaiPlayerProgress(state);
+      if (progress.finishedAt) return;
+      const removedSet = new Set(progress.removed);
+      const remaining = MAHJONG_ALL_INDICES.filter(i => !removedSet.has(i));
+      const pair = mahjongFindHintPair(state.tiles, remaining);
+      view.shanghaiSelection = null;
+      view.shanghaiHint = pair ? { sessionKey: key, indices: pair } : null;
+      view.shanghaiMessage = pair ? null : { sessionKey: key, message: 'אין מהלך אפשרי כרגע', error: true };
+      render();
+    };
+  }
+
+  const shanghaiBackSetupBtn = document.querySelector('[data-shanghai-back-setup]');
+  if (shanghaiBackSetupBtn) shanghaiBackSetupBtn.onclick = () => { view.activeGameSessionKey = null; view.gameSetupDraft = {}; view.shanghaiSelection = null; view.shanghaiHint = null; view.shanghaiMessage = null; render(); };
 }
 
 function subscribeAll(name, gen) {
