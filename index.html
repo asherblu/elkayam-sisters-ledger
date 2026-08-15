@@ -878,43 +878,43 @@ function personalizedEmpowerText(name) {
 }
 
 const NAMES = ['ריקי', 'ברוריה', 'דורית'];
-const APP_VERSION = '2.14.0';
-const APP_UPDATED = '14.08.2026';
+const APP_VERSION = '2.15.0';
+const APP_UPDATED = '15.08.2026';
 const AVATAR_CLASS = { 'ריקי': 'ricky', 'ברוריה': 'bruria', 'דורית': 'dorit' };
 
 // Games hub catalog. Each game starts locked (coming soon) until it's actually built and deployed -
 // flip `locked` to false and add `instructionsHtml` only once that specific game's screen/logic exists.
 const GAMES_CATALOG = [
   { id: 'tictactoe', title: 'איקס עיגול', icon: '⭕', color: 'g-teal', locked: false, instructionsHtml: `
-    <p>המטרה: לסדר שלושה סימונים ברצף - אופקי, אנכי או אלכסוני - לפני היריבה.</p>
-    <p>בוחרים נגד מי משחקים: המחשב (עם רמת קושי - קל / בינוני / קשה) או אחת האחיות, בזמן אמת.</p>
+    <p>{name} היקרה, הנה איך משחקים: המטרה היא לסדר שלושה סימונים ברצף - אופקי, אנכי או אלכסוני - לפני היריבה.</p>
+    <p>בוחרת נגד מי משחקת: המחשב (עם רמת קושי - קל / בינוני / קשה) או אחת האחיות, בזמן אמת.</p>
     <p>מי שפותחת את המשחק מסמנת ❌ ומתחילה ראשונה. לוחצים על משבצת ריקה כדי לסמן בתורכן.</p>
     <p>המשחק נשמר אוטומטית - אפשר לצאת ולחזור בהמשך מאותה נקודה, או ללחוץ "משחק חדש" כדי להתחיל מחדש.</p>
   ` },
   { id: 'connect4', title: '4 בשורה', icon: '🔴', color: 'g-blue', locked: false, instructionsHtml: `
-    <p>המטרה: לחבר ארבעה דיסקים ברצף - אופקי, אנכי או אלכסוני - לפני היריבה.</p>
-    <p>לוחצות על החץ מעל עמודה כדי להפיל דיסק - הוא נופל למקום הפנוי הנמוך ביותר באותה עמודה.</p>
-    <p>בוחרים נגד מי משחקים: המחשב (עם רמת קושי) או אחת האחיות, בזמן אמת.</p>
-    <p>המשחק נשמר אוטומטית עד שמסיימות, ואפשר להתחיל מחדש בכל שלב.</p>
+    <p>{name}, המטרה כאן היא לחבר ארבעה דיסקים ברצף - אופקי, אנכי או אלכסוני - לפני היריבה.</p>
+    <p>לוחצת על החץ מעל עמודה כדי להפיל דיסק - הוא נופל למקום הפנוי הנמוך ביותר באותה עמודה.</p>
+    <p>בוחרת נגד מי משחקת: המחשב (עם רמת קושי) או אחת האחיות, בזמן אמת.</p>
+    <p>המשחק נשמר אוטומטית עד שתסיימי, ואפשר להתחיל מחדש בכל שלב.</p>
   ` },
   { id: 'sudoku', title: 'סודוקו', icon: '🔢', color: 'g-purple', locked: false, instructionsHtml: `
-    <p>המטרה: למלא את כל הלוח כך שבכל שורה, עמודה וריבוע 3x3 יופיעו הספרות 1 עד 9 בדיוק פעם אחת.</p>
-    <p>בוחרות רמת קושי (קל / בינוני / קשה) ואיך לשחק: לבד בקצב שלכן, או במרוץ בזמן אמת מול אחת האחיות - שתיכן פותרות את אותו הלוח, ומי שמסיימת ראשונה מנצחת (רואים רק את אחוז ההתקדמות של האחות, לא את הלוח שלה).</p>
-    <p>לוחצות על משבצת ריקה ואז על ספרה מהלוח שמופיע למטה. משבצת עם התנגשות (אותה ספרה כבר קיימת באותה שורה/עמודה/ריבוע) תסומן באדום.</p>
+    <p>{name}, המטרה היא למלא את כל הלוח כך שבכל שורה, עמודה וריבוע 3x3 יופיעו הספרות 1 עד 9 בדיוק פעם אחת.</p>
+    <p>בוחרת רמת קושי (קל / בינוני / קשה) ואיך לשחק: לבד בקצב שלך, או במרוץ בזמן אמת מול אחת האחיות - שתיכן פותרות את אותו הלוח, ומי שמסיימת ראשונה מנצחת (רואים רק את אחוז ההתקדמות של האחות, לא את הלוח שלה).</p>
+    <p>לוחצת על משבצת ריקה ואז על ספרה מהלוח שמופיע למטה. משבצת עם התנגשות (אותה ספרה כבר קיימת באותה שורה/עמודה/ריבוע) תסומן באדום.</p>
     <p>המשחק נשמר אוטומטית, ואפשר להתחיל לוח חדש בכל שלב.</p>
   ` },
   { id: 'wordle', title: 'וורדל עברי', icon: '🔤', color: 'g-green', locked: false, instructionsHtml: `
-    <p>מילה עברית אחת בת 5 אותיות, משותפת לשלושתכן - מתחלפת כל יום. יש לך 6 ניחושים לפענח אותה.</p>
+    <p>{name} היקרה, מילה עברית אחת בת 5 אותיות מחכה לך - משותפת לשלושתכן, ומתחלפת כל יום. יש לך 6 ניחושים לפענח אותה.</p>
     <p>אחרי כל ניחוש כל אות תיצבע: ירוק = במקום הנכון, צהוב = קיימת במילה אבל במקום אחר, אפור = לא קיימת במילה בכלל.</p>
-    <p>מקלידים עם המקלדת שעל המסך (או עם מקלדת פיזית) ולוחצים "אישור". בסוף - בין אם פתרת ובין אם לא - אפשר לראות איך הלך היום לכל אחת מכן.</p>
+    <p>מקלידה עם המקלדת שעל המסך (או עם מקלדת פיזית) ולוחצת "אישור". בסוף - בין אם פתרת ובין אם לא - אפשר לראות איך הלך היום לכל אחת מכן.</p>
   ` },
   { id: 'crossword', title: 'תשחץ', icon: '📝', color: 'g-orange', locked: false, instructionsHtml: `
-    <p>בכל הפעלה נבנית חידה חדשה ואמיתית לפי הנושא ורמת הקושי שתבחרי - כל מילה מצטלבת עם מילים אחרות, בדיוק כמו בתשבץ אמיתי.</p>
-    <p>בוחרות נושא, רמת קושי, ואם לשחק לבד או במרוץ מול אחת האחיות. לוחצות על משבצת או על רמז מהרשימה כדי לבחור מילה, מקלידות אותיות עם המקלדת שעל המסך, ובודקות את הפתרון עם כפתור "בדיקה".</p>
+    <p>{name}, בכל הפעלה נבנית בשבילך חידה חדשה ואמיתית לפי הנושא ורמת הקושי שתבחרי - כל מילה מצטלבת עם מילים אחרות, בדיוק כמו בתשבץ אמיתי.</p>
+    <p>בוחרת נושא, רמת קושי, ואם לשחק לבד או במרוץ מול אחת האחיות. לוחצת על משבצת או על רמז מהרשימה כדי לבחור מילה, מקלידה אותיות עם המקלדת שעל המסך, ובודקת את הפתרון עם כפתור "בדיקה".</p>
     <p>במצב מרוץ - שתיכן פותרות בדיוק את אותה חידה, כל אחת על הלוח שלה, ומי שמסיימת ראשונה מנצחת.</p>
   ` },
   { id: 'trivia', title: 'שאלון אמריקאי', icon: '❓', color: 'g-red', locked: false, instructionsHtml: `
-    <p>בחרי נושא ועני על עשר שאלות אמריקאיות מאתגרות.</p>
+    <p>{name}, בחרי נושא ועני על עשר שאלות אמריקאיות מאתגרות.</p>
     <p>אפשר לשחק לבד או לצאת למרוץ מול אחות - ובמרוץ שתיכן מקבלות בדיוק אותן שאלות.</p>
   ` },
   { id: 'cookiewords', title: 'עוגות מילים', icon: '🍪', color: 'g-brown', locked: true, instructionsHtml: '' },
@@ -980,6 +980,24 @@ function pickRandomQuote() {
   const all = quotePoolWithWeeklyAsherJoke();
   if (!all.length) return '';
   return all[Math.floor(Math.random() * all.length)];
+}
+
+// Same random draw as pickRandomQuote(), but also resolves the stable favoritable quoteKey (the same
+// seed_N/user_ID scheme used on the empowerment page - see quoteKeyFor/buildQuoteEntries) so the login
+// popup can offer the same heart-favorite toggle. quotePoolWithWeeklyAsherJoke() swaps exactly one slot's
+// *text* for this week's Asher joke without changing the pool's length/order, so index alignment against
+// the underlying seed+user entries still holds - except for that one slot, which isn't a real quote and
+// so isn't favoritable (key comes back null and the popup simply omits the heart button for it).
+function pickRandomQuoteWithKey() {
+  const { seedEntries, userEntries } = buildQuoteEntries();
+  const entries = seedEntries.concat(userEntries);
+  const pool = quotePoolWithWeeklyAsherJoke();
+  if (!entries.length || !pool.length) return null;
+  const idx = Math.floor(Math.random() * pool.length);
+  const text = pool[idx];
+  const original = entries[idx];
+  const isJokeSlot = text !== original.text;
+  return { text, key: isJokeSlot ? null : quoteKeyFor(original) };
 }
 
 function buildTxNotificationText(tx, me, pet) {
@@ -1767,7 +1785,7 @@ function renderAddRecipeForm(cats) {
 
 function renderFabButtons() {
   const shoppingCount = data.shoppingList.filter(i => !i.purchased).length;
-  const relaxPlaying = !!view.relaxPlaying;
+  const relaxPlaying = !!view.relaxPlaying || view.relaxSong === 'soundcloud';
   return `
     <div class="fab-col right">
       <button class="fab-circle weather-fab" id="weather-fab-btn" title="מזג האוויר" aria-label="מזג האוויר">🌤️</button>
@@ -1784,6 +1802,36 @@ function renderFabButtons() {
       <div class="sticky-note-tab" id="shopping-tab-btn">🛒 רשימת קניות</div>
     </div>
     ${view.weatherPopup ? renderWeatherModal() : ''}
+    ${view.relaxPopupOpen ? renderRelaxPopup() : ''}
+  `;
+}
+
+// Song picker for the "תירגעי" (relax) button - two options: the original local relax-music.mp3 track
+// (played via the persistent <audio id="relax-audio"> element so it keeps playing in the background even
+// after this popup closes), or "יא מאמא" by שמעון בוסקילה streamed live from SoundCloud through their
+// official embedded player widget. We deliberately do NOT download/host that song's audio file locally -
+// it's a copyrighted commercial track and this repo is public (required for GitHub Pages), so redistributing
+// the full file would be a real copyright problem. The SoundCloud embed streams straight from SoundCloud's
+// own player, which is exactly what that embed is designed for - no file of ours, no rehosting.
+function renderRelaxPopup() {
+  const song = view.relaxSong;
+  const relaxPlaying = !!view.relaxPlaying;
+  return `
+    <div class="modal-overlay" id="relax-modal-overlay">
+      <div class="modal-box">
+        <h3 style="margin:0 0 10px; font-size:16px;">🎵 תירגעי</h3>
+        <p style="font-size:13.5px; color: var(--text-muted); margin-bottom:14px;">בחרי מה לנגן:</p>
+        <button class="btn ${song === 'local' && relaxPlaying ? 'btn-primary' : 'btn-secondary'}" style="width:100%; margin-bottom:8px;" id="relax-pick-local">🎵 מוזיקה מרגיעה ${song === 'local' && relaxPlaying ? '⏸️ מנגן' : '▶️'}</button>
+        <button class="btn ${song === 'soundcloud' ? 'btn-primary' : 'btn-secondary'}" style="width:100%;" id="relax-pick-soundcloud">🎶 יא מאמא - שמעון בוסקילה</button>
+        ${song === 'soundcloud' ? `
+          <div style="margin-top:10px; border-radius:10px; overflow:hidden;">
+            <iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay"
+              src="https://w.soundcloud.com/player/?url=${encodeURIComponent('https://soundcloud.com/femwtoydytfe/mp3-6')}&color=%238a6d3b&auto_play=true&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false&visual=false"></iframe>
+          </div>
+        ` : ''}
+        <button class="btn btn-secondary" style="width:100%; margin-top:12px;" id="relax-close-btn">סגירה</button>
+      </div>
+    </div>
   `;
 }
 
@@ -1849,6 +1897,13 @@ function renderGamesHub() {
   `;
 }
 
+// Substitutes the {name} placeholder used in GAMES_CATALOG instructionsHtml templates with the
+// signed-in sister's name, so every game's "how to play" window reads as a personal note to her -
+// same {name}/{quote} placeholder convention already used by EMPOWER_TEMPLATES elsewhere in the app.
+function personalizeInstructions(html) {
+  return (html || '').split('{name}').join(session.name);
+}
+
 function renderGameInstructionsModal() {
   const g = GAMES_CATALOG.find(x => x.id === view.gameInstructionsFor);
   if (!g) return '';
@@ -1856,7 +1911,7 @@ function renderGameInstructionsModal() {
     <div class="modal-overlay" id="game-instructions-overlay">
       <div class="modal-box">
         <h3 style="margin:0 0 10px; font-size:16px;">${g.icon} ${escapeHtml(g.title)} - איך משחקים</h3>
-        <div class="game-instructions-body">${g.instructionsHtml || '<p>ההוראות למשחק הזה עדיין בבנייה.</p>'}</div>
+        <div class="game-instructions-body">${g.instructionsHtml ? personalizeInstructions(g.instructionsHtml) : '<p>ההוראות למשחק הזה עדיין בבנייה.</p>'}</div>
         <label class="game-instructions-checkbox">
           <input type="checkbox" id="game-instructions-dontshow"> הבנתי, אל תראה שוב
         </label>
@@ -2921,7 +2976,160 @@ const CROSSWORD_TOPICS = [
     { word: 'טחינה', clue: 'ממרח משומשום' },
     { word: 'שניצל', clue: 'מטוגן ופריך, אהוב על ילדים' },
   ]},
+  { id: 'bible', title: 'תנ"ך', icon: '📖', words: [
+    { word: 'משה', clue: 'הוציא את בני ישראל ממצרים' },
+    { word: 'אברהם', clue: 'אבי האומה, עלה לארץ כנען' },
+    { word: 'שרה', clue: 'אשתו של אברהם' },
+    { word: 'יצחק', clue: 'בנם של אברהם ושרה' },
+    { word: 'יעקב', clue: 'שמו הוחלף לישראל' },
+    { word: 'יוסף', clue: 'נמכר לעבדות במצרים בידי אחיו' },
+    { word: 'דוד', clue: 'מלך ישראל שהביס את גלית' },
+    { word: 'שלמה', clue: 'מלך חכם שבנה את בית המקדש' },
+    { word: 'נח', clue: 'בנה תיבה להצלת בעלי החיים' },
+    { word: 'אדם', clue: 'האדם הראשון שנברא' },
+    { word: 'חוה', clue: 'האישה הראשונה, אשתו של אדם' },
+    { word: 'מרים', clue: 'אחותם של משה ואהרן' },
+    { word: 'אהרן', clue: 'הכהן הגדול הראשון, אחיו של משה' },
+    { word: 'רות', clue: 'מואבייה שהצטרפה לעם ישראל' },
+    { word: 'אסתר', clue: 'מלכה שהצילה את היהודים בפרס' },
+    { word: 'יונה', clue: 'נביא שנבלע בידי דג גדול' },
+    { word: 'שמשון', clue: 'גיבור בעל כוח־על, חולשתו הייתה בשיערו' },
+    { word: 'דלילה', clue: 'גילתה את סוד כוחו של שמשון' },
+    { word: 'גלית', clue: 'ענק פלישתי שהובס בידי דוד' },
+    { word: 'מצרים', clue: 'הארץ שבה היו בני ישראל לעבדים' },
+    { word: 'סיני', clue: 'ההר שבו ניתנה התורה' },
+    { word: 'ירושלים', clue: 'עיר הקודש, בירת ישראל' },
+    { word: 'תורה', clue: 'חמשת חומשי משה' },
+    { word: 'מקדש', clue: 'בית הקודש שבנה שלמה' },
+    { word: 'תיבה', clue: 'ספינה שבה ניצל נח' },
+    { word: 'מן', clue: 'מזון שירד מהשמים במדבר' },
+    { word: 'שבט', clue: 'אחת משנים עשר חטיבות עם ישראל' },
+    { word: 'כהן', clue: 'משרת בבית המקדש' },
+    { word: 'נביא', clue: 'מוסר דברי אלוהים לעם' },
+    { word: 'מזמור', clue: 'שיר תהילים' },
+    { word: 'תהילים', clue: 'ספר שירי קודש שכתב דוד' },
+    { word: 'עדן', clue: 'הגן שבו חיו אדם וחוה' },
+    { word: 'פרעה', clue: 'מלך מצרים בתקופת השעבוד' },
+    { word: 'לוחות', clue: 'עליהם נחקקו עשרת הדיברות' },
+    { word: 'עגל', clue: 'פסל זהב שעבדו בני ישראל בטעות' },
+    { word: 'יעל', clue: 'הרגה את סיסרא באוהלה' },
+    { word: 'דבורה', clue: 'שופטת ונביאה שהנהיגה את העם' },
+  ]},
+  { id: 'history', title: 'היסטוריה', icon: '📜', words: [
+    { word: 'פרמידה', clue: 'מבנה קבורה עתיק במצרים' },
+    { word: 'רומא', clue: 'בירת האימפריה העתיקה החזקה באירופה' },
+    { word: 'יוון', clue: 'מולדת האולימפיאדה והדמוקרטיה העתיקה' },
+    { word: 'קיסר', clue: 'שליט עליון באימפריה הרומית' },
+    { word: 'פרעה', clue: 'שליט מצרים העתיקה' },
+    { word: 'מלך', clue: 'שליט של ממלכה' },
+    { word: 'ממלכה', clue: 'שטח הנשלט בידי מלך' },
+    { word: 'אימפריה', clue: 'שטח נרחב הנשלט בידי מעצמה אחת' },
+    { word: 'מהפכה', clue: 'שינוי פתאומי וגדול בשלטון או בחברה' },
+    { word: 'מלחמה', clue: 'עימות מזוין בין שני צדדים' },
+    { word: 'שלום', clue: 'הסכם שמסיים מלחמה' },
+    { word: 'תעלה', clue: 'נתיב מים מלאכותי, כמו בסואץ' },
+    { word: 'מצודה', clue: 'מבנה ביצורים להגנה' },
+    { word: 'חומה', clue: 'קיר גבוה שמגן על עיר' },
+    { word: 'מגילה', clue: 'כתב עתיק המגולגל' },
+    { word: 'תגלית', clue: 'גילוי חדש שלא נודע קודם' },
+    { word: 'מסחר', clue: 'קנייה ומכירה של סחורות' },
+    { word: 'ספינה', clue: 'כלי שיט להפלגה בים' },
+    { word: 'מצור', clue: 'כיתור צבאי של עיר' },
+    { word: 'ניצחון', clue: 'הצלחה במלחמה או בתחרות' },
+    { word: 'תבוסה', clue: 'הפסד במלחמה' },
+    { word: 'גבורה', clue: 'אומץ לב במצבי סכנה' },
+    { word: 'עתיקות', clue: 'שרידים מהעבר הרחוק' },
+    { word: 'חפירה', clue: 'עבודה ארכיאולוגית לחשיפת שרידים מהעבר' },
+    { word: 'ארכיאולוג', clue: 'חוקר שרידי העבר' },
+    { word: 'שריד', clue: 'מה שנשאר מדבר עתיק' },
+    { word: 'תקופה', clue: 'פרק זמן היסטורי מוגדר' },
+    { word: 'עידן', clue: 'תקופה ארוכה בהיסטוריה' },
+    { word: 'מהגר', clue: 'אדם שעוזב את ארצו למדינה אחרת' },
+    { word: 'עלייה', clue: 'הגירת יהודים לארץ ישראל' },
+    { word: 'תנועה', clue: 'ארגון חברתי או פוליטי הפועל למען מטרה' },
+    { word: 'ציונות', clue: 'התנועה שקידמה הקמת מדינה יהודית' },
+    { word: 'עצמאות', clue: 'חופש וריבונות של מדינה' },
+    { word: 'מדינה', clue: 'ישות פוליטית עם שטח וממשל' },
+    { word: 'גילוי', clue: 'מציאת דבר חדש שלא נודע קודם' },
+    { word: 'שושלת', clue: 'רצף שליטים מאותה משפחה' },
+  ]},
+  { id: 'physics', title: 'פיזיקה', icon: '⚛️', words: [
+    { word: 'כוח', clue: 'גורם לשינוי בתנועת גוף' },
+    { word: 'אנרגיה', clue: 'יכולת לבצע עבודה' },
+    { word: 'מסה', clue: 'כמות החומר בגוף' },
+    { word: 'משקל', clue: 'כוח המשיכה הפועל על גוף' },
+    { word: 'מהירות', clue: 'מרחק חלקי זמן' },
+    { word: 'תאוצה', clue: 'קצב השינוי של המהירות' },
+    { word: 'חיכוך', clue: 'כוח המתנגד לתנועה בין משטחים' },
+    { word: 'כבידה', clue: 'כוח המושך גופים זה לזה' },
+    { word: 'חשמל', clue: 'זרם של מטענים חשמליים' },
+    { word: 'מגנט', clue: 'מושך חפצי ברזל' },
+    { word: 'אור', clue: 'גל אלקטרומגנטי שרואים בעין' },
+    { word: 'קרן', clue: 'קו ישר של אור' },
+    { word: 'עדשה', clue: 'מרכזת או מפזרת קרני אור' },
+    { word: 'מראה', clue: 'משטח שמשקף אור' },
+    { word: 'חום', clue: 'אנרגיה שעוברת בין גופים בשל הפרש טמפרטורה' },
+    { word: 'טמפרטורה', clue: 'מדד לחום של גוף' },
+    { word: 'לחץ', clue: 'כוח המופעל על שטח מסוים' },
+    { word: 'נפח', clue: 'כמות המקום שגוף תופס' },
+    { word: 'צפיפות', clue: 'מסה חלקי נפח' },
+    { word: 'גל', clue: 'תנועה מחזורית שנושאת אנרגיה' },
+    { word: 'תדר', clue: 'מספר המחזורים בשנייה' },
+    { word: 'קול', clue: 'גל הנוצר מרעידות ונשמע באוזן' },
+    { word: 'הד', clue: 'החזרה של קול ממכשול' },
+    { word: 'אטום', clue: 'יחידת היסוד של החומר' },
+    { word: 'אלקטרון', clue: 'חלקיק שלילי בתוך האטום' },
+    { word: 'פרוטון', clue: 'חלקיק חיובי בגרעין האטום' },
+    { word: 'נויטרון', clue: 'חלקיק ניטרלי בגרעין האטום' },
+    { word: 'גרעין', clue: 'מרכז האטום' },
+    { word: 'קרינה', clue: 'פליטת אנרגיה מגוף' },
+    { word: 'מוליך', clue: 'חומר שמעביר חשמל בקלות' },
+    { word: 'בידוד', clue: 'חומר שמונע מעבר חשמל או חום' },
+    { word: 'מעגל', clue: 'מסלול סגור לזרימת חשמל' },
+    { word: 'סוללה', clue: 'מקור אנרגיה חשמלית נייד' },
+    { word: 'וקטור', clue: 'גודל בעל כיוון ועוצמה' },
+    { word: 'שדה', clue: 'אזור שבו פועל כוח, כמו כוח מגנטי' },
+    { word: 'ניוטון', clue: 'יחידת מידה לכוח' },
+  ]},
+  { id: 'music', title: 'מוסיקה', icon: '🎵', words: [
+    { word: 'פסנתר', clue: 'כלי נגינה עם קלידים' },
+    { word: 'גיטרה', clue: 'כלי נגינה עם מיתרים שפורטים' },
+    { word: 'תופים', clue: 'כלי הקשה שמכים עליו' },
+    { word: 'חליל', clue: 'כלי נשיפה דק ומאורך' },
+    { word: 'כינור', clue: 'כלי מיתר שמנגנים בו בעזרת קשת' },
+    { word: 'חצוצרה', clue: 'כלי נשיפה ממתכת מבריק' },
+    { word: 'סקסופון', clue: 'כלי נשיפה עקום, פופולרי בג׳אז' },
+    { word: 'תוף', clue: 'כלי הקשה עגול' },
+    { word: 'מנגינה', clue: 'רצף צלילים מוזיקלי' },
+    { word: 'קצב', clue: 'המקצב החוזר בשיר' },
+    { word: 'תו', clue: 'סימן מוזיקלי בודד' },
+    { word: 'תווים', clue: 'סימנים שמייצגים צלילים בכתב' },
+    { word: 'זמר', clue: 'אדם ששר, גם סוג של שיר' },
+    { word: 'זמרת', clue: 'אישה ששרה' },
+    { word: 'מקהלה', clue: 'קבוצת אנשים ששרים יחד' },
+    { word: 'תזמורת', clue: 'קבוצת נגנים גדולה' },
+    { word: 'מנצח', clue: 'מנהיג את התזמורת' },
+    { word: 'נגן', clue: 'אדם שמנגן בכלי נגינה' },
+    { word: 'שיר', clue: 'יצירה מוזיקלית עם מילים' },
+    { word: 'להיט', clue: 'שיר פופולרי ואהוב' },
+    { word: 'אלבום', clue: 'אוסף שירים של אמן' },
+    { word: 'תקליט', clue: 'דיסק שמנגן מוזיקה' },
+    { word: 'מיקרופון', clue: 'מגביר את הקול לצורך הקלטה' },
+    { word: 'רמקול', clue: 'מוציא החוצה את הצליל' },
+    { word: 'אקורדיון', clue: 'כלי נגינה עם מפוח ומקלדת' },
+    { word: 'עוגב', clue: 'כלי נגינה גדול עם צינורות' },
+    { word: 'קלרינט', clue: 'כלי נשיפה מעץ עם פייה' },
+    { word: 'תקליטן', clue: 'מנגן מוזיקה מוקלטת באירועים' },
+    { word: 'הרמוניה', clue: 'שילוב נעים בין צלילים' },
+    { word: 'בס', clue: 'כלי מיתר נמוך וגדול' },
+    { word: 'מטרונום', clue: 'מכשיר ששומר על קצב קבוע' },
+    { word: 'הופעה', clue: 'ביצוע חי מול קהל' },
+    { word: 'סולן', clue: 'הזמר הראשי בלהקה' },
+    { word: 'להקה', clue: 'קבוצת נגנים או זמרים שמופיעים יחד' },
+    { word: 'פזמון', clue: 'החלק החוזר בשיר' },
+  ]},
 ];
+CROSSWORD_TOPICS.unshift({ id: 'general', title: 'כללי (מעורב)', icon: '🧠', words: CROSSWORD_TOPICS.flatMap(t => t.words) });
 const CROSSWORD_KEYS = ['א','ב','ג','ד','ה','ו','ז','ח','ט','י','כ','ל','מ','נ','ס','ע','פ','צ','ק','ר','ש','ת','ך','ם','ן','ף','ץ'];
 const CROSSWORD_DIFFICULTY_CONFIG = {
   easy: { target: 8, floor: 6, gridSize: 11, label: 'קל' },
@@ -3390,7 +3598,8 @@ async function playCrosswordDelete() {
 const TRIVIA_TOPICS = [
   { id: 'general', title: 'כללי', icon: '🧠' }, { id: 'geography', title: 'גיאוגרפיה', icon: '🌍' },
   { id: 'history', title: 'היסטוריה', icon: '📜' }, { id: 'science', title: 'מדע וטבע', icon: '🔬' },
-  { id: 'movies', title: 'קולנוע וטלוויזיה', icon: '🎬' }
+  { id: 'movies', title: 'קולנוע וטלוויזיה', icon: '🎬' }, { id: 'bible', title: 'תנ"ך', icon: '📖' },
+  { id: 'physics', title: 'פיזיקה', icon: '⚛️' }, { id: 'music', title: 'מוסיקה', icon: '🎵' }
 ];
 function triviaQuestion(id, topicId, question, choices, correctIndex, funFact) { return { id, topicId, question, choices, correctIndex, funFact }; }
 const TRIVIA_QUESTIONS = [
@@ -3453,12 +3662,49 @@ const TRIVIA_QUESTIONS = [
   triviaQuestion('m9','movies','מי ביים את „המסע המופלא“?',['מאמורו הוסודה','הייאו מיאזאקי','איסאו טקהאטה','אקירה קורוסאווה'],1,'הסרט זכה באוסקר לסרט האנימציה הטוב ביותר.'),
   triviaQuestion('m10','movies','באיזה סרט מופיעה הדמות פורסט גאמפ?',['אפולו 13','פורסט גאמפ','הנמלט','פילדלפיה'],1,'טום הנקס גילם את פורסט גאמפ.'),
   triviaQuestion('m11','movies','מי ביים את „טיטניק“ משנת 1997?',['רון הווארד','ג׳יימס קמרון','פיטר ג׳קסון','מייקל ביי'],1,'הסרט זכה ב־11 פרסי אוסקר.'),
-  triviaQuestion('m12','movies','באיזה סרט מופיעה הדמות אינדיאנה ג׳ונס?',['בחזרה לעתיד','שודדי התיבה האבודה','שליחות קטלנית','הנוסע השמיני'],1,'הדמות מגולמת בסרטים הקלאסיים בידי האריסון פורד.')
+  triviaQuestion('m12','movies','באיזה סרט מופיעה הדמות אינדיאנה ג׳ונס?',['בחזרה לעתיד','שודדי התיבה האבודה','שליחות קטלנית','הנוסע השמיני'],1,'הדמות מגולמת בסרטים הקלאסיים בידי האריסון פורד.'),
+  triviaQuestion('b1','bible','מי היה האדם הראשון לפי סיפור הבריאה בספר בראשית?',['אדם','נח','אברהם','משה'],0,'לפי הסיפור המקראי, אדם נברא ראשון וחוה נבראה אחריו.'),
+  triviaQuestion('b2','bible','כמה חומשים (ספרים) יש בתורה?',['3','5','7','12'],1,'התורה מורכבת מבראשית, שמות, ויקרא, במדבר ודברים.'),
+  triviaQuestion('b3','bible','מי הוביל את בני ישראל ביציאת מצרים, לפי המקרא?',['אהרן','משה','יהושע','שמואל'],1,'משה גם קיבל את לוחות הברית בהר סיני, לפי הסיפור המקראי.'),
+  triviaQuestion('b4','bible','באיזה הר קיבל משה את לוחות הברית, לפי המקרא?',['הר סיני','הר הכרמל','הר גריזים','הר תבור'],0,'הר סיני מוזכר בספר שמות כמקום מתן תורה.'),
+  triviaQuestion('b5','bible','מי היה המלך השני של ישראל, אחרי שאול?',['שלמה','דוד','רחבעם','יהוא'],1,'דוד המלך מוזכר במקרא כמי שהקים את בירתו בירושלים.'),
+  triviaQuestion('b6','bible','איזה מלך בנה את בית המקדש הראשון בירושלים, לפי המקרא?',['דוד','שלמה','חזקיהו','יאשיהו'],1,'שלמה המלך, בנו של דוד, מתואר במקרא כבונה בית המקדש.'),
+  triviaQuestion('b7','bible','כמה בנים היו ליעקב אבינו, לפי המקרא (מהם נוצרו שבטי ישראל)?',['10','12','13','7'],1,'שנים-עשר בני יעקב נחשבים לאבות שנים-עשר שבטי ישראל.'),
+  triviaQuestion('b8','bible','לפי סיפור יונה הנביא, מה בלע אותו?',['תנין ים','דג גדול','כריש','תמנון'],1,'הכתוב בספר יונה מתאר "דג גדול" שבלע אותו לשלושה ימים.'),
+  triviaQuestion('b9','bible','איזה נביא, לפי המקרא, עלה השמימה בסערה ולא מת כדרך כל אדם?',['אלישע','אליהו','ישעיהו','ירמיהו'],1,'סיפורו מופיע בספר מלכים ב׳, וכולל את מרכבת האש.'),
+  triviaQuestion('b10','bible','מי הייתה האישה הראשונה שנבראה, לפי סיפור הבריאה?',['שרה','חוה','רבקה','רחל'],1,'המקרא מכנה אותה "אם כל חי".'),
+  triviaQuestion('b11','bible','באיזה חומש (ספר) מתוארת יציאת מצרים?',['בראשית','שמות','ויקרא','במדבר'],1,'שמו של הספר נגזר ממילות הפתיחה שלו במקרא.'),
+  triviaQuestion('b12','bible','מי היה אביו של שלמה המלך, לפי המקרא?',['שאול','דוד','יהושפט','יותם'],1,'דוד ובת-שבע הם הוריו של שלמה, לפי הכתוב.'),
+  triviaQuestion('ph1','physics','מהי יחידת המידה הבסיסית למסה במערכת היחידות הבינלאומית (SI)?',['גרם','קילוגרם','ליטר','ניוטון'],1,'הקילוגרם הוא אחת משבע היחידות הבסיסיות במערכת ה-SI.'),
+  triviaQuestion('ph2','physics','מי ניסח את שלושת חוקי התנועה הקלאסיים המוכרים כ"חוקי ניוטון"?',['גלילאו גלילי','אייזק ניוטון','אלברט איינשטיין','יוהאן קפלר'],1,'החוקים פורסמו בספרו "פרינקיפיה" ב-1687.'),
+  triviaQuestion('ph3','physics','מהי מהירות האור בריק, בקירוב?',['300 ק"מ בשנייה','3,000 ק"מ בשנייה','300,000 ק"מ בשנייה','3,000,000 ק"מ בשנייה'],2,'מהירות האור המדויקת היא כ-299,792 ק"מ בשנייה.'),
+  triviaQuestion('ph4','physics','איזו תכונה של גוף מתארת את התנגדותו לשינוי במצב התנועה שלו?',['אינרציה','צפיפות','מוליכות','גמישות'],0,'עיקרון האינרציה הוא הבסיס לחוק הראשון של ניוטון.'),
+  triviaQuestion('ph5','physics','מהי יחידת המידה לכוח במערכת ה-SI?',['ג׳אול','ניוטון','וואט','פסקל'],1,'היחידה נקראת על שמו של אייזק ניוטון.'),
+  triviaQuestion('ph6','physics','איזה מדען ניסח את תורת היחסות הפרטית?',['מקס פלאנק','נילס בוהר','אלברט איינשטיין','ורנר הייזנברג'],2,'התיאוריה פורסמה בשנת 1905.'),
+  triviaQuestion('ph7','physics','מהי יחידת המידה לאנרגיה במערכת ה-SI?',['וואט','ג׳אול','ניוטון','קלווין'],1,'היחידה נקראת על שם המדען הבריטי ג׳יימס פרסקוט ג׳אול.'),
+  triviaQuestion('ph8','physics','כיצד נקרא מצב הצבירה שבו לחלקיקים אין צורה או נפח קבועים, והם ממלאים כל מרחב פנוי?',['מוצק','נוזל','גז','פלזמה'],2,'בגז המרחק הממוצע בין החלקיקים גדול משמעותית מאשר בנוזל או מוצק.'),
+  triviaQuestion('ph9','physics','איזה חוק פיזיקלי קובע שאנרגיה אינה נוצרת ואינה נעלמת, אלא רק משנה צורה?',['חוק שימור האנרגיה','חוק הכבידה','חוק אוהם','חוק בויל'],0,'זהו אחד מהעקרונות היסודיים ביותר בפיזיקה הקלאסית.'),
+  triviaQuestion('ph10','physics','מהי יחידת המידה הבסיסית לזמן במערכת ה-SI?',['דקה','שנייה','שעה','הרץ'],1,'השנייה מוגדרת כיום לפי תדירות קרינה של אטום צזיום.'),
+  triviaQuestion('ph11','physics','איזה כלי מודד לחץ אטמוספרי?',['תרמומטר','ברומטר','וולטמטר','מד-פעימות'],1,'הברומטר הראשון הומצא במאה ה-17 בידי אוונג׳ליסטה טוריצ׳לי.'),
+  triviaQuestion('ph12','physics','מהי יחידת המידה לתדירות (מספר מחזורים בשנייה)?',['וואט','אמפר','הרץ','וולט'],2,'היחידה נקראת על שם הפיזיקאי הגרמני היינריך הרץ.'),
+  triviaQuestion('mu1','music','מי הלחין את האופרה "חליל הקסם" (Die Zauberflöte)?',['יוהאן סבסטיאן באך','וולפגנג אמדאוס מוצרט','יוזף היידן','פרנץ שוברט'],1,'זו הייתה אחת מיצירותיו האחרונות של מוצרט, מ-1791.'),
+  triviaQuestion('mu2','music','כמה תווים שונים יש באוקטבה כרומטית מלאה (כל הצלילים בפסנתר, לבנים ושחורים)?',['7','8','12','13'],2,'לאחר 12 הצלילים חוזר הדפוס באוקטבה הבאה.'),
+  triviaQuestion('mu3','music','איזה כלי נגינה מנוגן באמצעות פומית כפולה (double reed)?',['חליל צד','קלרינט','אבוב','חצוצרה'],2,'האבוב שייך למשפחת כלי הנשיפה-עץ.'),
+  triviaQuestion('mu4','music','מי הלחין את הבלט "אגם הברבורים"?',['איגור סטרווינסקי','פיוטר איליץ׳ צ׳ייקובסקי','סרגיי פרוקופייב','יוהאנס ברהמס'],1,'הבלט הוצג לראשונה במוסקבה בשנת 1877.'),
+  triviaQuestion('mu5','music','כמה מיתרים יש לגיטרה קלאסית סטנדרטית?',['4','5','6','7'],2,'הכוונון הרגיל של גיטרה קלאסית הוא מי-לה-רה-סול-סי-מי.'),
+  triviaQuestion('mu6','music','איזה כלי הוא הגדול והנמוך ביותר ממשפחת כלי הקשת בתזמורת סימפונית רגילה?',['כינור','ויולה','צ׳לו','קונטרבס'],3,'הקונטרבס מנוגן לרוב בעמידה או על כיסא גבוה, בשל גודלו.'),
+  triviaQuestion('mu7','music','מי מכונה לעיתים קרובות "אבי הסימפוניה" בזכות תרומתו לפיתוח הצורה המוזיקלית?',['וולפגנג אמדאוס מוצרט','יוזף היידן','לודוויג ואן בטהובן','יוהאן שטראוס'],1,'היידן חיבר יותר מ-100 סימפוניות במהלך הקריירה שלו.'),
+  triviaQuestion('mu8','music','מהו המונח המוזיקלי למרחק בין שני צלילים באותו שם (למשל דו לדו הבא)?',['אקורד','אוקטבה','גמה','קצב'],1,'תדירות הצליל הגבוה באוקטבה כפולה מזו של הצליל הנמוך.'),
+  triviaQuestion('mu9','music','איזה כלי נגינה עתיק מופעל באמצעות דוושות ומנשב אוויר דרך צינורות?',['פסנתר','עוגב','אקורדיון','חלילית'],1,'עוגבים גדולים נפוצים בכנסיות ואולמות קונצרטים.'),
+  triviaQuestion('mu10','music','מי היה מלחין גרמני שהמשיך להלחין יצירות מופת גם לאחר שאיבד את שמיעתו?',['יוהאן סבסטיאן באך','וולפגנג אמדאוס מוצרט','לודוויג ואן בטהובן','פרנץ ליסט'],2,'בטהובן חיבר חלק מיצירותיו הגדולות ביותר בעודו כמעט חירש לחלוטין.'),
+  triviaQuestion('mu11','music','מהו הסימן המוזיקלי הנפוץ ל"forte" (בעוצמה חזקה, בקול רם)?',['p','f','mf','cresc.'],1,'"Forte" היא מילה איטלקית שמשמעותה "חזק".'),
+  triviaQuestion('mu12','music','איזה כלי מקלדת נחשב לקודמו העיקרי של הפסנתר המודרני, עם צליל עדין ושקט יותר?',['תוף','חצוצרה','צ׳מבלו','קסילופון'],2,'בצ׳מבלו המיתרים נפרטים, בשונה מהפסנתר שבו הם מוכים בפטישונים.')
 ];
 const TRIVIA_WRONG_QUIPS = ['כמעט, אבל לא הפעם 😅','לא נורא, גם חידון אוהב להפתיע.','התשובה הנכונה הסתתרה ממש ליד.','ניסיון יפה — ממשיכות הלאה!','זה היה אחד המבלבלים, לגמרי.','הידע כבר מתחמם לקראת השאלה הבאה.','לא פוגע בשמחה בכלל.','גם מנחשות מצוינות מפספסות לפעמים.','הנה הזדמנות קטנה ללמוד משהו חדש.','החידון שומר על מתח, זה הכול.','קרוב במשפחה, רחוק בתשובה.','נקודה הבאה עוד מחכה לך.','הפעם השאלה ניצחה, לא את.','טעות קטנה, מצב רוח גדול.','בדיוק בשביל זה יש ארבע אפשרויות.','ממשיכות בביטחון לשאלה הבאה.'];
 
 function pickTriviaQuestions(topicId) {
-  return sdkShuffled(TRIVIA_QUESTIONS.filter(q => q.topicId === topicId)).slice(0, 10).map(q => ({ id: q.id, choiceOrder: sdkShuffled([0, 1, 2, 3]) }));
+  const pool = topicId === 'general' ? TRIVIA_QUESTIONS : TRIVIA_QUESTIONS.filter(q => q.topicId === topicId);
+  return sdkShuffled(pool).slice(0, 10).map(q => ({ id: q.id, choiceOrder: sdkShuffled([0, 1, 2, 3]) }));
 }
 function triviaSoloSessionKey(name, topicId) { return `solo__${name}__${topicId}`; }
 function triviaRaceSessionKey(topicId, a, b) { return `${topicId}__${gameSessionKeyPair(a, b)}`; }
@@ -3839,7 +4085,12 @@ function renderLoginPopup() {
     <div class="modal-overlay" id="login-popup-overlay">
       <div class="modal-box popup-box">
         <div class="popup-text">${escapeHtml(popup.greeting)}</div>
-        ${popup.quote ? `<div class="popup-quote">💫 ${escapeHtml(popup.quote)}</div>` : ''}
+        ${popup.quote ? `
+          <div class="popup-quote" style="display:flex; align-items:center; gap:8px;">
+            <span style="flex:1;">💫 ${escapeHtml(popup.quote)}</span>
+            ${popup.quoteKey ? `<button class="quote-fav-btn" data-toggle-fav="${popup.quoteKey}" title="הוספה למועדפים">${isFavoritedByMe(popup.quoteKey) ? '❤️' : '🤍'}</button>` : ''}
+          </div>
+        ` : ''}
         ${popup.notifications.length > 0 ? `
           <div class="popup-notif-list">
             ${popup.notifications.map(n => `<div class="popup-notif">${escapeHtml(n)}</div>`).join('')}
@@ -4667,8 +4918,17 @@ function attachHandlers() {
 
   const relaxFabBtn = document.getElementById('relax-fab-btn');
   if (relaxFabBtn) relaxFabBtn.onclick = () => {
+    view.relaxPopupOpen = true;
+    render();
+  };
+
+  const relaxPickLocalBtn = document.getElementById('relax-pick-local');
+  if (relaxPickLocalBtn) relaxPickLocalBtn.onclick = () => {
     const audio = document.getElementById('relax-audio');
     if (!audio) return;
+    // Switching to the local track always stops the SoundCloud embed first (removing it from the DOM
+    // on the next render stops that playback - iframes don't keep playing once unmounted).
+    view.relaxSong = 'local';
     if (audio.paused) {
       audio.play().catch(() => {});
       view.relaxPlaying = true;
@@ -4676,6 +4936,23 @@ function attachHandlers() {
       audio.pause();
       view.relaxPlaying = false;
     }
+    render();
+  };
+
+  const relaxPickSoundcloudBtn = document.getElementById('relax-pick-soundcloud');
+  if (relaxPickSoundcloudBtn) relaxPickSoundcloudBtn.onclick = () => {
+    const audio = document.getElementById('relax-audio');
+    if (audio && !audio.paused) { audio.pause(); view.relaxPlaying = false; }
+    view.relaxSong = view.relaxSong === 'soundcloud' ? null : 'soundcloud';
+    render();
+  };
+
+  const relaxCloseBtn = document.getElementById('relax-close-btn');
+  if (relaxCloseBtn) relaxCloseBtn.onclick = () => {
+    view.relaxPopupOpen = false;
+    // Closing the popup unmounts the SoundCloud iframe (it only renders while the popup is open),
+    // which stops that playback - the local track (a persistent <audio> element outside the popup)
+    // keeps playing in the background if it was on, matching the original FAB's behavior.
     render();
   };
 
@@ -5495,10 +5772,10 @@ function finishInitialLoad(me) {
   markRecipesSeen(me, newestRecipeCreatedAt || new Date().toISOString()).catch(() => {});
 
   const notifications = txNotifications.concat(recipeNotifications);
-  const quote = pickRandomQuote();
+  const picked = pickRandomQuoteWithKey();
   view = {
     screen: 'dashboard',
-    loginPopup: { greeting: `${getLoginGreetingBase()}, ${me} ${pet}!`, notifications, quote }
+    loginPopup: { greeting: `${getLoginGreetingBase()}, ${me} ${pet}!`, notifications, quote: picked ? picked.text : '', quoteKey: picked ? picked.key : null }
   };
   render();
 }
