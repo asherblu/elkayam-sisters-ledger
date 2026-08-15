@@ -419,6 +419,24 @@
   .trivia-result-list { margin: 12px 0; padding-right: 20px; }
   .trivia-result-list li { margin: 6px 0; }
   .trivia-result-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+  .cookiewords-shell { max-width: 520px; margin: 0 auto; }
+  .cookiewords-status { display:flex; justify-content:space-between; gap:8px; margin:12px 0; color:var(--text-muted); font-size:13px; }
+  .cookiewords-word-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px; direction:ltr; }
+  .cookiewords-word { min-height:38px; display:flex; align-items:center; justify-content:center; gap:3px; border:1px solid var(--border); border-radius:8px; padding:5px; background:var(--card); color:var(--text-muted); direction:rtl; }
+  .cookiewords-word.is-found { border-color:var(--accent); background:#faf5e9; color:var(--text); font-weight:700; }
+  .cookiewords-word-letter { min-width:15px; text-align:center; border-bottom:1px solid currentColor; }
+  .cookiewords-candidate { min-height:46px; margin:17px auto 8px; padding:8px 12px; border-bottom:2px solid var(--accent); color:var(--text); direction:rtl; text-align:center; font-size:27px; font-weight:700; letter-spacing:2px; }
+  .cookiewords-message { min-height:24px; margin:8px 0; color:var(--text-muted); text-align:center; }
+  .cookiewords-message.is-error { color:#a11f1f; animation:cookiewords-shake .28s linear; }
+  @keyframes cookiewords-shake { 25%{transform:translateX(4px)} 75%{transform:translateX(-4px)} }
+  .cookiewords-wheel { position:relative; width:250px; height:250px; margin:4px auto 10px; direction:ltr; }
+  .cookiewords-wheel::before { content:''; position:absolute; inset:50px; border-radius:50%; background:#f7f1e5; border:1px solid var(--border); }
+  .cookiewords-letter { position:absolute; top:99px; left:99px; width:52px; height:52px; border:1px solid var(--accent); border-radius:50%; background:var(--card); color:var(--text); font:700 23px inherit; cursor:pointer; }
+  .cookiewords-actions { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px; margin:10px 0; }
+  .cookiewords-actions .btn { width:100%; }
+  .cookiewords-complete, .cookiewords-result { padding:16px; border:1px solid var(--border); border-radius:14px; background:var(--card); text-align:center; }
+  .cookiewords-complete h2, .cookiewords-result h2 { margin-top:0; }
+  .cookiewords-result ul { text-align:right; padding-right:20px; }
   .game-tile.locked { cursor: default; filter: grayscale(0.85); opacity: 0.6; box-shadow: none; }
   .game-tile-lock { font-size: 11px; font-weight: 700; background: rgba(0,0,0,0.28); border-radius: 999px; padding: 2px 10px; }
   .game-instructions-body { font-size: 13.5px; line-height: 1.6; color: var(--text); margin-bottom: 12px; }
@@ -885,7 +903,7 @@ function personalizedEmpowerText(name) {
 }
 
 const NAMES = ['ריקי', 'ברוריה', 'דורית'];
-const APP_VERSION = '2.15.1';
+const APP_VERSION = '2.16.0';
 const APP_UPDATED = '15.08.2026';
 const AVATAR_CLASS = { 'ריקי': 'ricky', 'ברוריה': 'bruria', 'דורית': 'dorit' };
 
@@ -924,7 +942,11 @@ const GAMES_CATALOG = [
     <p>{name}, בחרי נושא ועני על עשר שאלות אמריקאיות מאתגרות.</p>
     <p>אפשר לשחק לבד או לצאת למרוץ מול אחות - ובמרוץ שתיכן מקבלות בדיוק אותן שאלות.</p>
   ` },
-  { id: 'cookiewords', title: 'עוגות מילים', icon: '🍪', color: 'g-brown', locked: true, instructionsHtml: '' },
+  { id: 'cookiewords', title: 'עוגות מילים', icon: '🍪', color: 'g-brown', locked: false, instructionsHtml: `
+    <p>{name}, גלגל אותיות מחכה לך - לוחצת ברצף על אותיות סמוכות כדי להרכיב מילה, ואם המילה נכונה היא נכנסת למקום שלה ברשת שמתמלאת בהדרגה.</p>
+    <p>בוחרת רמת קושי (קל / בינוני / קשה) ואיך לשחק: לבד בקצב שלך על פני כמה שלבים, או במרוץ בזמן אמת מול אחת האחיות על אותו שלב בדיוק - מי שמוצאת את כל המילים ראשונה מנצחת.</p>
+    <p>אם טעית באות, אפשר למחוק ולנסות שוב. המשחק נשמר אוטומטית, ואם התחלת ולא סיימת - תמיד אפשר לחזור בדיוק לאיפה שעצרת.</p>
+  ` },
   { id: 'wordsearch', title: 'תפזורת', icon: '🔍', color: 'g-cyan', locked: true, instructionsHtml: '' },
   { id: 'relaxriddles', title: 'חידות מילים מרגיעות', icon: '🧘', color: 'g-pink', locked: true, instructionsHtml: '' },
   { id: 'shanghai', title: 'שנחאי', icon: '🀄', color: 'g-gold', locked: true, instructionsHtml: '' }
@@ -1233,6 +1255,7 @@ function render() {
   else if (view.screen === 'game-wordle') app.innerHTML = renderGameScreen('wordle');
   else if (view.screen === 'game-crossword') app.innerHTML = renderGameScreen('crossword');
   else if (view.screen === 'game-trivia') app.innerHTML = renderGameScreen('trivia');
+  else if (view.screen === 'game-cookiewords') app.innerHTML = renderGameScreen('cookiewords');
   attachHandlers();
 }
 
@@ -2019,12 +2042,14 @@ function renderGameScreen(gameId) {
   if (!view.activeGameSessionKey) {
     if (gameId === 'sudoku') return renderSudokuSetup();
     if (gameId === 'crossword') return renderCrosswordSetup();
+    if (gameId === 'cookiewords') return renderCookieWordsSetup();
     return renderGameOpponentSetup(gameId, g.title, g.icon);
   }
   if (gameId === 'tictactoe') return renderTicTacToeBoard(gameId, view.activeGameSessionKey);
   if (gameId === 'connect4') return renderConnect4Board(gameId, view.activeGameSessionKey);
   if (gameId === 'sudoku') return renderSudokuBoard(view.activeGameSessionKey);
   if (gameId === 'crossword') return renderCrosswordBoard(view.activeGameSessionKey);
+  if (gameId === 'cookiewords') return renderCookieWordsBoard(view.activeGameSessionKey);
   return '<p>המשחק הזה עדיין בבנייה.</p>';
 }
 
@@ -3843,6 +3868,67 @@ function renderTriviaResult(sessionKey, state, opponentName) {
   `;
 }
 
+// --- עוגות מילים (Cookie Words) ---
+const COOKIEWORDS_LEVELS = {
+  easy: [
+    { letters:['מ','ש','פ','ח','ה'], words:['מה','פה','שפה','מפה','חמה','משפחה'] },
+    { letters:['מ','ח','ש','ב','ה'], words:['מה','בה','במה','חשב','מחשב','מחשבה'] },
+    { letters:['כ','ת','ו','ב','ת'], words:['בת','תו','כתוב','כותב','כתובת'] },
+    { letters:['ג','ל','י','ד','ה'], words:['גל','גיל','ילד','דגל','לידה','גלידה'] },
+    { letters:['ש','ו','ל','ח','ן'], words:['חול','לוח','שולח','חלון','שולחן'] }
+  ],
+  medium: [
+    { letters:['מ','ש','פ','ח','ת','י'], words:['מי','שמח','פת','פתח','פיתח','שפית','משפחתי'] },
+    { letters:['מ','כ','ת','ב','י','ם'], words:['בת','מי','מים','כתב','מכתב','כתבים','מכתבים'] },
+    { letters:['ס','פ','ר','י','ה','ם'], words:['ים','פרי','ספר','ספרים','ספריה','הספרים','יפה'] },
+    { letters:['מ','ח','ש','ב','ת','י'], words:['מי','בת','שבת','חשב','מחשב','מחשבת','מחשבית'] },
+    { letters:['מ','ס','פ','ר','י','ם'], words:['מים','פרי','ספר','מסר','מספר','ספרים','מספרים'] }
+  ],
+  hard: [
+    { letters:['מ','ש','פ','ח','ה','ו','ת'], words:['מה','פה','שפה','מפה','חמה','חופש','משפחה','משפחות','המשפחות'] },
+    { letters:['מ','כ','ת','ב','י','ם','ה'], words:['מי','מים','בת','כתב','מכתב','כתבים','מכתבים','הבית','המכתבים'] },
+    { letters:['ש','ו','ל','ח','נ','י','ם'], words:['חול','לוח','שולח','שונים','חולים','לחנים','שלו','שולחים','שולחנים'] },
+    { letters:['ג','ל','י','ד','ה','ו','ת'], words:['גל','גיל','ילד','דגל','גלידה','לידה','הוד','תודה','גלידות','הגלידות'] },
+    { letters:['מ','ש','ח','ק','י','ם','ה'], words:['הם','מי','שם','חם','קם','משחק','שמח','משחקים','המשחקים'] }
+  ]
+};
+
+function cookieWordsCanFormWord(letters, word) { const pool = letters.slice(); for (const ch of word) { const index = pool.indexOf(ch); if (index === -1) return false; pool.splice(index, 1); } return true; }
+function cookieWordsSoloSessionKey(name, difficulty) { return `solo__${name}__${difficulty}`; }
+function cookieWordsRaceSessionKey(difficulty, a, b) { return `${difficulty}__${gameSessionKeyPair(a, b)}`; }
+function cookieWordsCurrentLevel(difficulty, levelIndex) { return COOKIEWORDS_LEVELS[difficulty][levelIndex]; }
+function cookieWordsPlayerProgress(state) { return state.mode === 'race' ? state.progress[session.name] : state; }
+function cookieWordsOpponentName(state) { return state.mode === 'race' ? state.players.find(name => name !== session.name) : null; }
+function cookieWordsTempFor(sessionKey, levelIndex) { const temp = view.cookieWordsTemp || {}; return temp.sessionKey === sessionKey && temp.levelIndex === levelIndex ? temp : { sessionKey, levelIndex, candidate:'', message:'', error:false }; }
+function cookieWordsSetTemp(temp) { view.cookieWordsTemp = temp; }
+async function startNewCookieWordsSoloSession(difficulty) { await saveGameSession('cookiewords', cookieWordsSoloSessionKey(session.name, difficulty), { mode:'solo', difficulty, levelIndex:0, foundWords:[], startedAt:new Date().toISOString(), finishedAt:null }); }
+async function startOrJoinCookieWordsRace(difficulty, opponentName) {
+  const key = cookieWordsRaceSessionKey(difficulty, session.name, opponentName); const existing = findGameSession('cookiewords', key);
+  if (existing && !existing.state.winner) { if (!existing.state.progress[session.name]) { const state = { ...existing.state, progress:{ ...existing.state.progress, [session.name]:{ levelIndex:0, foundWords:[], finishedAt:null } } }; await saveGameSession('cookiewords', key, state); } return key; }
+  const state = { mode:'race', difficulty, players:[session.name, opponentName].sort(), progress:{ [session.name]:{ levelIndex:0, foundWords:[], finishedAt:null } }, winner:null, startedAt:new Date().toISOString() };
+  await saveGameSession('cookiewords', key, state); return key;
+}
+function cookieWordsOtherProgress(state) { const name = cookieWordsOpponentName(state); const progress = name ? state.progress[name] : null; return { name, levelIndex:progress?.levelIndex || 0, foundCount:progress?.foundWords?.length || 0 }; }
+
+function renderCookieWordsSetup() {
+  const draft = view.gameSetupDraft || {}; const canStart = !!draft.difficulty && (draft.mode === 'solo' || (draft.mode === 'race' && draft.opponentName));
+  return `<div class="back-row"><button class="btn btn-secondary btn-small" data-back-to-games-hub>→ חזרה</button><h1 style="margin:0;font-size:17px;">🍪 עוגות מילים</h1></div><div class="game-setup-card"><h3>רמת קושי</h3><div class="game-setup-difficulty">${['easy','medium','hard'].map(difficulty => `<button class="game-setup-opt ${draft.difficulty === difficulty ? 'selected' : ''}" data-cookiewords-difficulty="${difficulty}">${difficulty === 'easy' ? 'קל' : difficulty === 'medium' ? 'בינוני' : 'קשה'}</button>`).join('')}</div><h3>איך משחקים?</h3><div class="game-setup-opponents"><button class="game-setup-opt ${draft.mode === 'solo' ? 'selected' : ''}" data-cookiewords-mode="solo">🧩 לבד</button>${otherSisters(session.name).map(name => `<button class="game-setup-opt ${draft.mode === 'race' && draft.opponentName === name ? 'selected' : ''}" data-cookiewords-mode="race" data-cookiewords-opponent="${escapeHtml(name)}"><span class="avatar ${AVATAR_CLASS[name] || ''}">${name[0]}</span> מרוץ מול ${escapeHtml(name)}</button>`).join('')}</div><button class="btn btn-primary" style="width:100%;margin-top:8px;" data-cookiewords-start ${canStart ? '' : 'disabled'}>בואי נתחיל!</button></div>${view.gameResumePrompt ? renderGameResumePrompt() : ''}`;
+}
+function renderCookieWordsLetters(letters, candidate) { return Array.from(candidate || '').map(letter => `<span class="cookiewords-word-letter">${escapeHtml(letter)}</span>`).join('') || 'בחרי אותיות מהגלגל'; }
+function renderCookieWordsBoard(sessionKey) {
+  const gs = findGameSession('cookiewords', sessionKey); if (!gs) return renderCookieWordsSetup(); const state = gs.state; const progress = cookieWordsPlayerProgress(state); if (progress.finishedAt) return renderCookieWordsResult(sessionKey, state);
+  const level = cookieWordsCurrentLevel(state.difficulty, progress.levelIndex); const temp = cookieWordsTempFor(sessionKey, progress.levelIndex); const opponent = state.mode === 'race' ? cookieWordsOtherProgress(state) : null;
+  if (progress.foundWords.length === level.words.length) return `<div class="cookiewords-shell"><div class="cookiewords-complete"><h2>שלב הושלם! 🎉</h2><p>כל ${level.words.length}/${level.words.length} המילים נמצאו.</p><button class="btn btn-primary" style="width:100%;" data-cookiewords-next-level>${progress.levelIndex === 4 ? 'לסיום המשחק' : 'לשלב הבא'}</button></div></div>`;
+  const wordGrid = level.words.map(word => `<div class="cookiewords-word ${progress.foundWords.includes(word) ? 'is-found' : ''}">${progress.foundWords.includes(word) ? renderCookieWordsLetters(level.letters, word) : Array.from(word).map(() => '<span class="cookiewords-word-letter">&nbsp;</span>').join('')}</div>`).join('');
+  const wheel = sdkShuffled(level.letters.map((letter, index) => ({ letter, index }))).map(({ letter, index }) => { const angle = (360 / level.letters.length) * index - 90; return `<button class="cookiewords-letter" style="transform:rotate(${angle}deg) translateY(-96px) rotate(${-angle}deg);" data-cookiewords-letter="${escapeHtml(letter)}">${escapeHtml(letter)}</button>`; }).join('');
+  return `<div class="cookiewords-shell"><div class="back-row"><button class="btn btn-secondary btn-small" data-back-to-games-hub>→ חזרה</button><h1 style="margin:0;font-size:17px;">🍪 עוגות מילים</h1></div><div class="cookiewords-status"><span>שלב ${progress.levelIndex + 1}/5 · ${progress.foundWords.length}/${level.words.length} מילים</span>${opponent ? `<span>${escapeHtml(opponent.name)}: שלב ${opponent.levelIndex + 1}/5, ${opponent.foundCount} מילים</span>` : ''}</div><div class="cookiewords-word-grid">${wordGrid}</div><div class="cookiewords-candidate">${renderCookieWordsLetters(level.letters, temp.candidate)}</div><div class="cookiewords-message ${temp.error ? 'is-error' : ''}">${escapeHtml(temp.message)}</div><div class="cookiewords-wheel">${wheel}</div><div class="cookiewords-actions"><button class="btn btn-secondary" data-cookiewords-delete-letter>⌫ מחיקה</button><button class="btn btn-primary" data-cookiewords-submit-word>אישור מילה</button></div></div>`;
+}
+function renderCookieWordsResult(sessionKey, state) {
+  const progress = cookieWordsPlayerProgress(state); if (state.mode === 'solo') return `<div class="cookiewords-shell"><div class="cookiewords-result"><h2>🎉 סיימת את כל 5 השלבים!</h2><p>כל הכבוד על מציאת כל המילים.</p><button class="btn btn-primary" style="width:100%;" data-cookiewords-replay>לשחק שוב</button></div></div>`;
+  const opponent = cookieWordsOpponentName(state); const otherProgress = state.progress[opponent]; const waiting = !otherProgress || !otherProgress.finishedAt; const rows = state.players.filter(name => state.progress[name]).map(name => `<li>${escapeHtml(name)} ${state.winner === name ? '— 🏆 ניצחה' : otherProgress?.finishedAt ? '— סיימה' : ''}</li>`).join('');
+  return `<div class="cookiewords-shell"><div class="cookiewords-result"><h2>${waiting ? `סיימת! ממתינים ל${escapeHtml(opponent)} שתסיים` : 'המרוץ הסתיים!'}</h2><ul>${rows}</ul><button class="btn btn-secondary" style="width:100%;" data-cookiewords-back-setup>לבחירת רמה</button></div></div>`;
+}
+
 function shoppingActiveList() {
   return data.shoppingList.filter(i => !i.purchased).sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || ''));
 }
@@ -5242,6 +5328,7 @@ function attachHandlers() {
       try {
         if (gameId === 'sudoku') await startNewSudokuSession(sessionKey, freshDraft);
         else if (gameId === 'crossword') await startNewCrosswordSession(sessionKey, freshDraft);
+        else if (gameId === 'cookiewords') await startNewCookieWordsSoloSession(freshDraft.difficulty);
         else await startNewGameSession(gameId, sessionKey, freshDraft);
       } catch (e) {
         alert('שגיאה בפתיחת המשחק, נסי שוב');
@@ -5613,6 +5700,59 @@ function attachHandlers() {
       render();
     };
   }
+
+  document.querySelectorAll('[data-cookiewords-difficulty]').forEach(button => button.addEventListener('click', () => { view.gameSetupDraft = { ...(view.gameSetupDraft || {}), difficulty:button.dataset.cookiewordsDifficulty }; render(); }));
+  document.querySelectorAll('[data-cookiewords-mode]').forEach(button => button.addEventListener('click', () => { const mode = button.dataset.cookiewordsMode; view.gameSetupDraft = { ...(view.gameSetupDraft || {}), mode, opponentName:mode === 'race' ? button.dataset.cookiewordsOpponent : null }; render(); }));
+  const cookieWordsStartBtn = document.querySelector('[data-cookiewords-start]');
+  if (cookieWordsStartBtn) {
+    cookieWordsStartBtn.onclick = async () => {
+      const draft = view.gameSetupDraft || {};
+      if (!draft.difficulty || !draft.mode) return;
+      if (draft.mode === 'race' && !draft.opponentName) return;
+      if (draft.mode === 'solo') {
+        // Guard against silently overwriting saved progress - a real bug caught in independent review
+        // before this game shipped: the original code always called startNewCookieWordsSoloSession()
+        // unconditionally, which would wipe an unfinished solo session the moment "start" was clicked
+        // again (e.g. after navigating away and back). Same resume-prompt pattern already used by
+        // sudoku/crossword for exactly this reason.
+        const soloKey = cookieWordsSoloSessionKey(session.name, draft.difficulty);
+        const existing = findGameSession('cookiewords', soloKey);
+        if (existing && existing.state && !existing.state.finishedAt) {
+          view.gameResumePrompt = { sessionKey: soloKey, gameId: 'cookiewords', freshDraft: draft, opponentLabel: 'לבד' };
+          render();
+          return;
+        }
+        try {
+          await startNewCookieWordsSoloSession(draft.difficulty);
+        } catch (e) {
+          alert('שגיאה בפתיחת המשחק, נסי שוב');
+          return;
+        }
+        view.activeGameSessionKey = soloKey;
+      } else {
+        try {
+          view.activeGameSessionKey = await startOrJoinCookieWordsRace(draft.difficulty, draft.opponentName);
+        } catch (e) {
+          alert('שגיאה בפתיחת המשחק, נסי שוב');
+          return;
+        }
+      }
+      view.gameSetupDraft = null;
+      view.cookieWordsTemp = null;
+      render();
+    };
+  }
+  document.querySelectorAll('[data-cookiewords-letter]').forEach(button => button.addEventListener('click', () => { const key = view.activeGameSessionKey; const gs = findGameSession('cookiewords', key); if (!gs) return; const progress = cookieWordsPlayerProgress(gs.state); const level = cookieWordsCurrentLevel(gs.state.difficulty, progress.levelIndex); const temp = cookieWordsTempFor(key, progress.levelIndex); const candidate = `${temp.candidate}${button.dataset.cookiewordsLetter}`; cookieWordsSetTemp({ ...temp, candidate, message:'', error:!cookieWordsCanFormWord(level.letters, candidate) }); if (!cookieWordsCanFormWord(level.letters, candidate)) view.cookieWordsTemp.message = 'אין בגלגל מספיק אותיות למילה הזאת.'; render(); }));
+  const cookieWordsDeleteBtn = document.querySelector('[data-cookiewords-delete-letter]');
+  if (cookieWordsDeleteBtn) cookieWordsDeleteBtn.onclick = () => { const key = view.activeGameSessionKey; const gs = findGameSession('cookiewords', key); if (!gs) return; const progress = cookieWordsPlayerProgress(gs.state); const temp = cookieWordsTempFor(key, progress.levelIndex); cookieWordsSetTemp({ ...temp, candidate:temp.candidate.slice(0, -1), message:'', error:false }); render(); };
+  const cookieWordsSubmitBtn = document.querySelector('[data-cookiewords-submit-word]');
+  if (cookieWordsSubmitBtn) cookieWordsSubmitBtn.onclick = async () => { const key = view.activeGameSessionKey; const gs = findGameSession('cookiewords', key); if (!gs) return; const state = gs.state; const progress = cookieWordsPlayerProgress(state); const level = cookieWordsCurrentLevel(state.difficulty, progress.levelIndex); const temp = cookieWordsTempFor(key, progress.levelIndex); const word = temp.candidate; const valid = word.length >= 2 && cookieWordsCanFormWord(level.letters, word) && level.words.includes(word) && !progress.foundWords.includes(word); if (!valid) { cookieWordsSetTemp({ ...temp, message:word.length < 2 ? 'בחרי לפחות שתי אותיות.' : progress.foundWords.includes(word) ? 'את המילה הזאת כבר מצאת.' : 'המילה אינה אחת ממילות השלב.', error:true }); render(); return; } if (state.mode === 'solo') await saveGameSession('cookiewords', key, { ...state, foundWords:[...progress.foundWords, word] }); else await saveGameSession('cookiewords', key, { ...state, progress:{ ...state.progress, [session.name]:{ ...progress, foundWords:[...progress.foundWords, word] } } }); view.cookieWordsTemp = null; render(); };
+  const cookieWordsNextLevelBtn = document.querySelector('[data-cookiewords-next-level]');
+  if (cookieWordsNextLevelBtn) cookieWordsNextLevelBtn.onclick = async () => { const key = view.activeGameSessionKey; const gs = findGameSession('cookiewords', key); if (!gs) return; const state = gs.state; const progress = cookieWordsPlayerProgress(state); const last = progress.levelIndex === 4; const nextProgress = { ...progress, levelIndex:progress.levelIndex + (last ? 0 : 1), foundWords:[], finishedAt:last ? new Date().toISOString() : null }; if (state.mode === 'solo') await saveGameSession('cookiewords', key, { ...state, ...nextProgress }); else await saveGameSession('cookiewords', key, { ...state, progress:{ ...state.progress, [session.name]:nextProgress }, winner:last && !state.winner ? session.name : state.winner }); view.cookieWordsTemp = null; render(); };
+  const cookieWordsReplayBtn = document.querySelector('[data-cookiewords-replay]');
+  if (cookieWordsReplayBtn) cookieWordsReplayBtn.onclick = async () => { const gs = findGameSession('cookiewords', view.activeGameSessionKey); if (!gs) return; await startNewCookieWordsSoloSession(gs.state.difficulty); view.cookieWordsTemp = null; render(); };
+  const cookieWordsBackSetupBtn = document.querySelector('[data-cookiewords-back-setup]');
+  if (cookieWordsBackSetupBtn) cookieWordsBackSetupBtn.onclick = () => { view.activeGameSessionKey = null; view.gameSetupDraft = {}; view.cookieWordsTemp = null; render(); };
 }
 
 function subscribeAll(name, gen) {
